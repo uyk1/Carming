@@ -84,8 +84,8 @@ class get_mgeo:
             for link_point in self.links[link_idx].points:
                 tmp_point = Point32()
                 tmp_point.x = link_point[0]
-                tmp_point.x = link_point[1]
-                tmp_point.x = link_point[2]
+                tmp_point.y = link_point[1]
+                tmp_point.z = link_point[2]
                 all_link.points.append(tmp_point)
 
         return all_link
