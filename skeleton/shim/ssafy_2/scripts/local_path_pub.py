@@ -11,13 +11,13 @@ from nav_msgs.msg import Odometry, Path
 # local_path_pub 은 global Path (전역경로) 데이터를 받아 Local Path (지역경로) 를 만드는 예제입니다.
 # Local Path (지역경로) 는 global Path(전역경로) 에서 차량과 가장 가까운 포인트를 시작으로 만들어 집니다.
 
-# 노드 실행 순서 
-# 1. Global Path 와 Odometry 데이터 subscriber 생성 
+# 노드 실행 순서
+# 1. Global Path 와 Odometry 데이터 subscriber 생성
 # 2. Local Path publisher 선언
 # 3. Local Path 의 Size 결정
 # 4. 콜백함수에서 처음 메시지가 들어오면 초기 위치를 저장
 # 5. Global Path 에서 차량 위치와 가장 가까운 포인트(Currenty Waypoint) 탐색
-# 6. 가장 가까운 포인트(Currenty Waypoint) 위치부터 Local Path 생성 및 예외 처리 
+# 6. 가장 가까운 포인트(Currenty Waypoint) 위치부터 Local Path 생성 및 예외 처리
 # 7. Local Path 메세지 Publish
 
 
@@ -66,9 +66,11 @@ class local_path_pub:
                 # 차량의 현재 위치는 Local Path 를 만드는 시작 위치가 됩니다.
                 # 차량의 현재 위치를 탐색하는 반복문은 작성해 current_waypoint 찾습니다.
                 '''
-
+                # min_dist, waypoin 초기설정
+                # min_dist는 infinity로 초기설정
                 min_dis = float('inf')
                 current_waypoint = -1
+                # global_path_msg에서 받은 pose들 중 현재 위치에서 가장 가까운 좌표를 찾아서 min_dist와 waypoint에 저장
                 for idx, pose in enumerate(self.global_path_msg.poses):
                     dx = pose.pose.position.x - x
                     dy = pose.pose.position.y - y
@@ -85,14 +87,19 @@ class local_path_pub:
 
                 '''
 
+                # waypoint가 정해진 경우에만 실행
                 if current_waypoint != -1:
+                    # 현재 좌표와 앞에서 정한 local_path의 길이의 합이 global_path의 길이보다 작은 경우
                     if current_waypoint + self.local_path_size < len(self.global_path_msg.poses):
                         for idx in range(current_waypoint, current_waypoint + self.local_path_size):
+                            # 좌표를 담을 객체 생성
                             read_pose = PoseStamped()
+                            # 앞에서 확인한 가장 가까운 좌표의 x, y값 저장
                             read_pose.pose.position.x = float(self.global_path_msg.poses[idx].pose.position.x)
                             read_pose.pose.position.y = float(self.global_path_msg.poses[idx].pose.position.y)
                             read_pose.pose.position.z = 1
                             local_path_msg.poses.append(read_pose)
+                    # 현재 좌표와 앞에서 정한 local_path의 길이의 합이 global_path의 길이보다 긴 경우
                     else:
                         for idx in range(current_waypoint, current_waypoint, len(self.glpabl_path_msg.poses)):
                             read_pose = PoseStamped()
