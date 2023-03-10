@@ -11,8 +11,8 @@ from nav_msgs.msg import Odometry, Path
 # global_path_pub 은 txt 파일로 저장한 Path 데이터를 global Path (전역경로) 로 읽어오는 예제입니다.
 # 만들어진 global Path(전역경로) 는 Local Path (지역경로) 를 만드는데 사용 된다.
 
-# 노드 실행 순서 
-# 1. Global Path publisher 선언 및 Global Path 변수 생성 
+# 노드 실행 순서
+# 1. Global Path publisher 선언 및 Global Path 변수 생성
 # 2. 읽어올 경로 의 텍스트파일 이름을 정하고, 읽기 모드로 열기
 # 3. 읽어 온 경로 데이터를 Global Path 변수에 넣기
 # 4. Global Path 정보 Publish
@@ -41,8 +41,8 @@ class global_path_pub:
 
         rospack = rospkg.RosPack()
         pkg_path = rospack.get_path(pkg_name)
-        full_path = pkg_path + "/path/ssafy_test_path.txt"
-        self.f = open(full_path, '')
+        full_path = pkg_path + "/path/" + path_name + ".txt"
+        self.f = open(full_path, 'r')
         lines = self.f.readlines()
 
         # TODO: (3) 읽어 온 경로 데이터를 Global Path 변수에 넣기
@@ -53,8 +53,8 @@ class global_path_pub:
         for line in lines:
             tmp = line.split()
             read_pose = PoseStamped()
-            read_pose.pose.position.x = float(tmp[x])
-            read_pose.pose.position.y = float(tmp[y])
+            read_pose.pose.position.x = float(tmp[0])
+            read_pose.pose.position.y = float(tmp[1])
             read_pose.pose.orientation.w = 1
             self.global_path_msg.poses.append(read_pose)
         self.f.close()

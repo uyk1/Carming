@@ -83,7 +83,7 @@ class GPSIMUParser:
         # UTM 좌표로 변환 된 x, y 값에 offset 값을 빼주면 된다.
 
         '''
-        xy_zone = self.proj_UTM(self.lat, self.lon)
+        xy_zone = self.proj_UTM(self.lon, self.lat)
 
         # if 문을 이용 예외처리를 하는 이유는 시뮬레이터 음영 구간 설정 센서 데이터가 0.0 으로 나오기 때문이다.
         if self.lon == 0 and self.lat == 0:
@@ -127,3 +127,4 @@ if __name__ == '__main__':
         GPS_IMU_parser = GPSIMUParser()
     except rospy.ROSInterruptException:
         pass
+
