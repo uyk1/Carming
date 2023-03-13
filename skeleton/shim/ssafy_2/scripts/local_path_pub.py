@@ -101,7 +101,7 @@ class local_path_pub:
                             local_path_msg.poses.append(read_pose)
                     # 현재 좌표와 앞에서 정한 local_path의 길이의 합이 global_path의 길이보다 긴 경우
                     else:
-                        for idx in range(current_waypoint, current_waypoint, len(self.glpabl_path_msg.poses)):
+                        for idx in range(current_waypoint, current_waypoint, len(self.global_path_msg.poses)):
                             read_pose = PoseStamped()
                             read_pose.pose.position.x = float(self.global_path_msg.poses[idx].pose.position.x)
                             read_pose.pose.position.y = float(self.global_path_msg.poses[idx].pose.position.y)
