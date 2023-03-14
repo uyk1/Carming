@@ -64,13 +64,11 @@ class get_mgeo :
         while not rospy.is_shutdown():
 
             #TODO: (4) 변환한 Link, Node 정보 Publish
-            '''
-            # 변환한 Link, Node 정보 를 전송하는 publisher 를 만든다.
-            self.link_pub.
-            self.node_pub.
             
-            '''
-                
+            # 변환한 Link, Node 정보 를 전송하는 publisher 를 만든다.
+            self.link_pub.publish(self.link_msg)
+            self.node_pub.publish(self.node_msg)
+            
             rate.sleep()
 
 
@@ -79,15 +77,19 @@ class get_mgeo :
         all_link.header.frame_id='map'
 
         #TODO: (2) Link 정보 Point Cloud 데이터로 변환
-        '''
+        
         # Point Cloud 형식으로 Link 의 좌표 정보를 변환합니다.
         # Link 의 개수 만큼 반복하는 반복 문을 이용해 Link 정보를 Point Cloud 형식 데이터에 넣습니다.
+        # link 는 길 -> 한 점으로 이루어져 있지 않음. 따라서 링크에 포함된 모든 좌표를 순회
+        # 모든 self.links를 전부 순회하면서, 그들의 point의 x,y,z 좌표를 point cloud 형식 데이터 tmp_point에 넣는다.
 
         for link_idx in self.links :
-            for  in :
-
-        
-        '''
+            for link_point in self.links[link_idx].point:
+                tmp_point = Point32()
+                tmp_point.x = link_point[0]
+                tmp_point.y = link_point[1]
+                tmp_point.z = link_point[2]
+                all_link.points.append(tmp_point)
 
         return all_link
     
@@ -96,13 +98,16 @@ class get_mgeo :
         all_node.header.frame_id='map'
 
         #TODO: (3) Node 정보 Point Cloud 데이터로 변환
-        '''
+        
         # Point Cloud 형식으로 Node 의 좌표 정보를 변환합니다.
         # Node 의 개수 만큼 반복하는 반복 문을 이용해 Node 정보를 Point Cloud 형식 데이터에 넣습니다.
 
         for node_idx in self.nodes :
-
-        '''
+            tmp_point = Point32()
+            tmp_point.x = self.nodes[node_idx].point[0]
+            tmp_point.y = self.nodes[node_idx].point[1]
+            tmp_point.z = self.nodes[node_idx].point[2]
+            all_node.points.append(tmp_point)
 
         return all_node
 
