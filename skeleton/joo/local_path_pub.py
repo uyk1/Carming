@@ -24,13 +24,13 @@ class local_path_pub :
     def __init__(self):
         rospy.init_node('local_path_pub', anonymous=True)
         #TODO: (1) Global Path 와 Odometry 데이터 subscriber 생성 
-        '''
+        
         # Global Path 와 Odometry 데이터 subscriber 를 생성한다.
         # 콜백 함수의 이름은 self.global_path_callback, self.odom_callback 로 한다.
-        rospy.Subscriber( odometry 메세지 콜백 완성하기 )
-        rospy.Subscriber( global path 메세지 콜백 완성하기 )
+        rospy.Publisher('/odom', Odometry, queue_size=1)
+        rospy.Publisher('/global_path', Path, queue_size=1)
 
-        '''
+        
 
         #TODO: (2) Local Path publisher 선언
         '''
