@@ -52,7 +52,7 @@ class pathMaker :
         # 현재 차량의 위치와 이전에 지나온 위치의 좌표 데이터를 구한다.
         # 구해진 좌표 사이의 거리를 계산한다.
         # 이전 위치 좌표는 아래 #TODO: (4)에서 정의 한다.
-        distance = sqrt((x - self.prev_x)^2 + (y - self.prev_y)^2)
+        distance = sqrt(pow((x - self.prev_x),2) + pow((y - self.prev_y),2))
 
         
         #TODO: (4) 이전 위치보다 0.5m 이상일 때 위치를 저장        
