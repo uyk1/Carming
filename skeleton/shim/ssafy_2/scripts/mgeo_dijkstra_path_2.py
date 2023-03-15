@@ -17,8 +17,6 @@ from nav_msgs.msg import Odometry, Path
 current_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(current_path)
 
-print("===>")
-print(sys.path)
 from lib.mgeo.class_defs import *
 
 # mgeo_dijkstra_path_1 은 Mgeo 데이터를 이용하여 시작 Node 와 목적지 Node 를 지정하여 Dijkstra 알고리즘을 적용하는 예제 입니다.
@@ -69,17 +67,14 @@ class dijkstra_path_pub:
 
         # TODO: (1) Mgeo data 읽어온 후 데이터 확인
         load_path = os.path.normpath(os.path.join(current_path, 'lib/mgeo_data/R_KR_PG_K-City'))
-        # load_path라는 json 형식의 데이터에서 instance를 생성하여 mgeo_planner_map에 저장???
         mgeo_planner_map = MGeo.create_instance_from_json(load_path)
 
-        # K-City에서 읽은 데이터를 저장한 mgeo_planner_map이라는 인스턴스에서 node_set와 link_set를 저장
         node_set = mgeo_planner_map.node_set
         link_set = mgeo_planner_map.link_set
 
         self.nodes = node_set.nodes
         self.links = link_set.lines
 
-        # 이게 뭐지?? 클래스 사용???
         self.global_planner = Dijkstra(self.nodes, self.links)
 
         self.is_goal_pose = False
@@ -94,7 +89,7 @@ class dijkstra_path_pub:
 
         self.global_path_msg = Path()
         self.global_path_msg.header.frame_id = '/map'
-        # 최단경로 생성
+
         self.global_path_msg = self.calc_dijkstra_path_node(self.start_node, self.end_node)
 
         rate = rospy.Rate(10)  # 10hz
@@ -102,6 +97,7 @@ class dijkstra_path_pub:
             # TODO: (11) dijkstra 이용해 만든 Global Path 정보 Publish
             '''
             # dijkstra 이용해 만든 Global Path 메세지 를 전송하는 publisher 를 만든다.
+
             '''
             self.global_path_pub.publish(self.global_path_msg)
 
@@ -134,7 +130,7 @@ class dijkstra_path_pub:
 
             if dist < min_dis:
                 min_dis = dist
-                node_idx = from_node_id
+                node_id = from_node_id
 
         self.start_node = node_id
 
@@ -167,7 +163,7 @@ class dijkstra_path_pub:
 
             if dist < min_dis:
                 min_dis = dist
-                node_idx = from_node_id
+                node_id = from_node_id
 
         self.end_node = node_id
 
@@ -243,6 +239,7 @@ class Dijkstra:
         # shortest_link 의 min_cost 를 계산 합니다.
 
         '''
+
         shortest_link, min_cost = from_node.find_shortest_link_leading_to_node(to_node)
         return shortest_link, min_cost
 
@@ -329,3 +326,4 @@ class Dijkstra:
 
 if __name__ == '__main__':
     dijkstra_path_pub = dijkstra_path_pub()
+
