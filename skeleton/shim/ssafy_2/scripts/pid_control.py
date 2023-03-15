@@ -199,7 +199,7 @@ class pidControl:
         d_control = - self.d_gain * (error - self.prev_error) / self.controlTime
 
         output = p_control + self.i_control + d_control
-        self.prev_error = target_vel - output
+        self.prev_error = error
 
         return output
 
