@@ -166,7 +166,6 @@ class dijkstra_path_pub:
                 node_id = from_node_id
 
         self.end_node = node_id
-
         self.is_goal_pose = True
 
     def calc_dijkstra_path_node(self, start_node, end_node):
