@@ -6,7 +6,7 @@ build/
 !**/src/test/**/build/
 
 ### QueryDSL QClass ignore
-build/generated
+generated
 
 
 ### STS ###
