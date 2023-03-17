@@ -10,9 +10,11 @@ import L1_RootStackNavigator from './src/navigations/L1_RootStackNavigator';
 
 function App(): JSX.Element {
   return (
-    <NavigationContainer>
-      <L1_RootStackNavigator />
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <L1_RootStackNavigator />
+      </NavigationContainer>
+    </>
   );
 }
 
