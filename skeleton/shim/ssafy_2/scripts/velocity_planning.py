@@ -166,12 +166,31 @@ class pure_pursuit:
         return currnet_waypoint
 
     def calc_pure_pursuit(self, ):
+
+        # TODO: (2) 속도 비례 Look Ahead Distance 값 설정
+        '''
+        # 차량 속도에 비례하여 전방주시거리(Look Forward Distance) 가 변하는 수식을 구현 합니다.
+        # 이때 'self.lfd' 값은 최소와 최대 값을 넘어서는 안됩니다.
+        # "self.min_lfd","self.max_lfd", "self.lfd_gain" 을 미리 정의합니다.
+        # 최소 최대 전방주시거리(Look Forward Distance) 값과 속도에 비례한 lfd_gain 값을 직접 변경해 볼 수 있습니다.
+        # 초기 정의한 변수 들의 값을 변경하며 속도에 비례해서 전방주시거리 가 변하는 advanced_purepursuit 예제를 완성하세요.
+        #
+        '''
+        self.lfd = (self.status_msg.velocity.x) * self.lfd_gain
+
+        if self.lfd < self.min_lfd:
+            self.lfd = self.min_lfd
+        elif self.lfd > self.max_lfd:
+            self.lfd = self.max_lfd
+
+        rospy.loginfo(self.lfd)
+
         vehicle_position = self.current_postion
         self.is_look_forward_point = False
 
         translation = [vehicle_position.x, vehicle_position.y]
 
-        # TODO: (2) 좌표 변환 행렬 생성
+        # TODO: (3) 좌표 변환 행렬 생성
         '''
         # Pure Pursuit 알고리즘을 실행 하기 위해서 차량 기준의 좌표계가 필요합니다.
         # Path 데이터를 현재 차량 기준 좌표계로 좌표 변환이 필요합니다.
@@ -180,18 +199,17 @@ class pure_pursuit:
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 이용하여 조향 각도를 계산하게 됩니다.
         # 좌표 변환 행렬을 이용해 Path 데이터를 차량 기준 좌표 계로 바꾸는 반복 문을 작성 한 뒤
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
-        '''
 
-        trans_matrix = np.array([[cos(self.vehicle_yaw), -sin(self.vehicle_yaw), translation[0]],
-                                 [sin(self.vehicle_yaw), cos(self.vehicle_yaw), translation[1]],
-                                 [0, 0, 1]])
+        '''
+        trans_matrix = np.array([
+            [cos(self.vehicle_yaw), -sin(self.vehicle_yaw), translation[0]],
+            [sin(self.vehicle_yaw), cos(self.vehicle_yaw), translation[1]],
+            [0, 0, 1]])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
-        # print(vehicle_position)
         dis = float('inf')
-        for idx, pose in enumerate(self.path.poses):
-
-            path_point = pose.pose.position
+        for num, i in enumerate(self.path.poses):
+            path_point = i.pose.position
 
             global_path_point = [path_point.x, path_point.y, 1]
             local_path_point = det_trans_matrix.dot(global_path_point)
@@ -199,11 +217,12 @@ class pure_pursuit:
             if local_path_point[0] > 0:
                 dis = sqrt(local_path_point[0] * local_path_point[0] + local_path_point[1] * local_path_point[1])
                 if dis >= self.lfd:
-                    self.forward_point = idx
+                    self.forward_point.x = local_path_point[0]
+                    self.forward_point.y = local_path_point[1]
                     self.is_look_forward_point = True
                     break
 
-        # TODO: (3) Steering 각도 계산
+        # TODO: (4) Steering 각도 계산
         '''
         # 제어 입력을 위한 Steering 각도를 계산 합니다.
         # theta 는 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 좌표의 각도를 계산 합니다.
@@ -213,7 +232,6 @@ class pure_pursuit:
         steering = atan(2 * self.vehicle_length * sin(theta) / dis)
 
         return steering
-
 
 class pidControl:
     def __init__(self):
@@ -227,16 +245,16 @@ class pidControl:
     def pid(self, target_vel, current_vel):
         error = target_vel - current_vel
 
-        # TODO: (4) PID 제어 생성
+        # TODO: (5) PID 제어 생성
         '''
         # 종방향 제어를 위한 PID 제어기는 현재 속도와 목표 속도 간 차이를 측정하여 Accel/Brake 값을 결정 합니다.
         # 각 PID 제어를 위한 Gain 값은 "class pidContorl" 에 정의 되어 있습니다.
         # 각 PID Gain 값을 직접 튜닝하고 아래 수식을 채워 넣어 P I D 제어기를 완성하세요.
-        '''
 
+        '''
         p_control = self.p_gain * error
         self.i_control += self.i_gain * error * self.controlTime
-        d_control = - self.d_gain * (error - self.prev_error) / self.controlTime
+        d_control = self.d_gain * ((error - self.prev_error) / self.controlTime)
 
         output = p_control + self.i_control + d_control
         self.prev_error = error
