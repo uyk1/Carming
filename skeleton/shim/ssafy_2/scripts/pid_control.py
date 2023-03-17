@@ -139,24 +139,24 @@ class pure_pursuit:
         # 전방주시거리(Look Forward Distance) 와 가장 가까운 Path Point 를 계산하는 로직을 작성 하세요.
         '''
 
-        trans_matrix = np.array([[cos(self.vehicle_yaw), -sin(self.vehicle_yaw), translation[0]],
-                                 [sin(self.vehicle_yaw), cos(self.vehicle_yaw), translation[1]],
-                                 [0, 0, 1]])
+        trans_matrix = np.array([
+            [cos(self.vehicle_yaw), -sin(self.vehicle_yaw), translation[0]],
+            [sin(self.vehicle_yaw), cos(self.vehicle_yaw), translation[1]],
+            [0, 0, 1]])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
-        # print(vehicle_position)
-        for idx, pose in enumerate(self.path.poses):
-
-            path_point = pose.pose.position
+        dis = float('inf')
+        for num, i in enumerate(self.path.poses):
+            path_point = i.pose.position
 
             global_path_point = [path_point.x, path_point.y, 1]
             local_path_point = det_trans_matrix.dot(global_path_point)
-            print(global_path_point, "g")
-            print(local_path_point)
+
             if local_path_point[0] > 0:
                 dis = sqrt(local_path_point[0] * local_path_point[0] + local_path_point[1] * local_path_point[1])
                 if dis >= self.lfd:
-                    self.forward_point = idx
+                    self.forward_point.x = local_path_point[0]
+                    self.forward_point.y = local_path_point[1]
                     self.is_look_forward_point = True
                     break
 
@@ -196,7 +196,7 @@ class pidControl:
         '''
         p_control = self.p_gain * error
         self.i_control += self.i_gain * error * self.controlTime
-        d_control = - self.d_gain * (error - self.prev_error) / self.controlTime
+        d_control = self.d_gain * ((error - self.prev_error)/self.controlTime)
 
         output = p_control + self.i_control + d_control
         self.prev_error = error
