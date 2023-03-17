@@ -5,18 +5,15 @@
  * @format
  */
 
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { StackNavigator } from './src/navigations';
-
+import {NavigationContainer} from '@react-navigation/native';
+import L1_RootStackNavigator from './src/navigations/L1_L1_RootStackNavigator';
 
 function App(): JSX.Element {
   return (
     <NavigationContainer>
-      <StackNavigator/>
+      <L1_RootStackNavigator />
     </NavigationContainer>
   );
 }
-
 
 export default App;
