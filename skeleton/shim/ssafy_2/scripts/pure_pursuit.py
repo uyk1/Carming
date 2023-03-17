@@ -118,25 +118,24 @@ class pure_pursuit:
         '''
         # 차량(0,0,0)을 기준으로 좌표계 바꾸기
 
-        trans_matrix = np.array([[cos(self.vehicle_yaw), -sin(self.vehicle_yaw), translation[0]],
-                                 [sin(self.vehicle_yaw), cos(self.vehicle_yaw), translation[1]],
-                                 [0, 0, 1]])
+        trans_matrix = np.array([
+            [cos(self.vehicle_yaw), -sin(self.vehicle_yaw), translation[0]],
+            [sin(self.vehicle_yaw), cos(self.vehicle_yaw), translation[1]],
+            [0, 0, 1]])
 
         det_trans_matrix = np.linalg.inv(trans_matrix)
         dis = float('inf')
-        # print(vehicle_position)
-        for idx, pose in enumerate(self.path.poses):
-
-            path_point = pose.pose.position
+        for num, i in enumerate(self.path.poses):
+            path_point = i.pose.position
 
             global_path_point = [path_point.x, path_point.y, 1]
             local_path_point = det_trans_matrix.dot(global_path_point)
-            # print(global_path_point , "g")
-            print(local_path_point)
+
             if local_path_point[0] > 0:
                 dis = sqrt(local_path_point[0] * local_path_point[0] + local_path_point[1] * local_path_point[1])
                 if dis >= self.lfd:
-                    self.forward_point = idx
+                    self.forward_point.x = local_path_point[0]
+                    self.forward_point.y = local_path_point[1]
                     self.is_look_forward_point = True
                     break
 
