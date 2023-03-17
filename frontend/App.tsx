@@ -6,7 +6,7 @@
  */
 
 import {NavigationContainer} from '@react-navigation/native';
-import L1_RootStackNavigator from './src/navigations/L1_L1_RootStackNavigator';
+import L1_RootStackNavigator from './src/navigations/L1_RootStackNavigator';
 
 function App(): JSX.Element {
   return (
