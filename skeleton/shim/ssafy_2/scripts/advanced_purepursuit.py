@@ -106,7 +106,7 @@ class pure_pursuit:
                 output = self.pid.pid(self.target_velocity, self.status_msg.velocity.x * 3.6)
 
                 if output > 0.0:
-                    self.ctrl_cmd_msg.accel = 80
+                    self.ctrl_cmd_msg.accel = output
                     self.ctrl_cmd_msg.brake = 0.0
                 else:
                     self.ctrl_cmd_msg.accel = 0.0
@@ -203,9 +203,10 @@ class pure_pursuit:
             local_path_point = det_trans_matrix.dot(global_path_point)
 
             if local_path_point[0] > 0:
-                dis = sqrt(pow(local_path_point[0], 2) + pow(local_path_point[1], 2))
+                dis = sqrt(local_path_point[0] * local_path_point[0] + local_path_point[1] * local_path_point[1])
                 if dis >= self.lfd:
-                    self.forward_point = path_point
+                    self.forward_point.x = local_path_point[0]
+                    self.forward_point.y = local_path_point[1]
                     self.is_look_forward_point = True
                     break
 
@@ -242,7 +243,7 @@ class pidControl:
         '''
         p_control = self.p_gain * error
         self.i_control += self.i_gain * error * self.controlTime
-        d_control = self.d_gain * (error - self.prev_error) / self.controlTime
+        d_control = self.d_gain * ((error - self.prev_error) / self.controlTime)
 
         output = p_control + self.i_control + d_control
         self.prev_error = error
@@ -285,7 +286,7 @@ class velocityPlanning:
             a = a_matrix[0]
             b = a_matrix[1]
             c = a_matrix[2]
-            r = sqrt(a * a + b * b + c * c)
+            r = sqrt(a * a + b * b - c)
 
             # TODO: (7) 곡률 기반 속도 계획
             '''
