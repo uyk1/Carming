@@ -31,7 +31,7 @@ class IMGParser:
             # Byte 단위로 저장 된 이미지 데이터를 np.array 형태로 읽는 부분이다.
             # np.fromstring 함수를 이용하여 읽어오는 data 정보를 uint8 형태로 변환한다.
 
-            np_arr = np.fromstring(msg, dtype=np.uint8, count=-1)
+            np_arr = np.fromstring(msg.data, dtype=np.uint8, count=-1)
             ## msg에서 읽어들인 이미지 데이터를 np_arr 배열에 저장할 수 있다.
             ## dtype : 원시 데이터의 바이트 표현을 파싱하여 변환할 데이터 형식을 지정하는 것
             ## 이미지 데이터를 읽어오기 때문에 dtype파라미터에 uint8을 지정해야한다.
