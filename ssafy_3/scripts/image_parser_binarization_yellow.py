@@ -23,15 +23,14 @@ class IMGParser:
         self.image_sub = rospy.Subscriber("/image_jpeg/compressed", CompressedImage, self.callback)
 
     def callback(self, msg):
-        def callback(self, msg):
-            try:
-                np_arr = np.fromstring(msg.data, dtype=np.uint8, count=-1)
-                img_bgr = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+        try:
+            np_arr = np.fromstring(msg.data, dtype=np.uint8, count=-1)
+            img_bgr = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
-            except CvBridgeError as e:
-                print(e)
+        except CvBridgeError as e:
+            print(e)
         
-            img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
+        img_hsv = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2HSV)
 
         #TODO: (1)
         
