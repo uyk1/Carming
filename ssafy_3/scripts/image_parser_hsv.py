@@ -54,7 +54,7 @@ class IMGParser:
         
         # 이미지를 출력 합니다.
 
-        cv2.imshow('image_concat', img_bgr)
+        cv2.imshow('image_concat', img_concat)
         cv2.waitKey(1)
 
         
