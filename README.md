@@ -111,7 +111,7 @@
 - [이해관계자 파악 및 분석]()
 - [Swagger UI]()
 - [페르소나]()
-- [ERD]()
+- [ERD](https://lab.ssafy.com/s08-mobility-autodriving-sub2/S08P22A408/-/blob/main/Docs/ERD.PNG)
 - [Usecase 다이어그램]()
 - [Usecase Scenario]()
 
