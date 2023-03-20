@@ -15,7 +15,7 @@ from cv_bridge import CvBridgeError
 
 # 노드 실행 순서 
 # 1. 문자열 Type 데이터를 정수형으로 변환 
-# 2. 읽을 수 있는 bgr 이미지로 변환 
+# 2. 읽을 수 있는 bgr 이미지로 변환
 # 3. 이미지 출력
 
 class IMGParser:
