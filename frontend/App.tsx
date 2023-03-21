@@ -17,11 +17,12 @@ const theme = {
     ...MD3LightTheme.colors,
     primary: '#7173C9',
     secondary: '#DF94C2',
+    onPrimary: '#141060',
     tertiary: '#FFBDC1',
-    quaternary: '#141060',
     surface: '#8398D1',
-    accent: '#70558E',
-    neutral: '#D9D9D9',
+    surfaceVariant: '#70558E',
+    surfaceDisabled: '#D9D9D9',
+    shadow: '#0000009d',
   },
 };
 
