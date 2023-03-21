@@ -39,8 +39,8 @@ class IMGParser:
         # 하한 값 행렬과 상한 값 행렬을 정해 그 사이의 값 만을 출력 하도록 합니다.
         # 이번 예제에서는 흰색 영역을 검출합니다.
 
-        lower_wlane = np.array([0, 0, 75])
-        upper_wlane = np.array([20, 20, 100])
+        lower_wlane = np.array([0,0,205])
+        upper_wlane = np.array([30,60,255])
         ## 임의로 설정한 흰색의 min-max RGB값 범위
         ## RGB는 직관적인 세부 색을 구현하는데에 비해 HSV는 실제색 기반에서 명도와 채도를 갖고 비교
 
@@ -54,8 +54,12 @@ class IMGParser:
 
         img_wlane = cv2.inRange(img_hsv, lower_wlane, upper_wlane)
         ## 임계 범위 내에서 해당하는 값(흰색 선)만 추출
-        img_wlane = cv2.cvtColor(img_wlane, cv2.COLOR_HSV2BGR)
-        ## HSV로 뽑아낸 흰색라인을 BGR로 변환
+        ## 이렇게 추출한 값은 1채널이기때문에 다시 변환이 필요함
+        ## 왜냐하면 np.concatenate 함수는 같은 채널의 개수를 갖고 있어야 병렬로 띄울 수 있으므로!
+
+        img_wlane = cv2.cvtColor(img_wlane, cv2.COLOR_GRAY2BGR)
+        ## GRAY로 뽑아낸 흰색라인을 BGR로 변환
+        
         img_concat = np.concatenate((img_bgr, img_hsv, img_wlane), axis=1)
         ## BGR, HSV, BGR(흰색 라인) 병렬로 띄우기
         

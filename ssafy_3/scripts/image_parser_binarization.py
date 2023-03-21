@@ -42,10 +42,10 @@ class IMGParser:
         # 하한 값 행렬과 상한 값 행렬을 정해 그 사이의 값 만을 출력 하도록 합니다.
         # 앞선 예제에서 사용한 노란색 범위와 흰색 범위를 모두 사용합니다.
 
-        lower_wlane = np.array([0, 0, 75])
-        upper_wlane = np.array([20, 20, 100])
-        lower_ylane = np.array([35, 30, 60])
-        upper_ylane = np.array([65, 100, 100])
+        lower_wlane = np.array([0,0,205])
+        upper_wlane = np.array([30,60,255])
+        lower_ylane = np.array([0,70,120])
+        upper_ylane = np.array([40,195,230])
 
         
         
@@ -57,9 +57,11 @@ class IMGParser:
 
         img_wlane = cv2.inRange(img_hsv, lower_wlane, upper_wlane)
         img_ylane = cv2.inRange(img_hsv, lower_ylane, upper_ylane)
-        img_wlane = cv2.cvtColor(img_wlane, cv2.COLOR_HSV2BGR)
-        img_ylane = cv2.cvtColor(img_ylane, cv2.COLOR_HSV2BGR)
+        ## cv2.inRange함수의 경우, 채널이 1짜리 이미지 생성
 
+        img_wlane = cv2.cvtColor(img_wlane, cv2.COLOR_GRAY2BGR)
+        img_ylane = cv2.cvtColor(img_ylane, cv2.COLOR_GRAY2BGR)
+        ## 같은 채널만 함께 띄울 수 있으므로, 전부 BGR채널로 변환
         
 
         #TODO: (3)
@@ -68,7 +70,8 @@ class IMGParser:
         # or 연산을 통해 흰색과 노란색으로 검출된 모든 영역을 출력합니다.
 
         img_lane = cv2.bitwise_or(img_wlane, img_ylane)
-        img_concat = np.concatenate((img_bgr, img_hsv, img_lane), axis=1)
+        img_concat = np.concatenate((img_wlane, img_ylane, img_lane), axis=1)
+        ## 명세서의 내용에 맞게, white라인/yellow라인/결합라인 창을 띄운다.
 
         
         #TODO: (4)
