@@ -4,11 +4,19 @@ import styled from 'styled-components/native';
 import CommonChip from '../components/CommonChip';
 import {IconButton, useTheme} from 'react-native-paper';
 import {SegmentedButtons} from 'react-native-paper';
-import {useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
+import Carousel from 'react-native-snap-carousel-v4';
+import RecommendCard from '../components/RecommendCard';
+import {Dimensions, Text, View} from 'react-native';
+
+const {width: screenWidth} = Dimensions.get('window');
 
 const PlacesRecommendScreen = () => {
   const theme = useTheme();
+  const carouselRef = useRef(null);
 
+  const [placeList, setPlaceList] = useState<Place[]>([]);
+  const [tagList, setTagList] = useState<Tag[]>([]);
   const [recommendType, setRecommendType] = useState<string>('');
   const [checkedTagIdList, setCheckedTagIdList] = useState<number[]>([]);
 
@@ -39,7 +47,7 @@ const PlacesRecommendScreen = () => {
     },
   ];
 
-  const recommendTagList: Tag[] = [
+  const tags: Tag[] = [
     {
       id: 0,
       text: '맛있는',
@@ -54,6 +62,42 @@ const PlacesRecommendScreen = () => {
     },
   ];
 
+  const places: Place[] = [
+    {
+      id: 0,
+      color: 'yellow',
+      title: 'title1',
+      content: 'content1',
+      imageUrl: 'https://i.imgur.com/UYiroysl.jpg',
+    },
+    {
+      id: 1,
+      color: 'red',
+      title: 'title2',
+      content: 'content2',
+      imageUrl: 'https://i.imgur.com/UPrs1EWl.jpg',
+    },
+    {
+      id: 2,
+      color: 'blue',
+      title: 'title3',
+      content: 'content3',
+      imageUrl: 'https://i.imgur.com/MABUbpDl.jpg',
+    },
+    {
+      id: 3,
+      color: 'green',
+      title: 'title4',
+      content: 'content4',
+      imageUrl: 'https://i.imgur.com/KZsmUi2l.jpg',
+    },
+  ];
+
+  useEffect(() => {
+    setPlaceList(places);
+    setTagList(tags);
+  }, []);
+
   const tagPressed = (tagId: number) => {
     checkedTagIdList.includes(tagId)
       ? checkedTagIdList.splice(checkedTagIdList.indexOf(tagId), 1)
@@ -63,35 +107,51 @@ const PlacesRecommendScreen = () => {
 
   return (
     <GradientBackground colors={['#70558e7a', '#df94c283', '#ffbdc1b0']}>
-      <StyledSafeAreaView style={{justifyContent: 'space-between'}}>
-        <SegmentedButtons
-          style={{width: 200}}
-          value={recommendType}
-          onValueChange={setRecommendType}
-          buttons={recommendTypeChangeButtons}
+      <SafeAreaView style={{flex: 1}}>
+        <StyledView style={{justifyContent: 'space-between'}}>
+          <SegmentedButtons
+            style={{width: 200}}
+            value={recommendType}
+            onValueChange={setRecommendType}
+            buttons={recommendTypeChangeButtons}
+          />
+          <IconButton
+            icon="home"
+            size={30}
+            onPress={() => {
+              console.log('hello');
+            }}
+          />
+        </StyledView>
+        <StyledView style={{marginTop: 10, marginBottom: 20}}>
+          {tagList.map(element => {
+            return (
+              <CommonChip
+                key={element.id}
+                style={{marginLeft: 5}}
+                text={element.text}
+                selected={checkedTagIdList.includes(element.id)}
+                selectedBackgroundColor={theme.colors.secondary}
+                onPress={() => tagPressed(element.id)}
+              />
+            );
+          })}
+        </StyledView>
+        <Carousel
+          style={{flex: 1}}
+          layout={'default'}
+          vertical={false}
+          layoutCardOffset={9}
+          ref={carouselRef}
+          data={placeList}
+          renderItem={RecommendCard}
+          sliderWidth={screenWidth}
+          itemWidth={screenWidth - 60}
+          inactiveSlideShift={0}
+          useScrollView={true}
         />
-        <IconButton
-          icon="home"
-          size={25}
-          onPress={() => {
-            console.log('hello');
-          }}
-        />
-      </StyledSafeAreaView>
-      <StyledSafeAreaView style={{marginTop: 10}}>
-        {recommendTagList.map(element => {
-          return (
-            <CommonChip
-              key={element.id}
-              style={{marginLeft: 5}}
-              text={element.text}
-              selected={checkedTagIdList.includes(element.id)}
-              selectedBackgroundColor={theme.colors.secondary}
-              onPress={() => tagPressed(element.id)}
-            />
-          );
-        })}
-      </StyledSafeAreaView>
+        <Text style={{height: 150, backgroundColor: 'yellow'}}></Text>
+      </SafeAreaView>
     </GradientBackground>
   );
 };
@@ -101,14 +161,25 @@ type Tag = {
   text: string;
 };
 
-const StyledSafeAreaView = styled(SafeAreaView)`
+type Place = {
+  id: number;
+  color: string;
+  title: string;
+  content: string;
+  imageUrl: string;
+};
+
+const StyledView = styled(View)`
   align-items: center;
   flex-direction: row;
+  padding-left: 20px;
+  padding-right: 20px;
 `;
 
 const GradientBackground = styled(LinearGradient)`
   flex: 1;
-  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
 `;
 
 export default PlacesRecommendScreen;
