@@ -7,10 +7,10 @@ public class AuthenticationInfo {
 
     String authNumbers;
 
-    Boolean isAuthenticated;
+    Boolean authenticated;
 
-    public AuthenticationInfo(String authNumbers, Boolean isAuthenticated) {
+    public AuthenticationInfo(String authNumbers, Boolean Authenticated) {
         this.authNumbers = authNumbers;
-        this.isAuthenticated = isAuthenticated;
+        this.authenticated = Authenticated;
     }
 }
