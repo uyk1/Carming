@@ -1,6 +1,6 @@
 package com.carming.backend.member.controller;
 
-import com.carming.backend.member.dto.request.MemberCreate;
+import com.carming.backend.member.dto.request.MemberCreateDto;
 import com.carming.backend.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signupMember(@RequestBody MemberCreate request) {
+    public ResponseEntity<Void> signupMember(@RequestBody MemberCreateDto request) {
         memberService.saveMember(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }

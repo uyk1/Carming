@@ -3,7 +3,7 @@ package com.carming.backend.member.service;
 import com.carming.backend.common.JsonMapper;
 import com.carming.backend.member.domain.Member;
 import com.carming.backend.member.domain.valid.AuthenticationInfo;
-import com.carming.backend.member.dto.request.MemberCreate;
+import com.carming.backend.member.dto.request.MemberCreateDto;
 import com.carming.backend.member.exception.NotAuthentication;
 import com.carming.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +23,14 @@ public class MemberService {
 
 
     @Transactional
-    public Long saveMember(MemberCreate request) {
+    public Long saveMember(MemberCreateDto request) {
         isAuthenticated(request);
         Member savedMember = memberRepository.save(request.toEntity());
 
         return savedMember.getId();
     }
 
-    private void isAuthenticated(MemberCreate request) {
+    private void isAuthenticated(MemberCreateDto request) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         AuthenticationInfo authenticationInfo = JsonMapper.toClass(operations.get(request.getPhoneNumber()), AuthenticationInfo.class);
 
