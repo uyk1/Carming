@@ -70,7 +70,7 @@ class IMGParser:
         하단의 CURVEFit Class에 대한 정보를 바탕으로 적절한 Parameter를 입력하기 바랍니다.
         '''
         curve_learner = CURVEFit(order=3, lane_width=3.5, y_margin=1, x_range=30, min_pts=50)
-        ## 임의의 값 세팅. 무슨 기준인지는 아직 모르겠음
+        ## 적당한 값 세팅.
 
         #END
         rate = rospy.Rate(10)
@@ -129,6 +129,7 @@ class IMGParser:
         self.status_msg=msg    
         self.is_status = True
 
+    ## 스트링 데이터를 파싱해서 BGR 배열의 이미지로 변환하는 콜백함수
     def callback(self, msg):
         try:
             np_arr = np.fromstring(msg.data, np.uint8)
@@ -136,6 +137,7 @@ class IMGParser:
         except CvBridgeError as e:
             print(e)
 
+    ## 카메라로 인식한 hsv데이터에서 white/yellow 차선만 인식 후 합쳐서 self.img_lane으로 반환하는 함수
     def binarize(self, img):
         img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
 
@@ -146,6 +148,7 @@ class IMGParser:
 
         return self.img_lane
 
+    ## 고도가 있는 시점 창조 함수
     def mask_roi(self, img):
 
         h = img.shape[0]
@@ -176,7 +179,8 @@ class IMGParser:
         return mask
 
 
-
+    ## 입력으로 받은 이미지와 좌우 차선의 곡선 매개변수를 이용해서
+    ## 왼쪽 차선은 파란색으로, 오른쪽 차선은 빨강색으로 차선을 그려주는 함수
     def draw_lane_img(self, img, leftx, lefty, rightx, righty):
         '''
         place the lidar points into numpy arrays in order to make intensity map
@@ -184,17 +188,24 @@ class IMGParser:
         \n leftx, lefty, rightx, righty : curve fitting result 
         '''
         point_np = cv2.cvtColor(np.copy(img), cv2.COLOR_GRAY2BGR)
+        ## 차선 이미지를 BGR 3차원배열로 변환해서 point_np에 저장
 
         #Left Lane
         for ctr in zip(leftx, lefty):
+        ## zip(leftx, lefty) : 리스트에서 각각 같은 인덱스에 위치한 요소를 묶어서 튜플로 만들어줌
+        ## 각각의 튜플을 ctr이라는 변수에 할당하면서 반복해준다
             point_np = cv2.circle(point_np, ctr, 2, (255,0,0),-1)
+            ## cv2.circle() : 배열로 저장된 이미지에 원을 그리는 함수
+            ## point_np배열의 ctr위치에 반지름이 2인 파란색(255,0,0)원을 그린다.
 
         #Right Lane
         for ctr in zip(rightx, righty):
             point_np = cv2.circle(point_np, ctr, 2, (0,0,255),-1)
+            ## point_np배열의 ctr위치에 반지름이 2인 빨강색(0,0,255)원을 그린다.
 
         return point_np
 
+## 고도 높여주는 걸 실행시키는데에 필요한 클래스들
 class BEVTransform:
     def __init__(self, params_cam, xb=10.0, zb=10.0):
         self.xb = xb
@@ -389,9 +400,20 @@ class BEVTransform:
     
         return R
 
-
+## 커브길을 돌 때의 차선을 표시하는데에 필요한 클래스
 class CURVEFit:    
-    def __init__(self, order, alpha, lane_width, y_margin, x_range, dx, min_pts):
+    def __init__(
+            self,
+            order=3,
+            alpha=10,
+            lane_width=4,
+            y_margin=0.5,
+            x_range=5,
+            dx=0.5,
+            min_pts=50
+            ):
+        ## 값을 다 지정해줘야함
+        ## 지정하지 않는 경우, 인자 개수 전달 오류가 난다.
 
         self.order = order
         self.lane_width = lane_width
@@ -403,23 +425,44 @@ class CURVEFit:
         self.lane_path = Path()
         
         #TODO: (2) RANSAC Parameter 입력
-        '''
+        ## RANSAC : Random Sample Consensus의 약자
+        ## 잡음이 포함된 데이터에서 모델 파라미터를 추정하는 데 사용되는 반복적인 알고리즘
+        ## 사용자가 지정한 모델을 기반으로, 이상치에 영향을 덜 받는 추세선을 찾는다
+        ## 커브길을 돌 때, 차량이 주행하는 도로의 곡률을 추정하는데에 사용됨
+
         # RANSAC Parameter를 결정하는 영역입니다.
         # RANSAC의 개념 및 아래 링크를 참고하여 적절한 Parameter를 입력하기 바랍니다.
         # https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.RANSACRegressor.html
         
         self.ransac_left = linear_model.RANSACRegressor(base_estimator=linear_model.Lasso(alpha=alpha),
-                                                        max_trials=입력,
+                                                        max_trials=10,
                                                         loss='absolute_loss',
                                                         min_samples=self.min_pts,
                                                         residual_threshold=self.y_margin)
+        ## linear_model.RANSACRegressor
+        ## Scikit-learn 라이브러리에서 제공하는 RANSAC알고리즘을 활용하여 선형회귀모델을 추정하는데에 쓰임
+        ## 5가지의 인자를 갖는다.
+
+        ## 1. base_estimator : 모델 추정에 사용될 기본 모델, 추세선을 나타내는 회귀모델 (default: linear regression)
+        ##    linear_model.RANSACRegressor : 선형회귀모델 중 Lasso모델을 지정.
+        ##    Lasso : L1규제를 사용하여 모델의 가중치를 제한하는 모델
+        ##    alpha : L1규제의 강도를 제어 -> 모델의 일반화능력 개선 및 과적합을 줄일 수 있다.
+            
+        ## 2. min_samples : 최소 샘플 수 (default: None)
+
+        ## 3. residual_threshold : 잔차(threshold)의 최대 크기 (default: None)
+
+        ## 4. max_trials : RANSAC 알고리즘의 최대 시도 횟수 (default: 100)
+        ##    커질 경우 시간이 오래 소요됨.
+
+        ## 5. random_state : 랜덤 시드 (default: None)
 
         self.ransac_right = linear_model.RANSACRegressor(base_estimator=linear_model.Lasso(alpha=alpha),
-                                                        max_trials=입력,
+                                                        max_trials=10,
                                                         loss='absolute_loss',
                                                         min_samples=self.min_pts,
                                                         residual_threshold=self.y_margin)
-        '''
+        
         
         self._init_model()
 
