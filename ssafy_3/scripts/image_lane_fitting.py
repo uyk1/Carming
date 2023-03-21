@@ -40,19 +40,26 @@ class IMGParser:
         self.edges = None 
         self.is_status = False
 
+        ## White/Yellow 차선을 임의로 지정
         self.lower_wlane = np.array([0,0,205])
         self.upper_wlane = np.array([30,60,255])
 
         self.lower_ylane = np.array([0,70,120])# ([0,60,100])
         self.upper_ylane = np.array([40,195,230])# ([40,175,255])
 
+        ## 동기화를 위해 사용되는 크롭 사이즈(?)
+        ## 타겟이미지, 다각형 포인트 어레이, 다각형 색상, 다각형 라인 타입
         self.crop_pts = np.array([[[0,480],[0,350],[280,200],[360,200],[640,350],[640,480]]])
 
         rospack = rospkg.RosPack()
         currentPath = rospack.get_path(pkg_name)
+        ## 현재 패키지에서 다이스트라로 만들어진 경로 불러와서 작업 경로로 지정
         
+         
         with open(os.path.join(currentPath, 'sensor/sensor_params.json'), 'r') as fp:
+        ## os.path.join() 전달된 문자열을 합쳐서 경로 생성 및 파일 열기
             sensor_params = json.load(fp)
+            ## json.load(파일) : 파일에서 JSON 데이터를 파이썬 객체로 변환 후, sensor_params에 저장
 
         params_cam = sensor_params["params_cam"]
 
@@ -61,44 +68,58 @@ class IMGParser:
         '''
         CURVEFit Class의 Parameter를 결정하는 영역입니다.
         하단의 CURVEFit Class에 대한 정보를 바탕으로 적절한 Parameter를 입력하기 바랍니다.
-
-        curve_learner = CURVEFit(order=, lane_width= ,y_margin=, x_range=, min_pts=)
         '''
+        curve_learner = CURVEFit(order=3, lane_width=3.5, y_margin=1, x_range=30, min_pts=50)
+        ## 임의의 값 세팅. 무슨 기준인지는 아직 모르겠음
+
         #END
         rate = rospy.Rate(10)
 
         while not rospy.is_shutdown():
 
             if self.img_bgr is not None and self.is_status == True:
+            ## 이미지를 받은 상태 && 동작해야하는 상태
 
                 img_crop = self.mask_roi(self.img_bgr)
+                ## 이미지에서 차선부분 자르기
                 
                 img_warp = bev_op.warp_bev_img(img_crop)
+                ## 원근법을 사용해서 고도있는 시점 창조
 
                 img_lane = self.binarize(img_warp)
+                ## 이진화 후 차선 흑백으로 표시
 
                 img_f = bev_op.warp_inv_img(img_lane)
+                ## 이진화된 이미지를 원래 시점으로 되돌리기
 
                 lane_pts = bev_op.recon_lane_pts(img_f)
+                ## 이진화된 이미지에서 차선 경로 추출
 
                 x_pred, y_pred_l, y_pred_r = curve_learner.fit_curve(lane_pts)
+                ## 차선 경로에 대한 회귀선 설정
+                ## 왼쪽과 오른쪽 차선의 x,y값 반환
                 
                 curve_learner.set_vehicle_status(self.status_msg)
+                ## 상태메세지 갱신
 
                 lane_path = curve_learner.write_path_msg(x_pred, y_pred_l, y_pred_r)
+                ## 차선의 경로를 메세지로 작성
 
                 xyl, xyr = bev_op.project_lane2img(x_pred, y_pred_l, y_pred_r)
+                ## BEV좌표계 -> 이미지좌표계 , 차선 경로 투영
 
                 img_lane_fit = self.draw_lane_img(img_lane, xyl[:, 0].astype(np.int32),
                                                             xyl[:, 1].astype(np.int32),
                                                             xyr[:, 0].astype(np.int32),
                                                             xyr[:, 1].astype(np.int32))
+                ## 차선 경로를 이미지에 그리기
 
                 self.path_pub.publish(lane_path)
+                ## 차선 경로 메세지를 ROS토픽으로 게시
 
-                cv2.imshow("birdview", img_lane_fit)
-                cv2.imshow("img_warp", img_warp)
-                cv2.imshow("origin_img", self.img_bgr)
+                cv2.imshow("birdview", img_lane_fit)  ## 차선 경로 보여주기
+                cv2.imshow("img_warp", img_warp)  ## 고도있는 시점을 보여주기
+                cv2.imshow("origin_img", self.img_bgr)  ## 원본 이미지 보여주기
 
                 cv2.waitKey(1)
 
