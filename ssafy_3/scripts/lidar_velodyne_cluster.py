@@ -1,14 +1,15 @@
 #!/usr/bin/env python
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 import rospy
 import cv2
 import numpy as np
-
+from math import cos, sin, pi, sqrt, pow, atan2, atan
 from sensor_msgs.msg import PointCloud2
 import sensor_msgs.point_cloud2 as pc2
-from geometry_msgs.msg import PoseArray,Pose
+from geometry_msgs.msg import PoseArray, Pose
 from sklearn.cluster import DBSCAN
+
 
 # lidar_velodyne_cluster 는 LiDAR의 Point들을 물체 단위로 구분하는 Clustering 예제입니다.
 # PointCloud Data를 입력받아 DBSCAN Algorithm을 활용하여 Clustering을 수행합니다.
@@ -28,15 +29,20 @@ class SCANCluster:
 
         self.pc_np = None
 
-        #TODO: (1) DBSCAN Parameter 입력
+        # TODO: (1) DBSCAN Parameter 입력
         '''
         # DBSCAN의 Parameter를 결정하는 영역입니다.
         # sklearn.cluster의 DBSCAN에 대해 조사하여 적절한 Parameter를 입력하기 바랍니다.
-
-        self.dbscan = DBSCAN( , , ...)
         '''
-    
-    def callback(self, msg):    
+
+        ## DBSCAN : 데이터 클러스터링 알고리즘으로 밀도 기반 군집화를 수행
+        ## eps : 클러스터링을 수행하기 위한 반경의 크기를 결정
+        ## min_samples : 클러스터링을 수행하기 위해 필요한 최소 데이터 포인트 수를 결정함
+        self.dbscan = DBSCAN(eps=0.5, min_samples=5)
+
+    # print("hi")
+    def callback(self, msg):
+        print("hi")
         self.pc_np = self.pointcloud2_to_xyz(msg)
         if len(self.pc_np) == 0:
 
@@ -53,39 +59,43 @@ class SCANCluster:
 
             cluster_list = []
 
-            
+            print(n_cluster)
             for cluster in range(n_cluster):
-                #TODO: (2) 각 Cluster를 대표하는 위치 값 계산                
+                # TODO: (2) 각 Cluster를 대표하는 위치 값 계산
                 '''
                 # DBSCAN으로 Clustering 된 각 Cluster의 위치 값을 계산하는 영역입니다.
                 # Cluster에 해당하는 Point들을 활용하여 Cluster를 대표할 수 있는 위치 값을 계산합니다.
                 # 계산된 위치 값을 ROS geometry_msgs/Pose type으로 입력합니다.
                 # Input : cluster
                 # Output : cluster position x,y   
-
-                tmp_pose=Pose()
-                #tmp_pose.position.x = 
-                #tmp_pose.position.y = 
                 '''
+
+                tmp_pose = Pose()
+                tmp_pose.position.x = cluster.poses.position.x
+                tmp_pose.position.y = cluster.poses.position.x
+
                 cluster_msg.poses.append(tmp_pose)
-                
+
         self.cluster_pub.publish(cluster_msg)
 
     def pointcloud2_to_xyz(self, cloud_msg):
 
         point_list = []
-        
+        print(cloud_msg)
         for point in pc2.read_points(cloud_msg, skip_nans=True):
-            #TODO: (3) PointCloud Data로부터 Distance, Angle 값 계산
+            # TODO: (3) PointCloud Data로부터 Distance, Angle 값 계산
             '''
             # LiDAR의 PointCloud Data로부터 Distance와 Angle 값을 계산하는 영역입니다.
             # 각 Point의 XYZ 값을 활용하여 Distance와 Yaw Angle을 계산합니다.
             # Input : point (X, Y, Z, Intensity)            
-            
-            dist = 
-            angle = 
             '''
-            
+
+            x = 1
+            y = 2
+            z = 3
+            dist = sqrt(x * x + y * y + z * z)
+            angle = atan2(y, x)
+
             if point[0] > 0 and 1.50 > point[2] > -1.25 and dist < 50:
                 point_list.append((point[0], point[1], point[2], point[3], dist, angle))
 
@@ -94,9 +104,7 @@ class SCANCluster:
         return point_np
 
 
-
 if __name__ == '__main__':
-
     rospy.init_node('velodyne_clustering', anonymous=True)
 
     scan_cluster = SCANCluster()
