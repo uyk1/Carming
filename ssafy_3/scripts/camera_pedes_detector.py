@@ -60,9 +60,25 @@ def non_maximum_supression(bboxes, threshold=0.3):
 
             overlap_area =
             '''
+            ## IoU(Intersection over Union): NMS 알고리즘이 진행될 때, 가장 신뢰도 높은 제안을 선택하여 리스트에 넣음
+            ## ㄴ> 리스트를 비교할 때, IoU 계산 -> 사용자가 지정한 임계값보다 높으면 바운딩 박스 제거
+            ## IoU는 객체 인지 과정에 사용되는 도구, 성능 지표 아님. 객체 인식 모델의 성능 평가 도구
+            x_overlap = max(0, min(x1_br, x2_br) - max(x1_tl, x2_tl))
+            y_overlap = max(0, min(y1_br, y2_br) - max(y1_tl, y2_tl))
+            overlap_area = x_overlap * y_overlap
+            
+            area_1 = bbox[2] * new_bbox[3]
+            area_2 = new_bbox[2] * new_bbox[3]
+            
+            total_area = area_1 + area_2 - overlap_area
+
+            overlap_area = overlap_area / float(total_area)
+
             if overlap_area < threshold:
                 
                 new_bboxes.append(bbox)
+            ## threshold: 임계점, 한계값 등 -> 현재는 0.3
+            ## threshold보다 낮으면 new_bboxes에 bbox에 추가  
 
     return new_bboxes
 
@@ -80,10 +96,16 @@ class PEDESDetector:
         self.rate = rospy.Rate(20)
 
         #TODO: (2) HOG descitpor 생성
-        self.pedes_detector = cv2.HOGDescriptor()   
+        self.pedes_detector = cv2.HOGDescriptor()
+        ## HoG(Histogram of Gradients): 딥 러인이 대세가 되기 전의 머신 러닝 모델 -> 보행자 검출기 실행시 사용
+        ## ㄴ> 각 픽셀의 그레디언트를 구해 히스토그램으로 만든 feature.
+        ## ㄴ> 이미지는 2차원 정보 -> 픽셀 그레디언트 2 방향
+        ## ㄴ> Gx는 세로, Gy는 가로   
 
         #TODO: (3) 사전 학습된 SVM 분류기 설정 (for peds)                           
         self.pedes_detector.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+        ## SVM(Support Vector Machine): 딥 러닝 이전의 지도학습 기법, 분류와 회귀에 전부 적용 가능
+        ## OpenCV에서 HoG descriptor 설정 -> 보행자에 대한 SVM 분류 파라메터 내장 -> 보행자 검출 가능
 
     def callback(self, msg):
 
@@ -105,6 +127,8 @@ class PEDESDetector:
             
             #TODO: (6)  NMS 후처리 통과
             rects = non_maximum_supression(rects_temp)
+            ## NMS(Non Maximum Suppression): 여러 바운딩 박스의 중복 제거
+            ## ㄴ> 인지 과정을 거치면서 가장 신뢰도 높은 바운딩 박스만 남김
 
             for (x,y,w,h) in rects:
 
