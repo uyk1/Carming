@@ -9,7 +9,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-class ValidNumbersTest {
+class AuthNumbersTest {
 
     final int RANGE = 10;
     final int COUNT = 6;
@@ -18,15 +18,15 @@ class ValidNumbersTest {
     @DisplayName("인증번호의 String 값 확인하기")
     void getValidTicketNumber() {
         //given
-        List<Integer> numbers = ValidNumberFactory.pickNumbers(RANGE, COUNT);
+        List<Integer> numbers = AuthNumberFactory.pickNumbers(RANGE, COUNT);
         String randomNumber = numbers.stream()
                 .map(String::valueOf)
                 .reduce((x, y) -> x + y)
                 .get();
 
         //when
-        ValidNumbers validTicket = new ValidNumbers(numbers);
-        String ticketNumber = validTicket.getValidNumbers();
+        AuthNumbers validTicket = new AuthNumbers(numbers);
+        String ticketNumber = validTicket.getAuthNumbers();
 
         //then
         assertThat(ticketNumber).isEqualTo(randomNumber);
@@ -38,10 +38,10 @@ class ValidNumbersTest {
     void validTicketSize(int count) {
         //given
         final int WRONG_COUNT = count;
-        List<Integer> numbers = ValidNumberFactory.pickNumbers(RANGE, WRONG_COUNT);
+        List<Integer> numbers = AuthNumberFactory.pickNumbers(RANGE, WRONG_COUNT);
 
         //expected
-        assertThatThrownBy(() -> new ValidNumbers(numbers))
+        assertThatThrownBy(() -> new AuthNumbers(numbers))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }
