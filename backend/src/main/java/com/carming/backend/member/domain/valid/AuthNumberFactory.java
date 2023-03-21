@@ -4,16 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ValidNumberFactory {
+public class AuthNumberFactory {
 
-    private static final int VALID_NUMBERS_RANGE = 10;
-    private static final int VALID_NUMBERS_SIZE = 6;
+    private static final int AUTH_NUMBERS_RANGE = 10;
+    private static final int AUTH_NUMBERS_SIZE = 6;
 
     private static final Random random = new Random();
 
-    public static ValidNumbers createValidNumbers() {
-        List<Integer> numbers = pickNumbers(VALID_NUMBERS_RANGE, VALID_NUMBERS_SIZE);
-        return new ValidNumbers(numbers);
+    public static AuthNumbers createValidNumbers() {
+        List<Integer> numbers = pickNumbers(AUTH_NUMBERS_RANGE, AUTH_NUMBERS_SIZE);
+        return new AuthNumbers(numbers);
     }
 
     public static List<Integer> pickNumbers(int range, int count) {
