@@ -4,9 +4,14 @@ import com.carming.backend.member.domain.BirthInfo;
 import com.carming.backend.member.domain.Member;
 import lombok.Data;
 
-@Data
-public class MemberCreate {
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 
+@Data
+public class MemberCreateDto {
+
+    @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
+            message = "휴대폰번호가 올바르지 않습니다. 다시 입력해주세요.")
     private String phoneNumber;
 
     private String password;
@@ -32,9 +37,15 @@ public class MemberCreate {
     }
 
     @Data
-    private static class BirthInfoDto {
+    public static class BirthInfoDto {
+
+        @Pattern(regexp = "^(19[0-9][0-9]|20\\d{2})", message = "유효하지 않은 출생년도입니다.")
         private String birthYear;
+
+        @Pattern(regexp = "(0[1-9]|1[0-2])", message = "유효하지 않은 월입니다.")
         private String birthMonth;
+
+        @Pattern(regexp = "0[1-9]|[1-2][0-9]|3[0-1]", message = "유효하지 않는 일입니다.")
         private String birthDay;
 
         public BirthInfo toEntity() {
