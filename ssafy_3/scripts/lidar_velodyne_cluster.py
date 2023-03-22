@@ -42,7 +42,7 @@ class SCANCluster:
 
     # print("hi")
     def callback(self, msg):
-        print("hi")
+
         self.pc_np = self.pointcloud2_to_xyz(msg)
         if len(self.pc_np) == 0:
 
@@ -51,15 +51,19 @@ class SCANCluster:
         else:
             pc_xy = self.pc_np[:, :2]
 
+            ## dbscan으로 분류된 라벨들을 db에 저장
+            ## noise sample은 -1로 구분
             db = self.dbscan.fit_predict(pc_xy)
 
+            ## 클러스터의 갯수
+            ## db에 저장된 라벨들에서 최댓값에 1 더한 값이 클러스터의 갯수
+            ## 라벨이 0부터 시작하기 때문
             n_cluster = np.max(db) + 1
 
             cluster_msg = PoseArray()
 
             cluster_list = []
 
-            print(n_cluster)
             for cluster in range(n_cluster):
                 # TODO: (2) 각 Cluster를 대표하는 위치 값 계산
                 '''
@@ -69,19 +73,23 @@ class SCANCluster:
                 # Input : cluster
                 # Output : cluster position x,y   
                 '''
+                ## 평균 구하기
+                c_tmp = np.mean(pc_xy[db == cluster, :], axis=0)
 
+                ## .tolist() => array를 list로 만들기
+                ##           => [1 2 3] -> [1, 2, 3]으로 변환
                 tmp_pose = Pose()
-                tmp_pose.position.x = cluster.poses.position.x
-                tmp_pose.position.y = cluster.poses.position.x
+                tmp_pose.position.x = c_tmp.tolist()[0]
+                tmp_pose.position.y = c_tmp.tolist()[1]
 
                 cluster_msg.poses.append(tmp_pose)
 
         self.cluster_pub.publish(cluster_msg)
+        print(cluster_msg)
 
     def pointcloud2_to_xyz(self, cloud_msg):
 
         point_list = []
-        print(cloud_msg)
         for point in pc2.read_points(cloud_msg, skip_nans=True):
             # TODO: (3) PointCloud Data로부터 Distance, Angle 값 계산
             '''
@@ -89,12 +97,8 @@ class SCANCluster:
             # 각 Point의 XYZ 값을 활용하여 Distance와 Yaw Angle을 계산합니다.
             # Input : point (X, Y, Z, Intensity)            
             '''
-
-            x = 1
-            y = 2
-            z = 3
-            dist = sqrt(x * x + y * y + z * z)
-            angle = atan2(y, x)
+            dist = np.sqrt(point[0] ** 2 + point[1] ** 2 + point[2] ** 2)
+            angle = np.arctan2(point[1], point[0])
 
             if point[0] > 0 and 1.50 > point[2] > -1.25 and dist < 50:
                 point_list.append((point[0], point[1], point[2], point[3], dist, angle))
