@@ -10,16 +10,10 @@ import java.util.List;
 @Data
 public class Sms {
 
-    @Value("${sms.type}")
-    private String type;
-
-    @Value("${sms.content-type}")
-    private String contentType;
-
-    @Value("${sms.country-code}")
-    private String countryCode;
-    @Value("${sms.from}")
-    private String from;
+    private String type = "SMS";
+    private String contentType = "COMM";
+    private String countryCode = "82";
+    private String from = "01051391314";
     private String content;
     private List<Message> messages;
 
