@@ -2,21 +2,23 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
 import CommonChip from '../components/CommonChip';
-import {IconButton, useTheme} from 'react-native-paper';
+import {Avatar, Button, IconButton, useTheme} from 'react-native-paper';
 import {SegmentedButtons} from 'react-native-paper';
 import {useEffect, useRef, useState} from 'react';
 import Carousel from 'react-native-snap-carousel-v4';
 import RecommendCard from '../components/RecommendCard';
-import {Dimensions, Text, View} from 'react-native';
+import {Alert, Dimensions, View} from 'react-native';
+import {Place, Tag} from '../types';
 
 const {width: screenWidth} = Dimensions.get('window');
 
 const PlacesRecommendScreen = () => {
   const theme = useTheme();
-  const carouselRef = useRef(null);
+  const carouselRef = useRef<any>(null);
 
-  const [placeList, setPlaceList] = useState<Place[]>([]);
   const [tagList, setTagList] = useState<Tag[]>([]);
+  const [placeList, setPlaceList] = useState<Place[]>([]);
+  const [placeCart, setPlaceCart] = useState<Place[]>([]);
   const [recommendType, setRecommendType] = useState<string>('');
   const [checkedTagIdList, setCheckedTagIdList] = useState<number[]>([]);
 
@@ -94,8 +96,9 @@ const PlacesRecommendScreen = () => {
   ];
 
   useEffect(() => {
-    setPlaceList(places);
     setTagList(tags);
+    setPlaceList(places);
+    setPlaceCart(places);
   }, []);
 
   const tagPressed = (tagId: number) => {
@@ -103,6 +106,28 @@ const PlacesRecommendScreen = () => {
       ? checkedTagIdList.splice(checkedTagIdList.indexOf(tagId), 1)
       : checkedTagIdList.push(tagId);
     setCheckedTagIdList([...checkedTagIdList]);
+  };
+
+  const placeAddBtnPressed = () => {
+    const place: Place =
+      carouselRef.current.props.data[carouselRef.current._activeItem];
+    addPlaceCartItemById(place.id);
+  };
+
+  const addPlaceCartItemById = (placeId: number) => {
+    if (placeCart.filter(place => place.id == placeId).length > 0) {
+      Alert.alert('이미 담은 장소입니다.');
+    } else {
+      const place = placeList.filter(place => place.id === placeId)[0];
+      setPlaceCart([...placeCart, place]);
+    }
+  };
+
+  const cancelPlaceCartItemById = (placeId: number) => {
+    const idx = placeCart.map(place => place.id).indexOf(placeId);
+    const cart = [...placeCart];
+    cart.splice(idx, 1);
+    setPlaceCart([...cart]);
   };
 
   return (
@@ -124,15 +149,15 @@ const PlacesRecommendScreen = () => {
           />
         </StyledView>
         <StyledView style={{marginTop: 10, marginBottom: 20}}>
-          {tagList.map(element => {
+          {tagList.map(place => {
             return (
               <CommonChip
-                key={element.id}
+                key={place.id}
                 style={{marginLeft: 5}}
-                text={element.text}
-                selected={checkedTagIdList.includes(element.id)}
+                text={place.text}
+                selected={checkedTagIdList.includes(place.id)}
                 selectedBackgroundColor={theme.colors.secondary}
-                onPress={() => tagPressed(element.id)}
+                onPress={() => tagPressed(place.id)}
               />
             );
           })}
@@ -146,27 +171,40 @@ const PlacesRecommendScreen = () => {
           data={placeList}
           renderItem={RecommendCard}
           sliderWidth={screenWidth}
-          itemWidth={screenWidth - 60}
+          itemWidth={screenWidth - 80}
           inactiveSlideShift={0}
           useScrollView={true}
         />
-        <Text style={{height: 150, backgroundColor: 'yellow'}}></Text>
+        <StyledView style={{justifyContent: 'center'}}>
+          <IconButton
+            icon="arrow-down-drop-circle"
+            iconColor={theme.colors.background}
+            size={40}
+            onPress={() => placeAddBtnPressed()}
+          />
+        </StyledView>
+        <StyledView style={{height: 70}}>
+          {placeCart.map(place => {
+            return (
+              <View key={place.id} style={{marginRight: 5}}>
+                <Avatar.Image size={60} source={{uri: place.imageUrl}} />
+                <IconButton
+                  style={{position: 'absolute', right: -15, top: -15}}
+                  icon="close-circle"
+                  iconColor={theme.colors.background}
+                  size={20}
+                  onPress={() => cancelPlaceCartItemById(place.id)}
+                />
+              </View>
+            );
+          })}
+        </StyledView>
+        <StyledView style={{justifyContent: 'center'}}>
+          <Button>hello</Button>
+        </StyledView>
       </SafeAreaView>
     </GradientBackground>
   );
-};
-
-type Tag = {
-  id: number;
-  text: string;
-};
-
-type Place = {
-  id: number;
-  color: string;
-  title: string;
-  content: string;
-  imageUrl: string;
 };
 
 const StyledView = styled(View)`
