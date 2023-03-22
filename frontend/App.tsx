@@ -31,7 +31,7 @@ function App(): JSX.Element {
 
   setTimeout(() => {
     setIsLoaded(true);
-  }, 2000);
+  }, 3000);
 
   return (
     <PaperProvider theme={theme}>

@@ -1,5 +1,13 @@
-import {ImageBackground, View} from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  View,
+  ViewStyle,
+  Alert,
+} from 'react-native';
 import styled from 'styled-components/native';
+import {Button, Text} from 'react-native-paper';
+import CustomButton from '../components/CustomButton';
 
 const LandingScreen = () => {
   return (
@@ -10,8 +18,30 @@ const LandingScreen = () => {
       </UpperView>
       <LowerView>
         <BtnView>
-          <LandingScreenBtn title="로그인" />
-          <LandingScreenBtn title="회원가입" />
+          <CustomButton
+            text="로그인"
+            buttonStyle={{backgroundColor: 'transparent'}}
+            textStyle={{
+              fontSize: 30,
+              fontFamily: 'SeoulNamsanB',
+              textShadowColor: 'gray',
+              textShadowOffset: {width: 2, height: 2},
+              textShadowRadius: 10,
+            }}
+            onPress={() => Alert.alert('로그인')}
+          />
+          <CustomButton
+            text="회원가입"
+            buttonStyle={{backgroundColor: 'transparent'}}
+            textStyle={{
+              fontSize: 30,
+              fontFamily: 'SeoulNamsanB',
+              textShadowColor: 'gray',
+              textShadowOffset: {width: 2, height: 2},
+              textShadowRadius: 10,
+            }}
+            onPress={() => Alert.alert('회원가입')}
+          />
         </BtnView>
       </LowerView>
     </Container>
@@ -26,11 +56,11 @@ const Container = styled(ImageBackground)`
 `;
 
 const Title = styled.Text`
-  font-family: 'SeoulNamsanB';
-  font-size: 30px;
+  font-family: 'SeoulNamsanEB';
+  font-size: 32px;
   color: white;
   text-align: center;
-  text-shadow: 3px 3px 20px gray;
+  text-shadow: 2px 2px 10px gray;
   margin-top: 10px;
 `;
 
@@ -38,7 +68,7 @@ const UpperView = styled.View`
   flex: 1;
   align-items: center;
   justify-content: center;
-`
+`;
 
 const LowerView = styled.View`
   display: flex;
@@ -50,12 +80,7 @@ const LowerView = styled.View`
 const BtnView = styled.View`
   display: flex;
   flex-direction: row;
-`;
-
-const LandingScreenBtn = styled.Button`
-  // background-color: blue;
-  // padding: 10px;
-  // border-radius: 5px;
+  margin-top: 60%;
 `;
 
 export default LandingScreen;
