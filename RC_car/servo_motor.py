@@ -11,6 +11,7 @@ class SERVO_MOTOR:
             GPIO.setup(servo_pin, GPIO.OUT)
             
             self.pwm = GPIO.PWM(servo_pin, 50)
+            
             self.error = 0
             self.pwm.start(7.75)  ## center값 설정
             time.sleep(0.3)  ## 서보모터는 반드시 0.3초의 sleep이 필요
