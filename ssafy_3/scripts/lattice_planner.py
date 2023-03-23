@@ -34,7 +34,16 @@ import numpy as np
 
 '''
 ## 충돌 회피Collision Avoidance = 경로 제작 + 경로 중 적합한 길 선택
-## 경로 제작 중 격자Lattice 활용해서 만들 것 -> Lattice Path Planner 
+
+## 경로 제작 중 격자Lattice 활용해서 만들 것 -> Lattice Path Planner
+## 경로의 폭(d(t)), 완만함(s(t)) 등을 기준으로 끝점을 결정함 (SUB III Figure 11-2)
+## d(t)가 크면 중심 t에서 더 멀리 끝점이 위치하게되므로 경사가 급해짐
+## s(t)가 크면 원점에서 더 멀리 끝점이 위치하게되므로 경사는 완만해짐 
+
+## 안정성Safety와 부드러움Smoothness로 적합한 경로 선택
+## 충돌 유무는 차량을 점으로 가정 -> 경로점과 차량이 일정 수준 안에 들어있는지 확인
+## -> 출돌이 발생하면 1, 충돌이 발생하지 않으면 0으로 가우시안 컨볼루션
+## 가우시안 컨볼루션
 
 class latticePlanner:
     def __init__(self):

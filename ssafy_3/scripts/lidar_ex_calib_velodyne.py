@@ -18,6 +18,11 @@ from numpy.linalg import inv
 # 정합 시에는 불필요한 Point들을 제거해야 하며 각 Sensor Data의 좌표계가 어떤 형태인지 명심해야 합니다. 
 # LiDAR는 VLP-16을 사용합니다.
 
+## Lidar_Camera_calibration(77p)
+## Lidar와 카메라 센서 이미지 입력 -> matrix를 통한 연산 -> LiDAR PointCloud2 Data를 Image Data에 정합한 결과를 시각화
+## 단독 노드를 실행하는 예제 -> 반드시 LiDAR 센서에 맞는 velodyne launch 파일을 먼저 실행한 후 실행
+## $ rosrun ssafy_3 lidar_ex_calib_velodyne.py
+
 #노드 실행 순서
 # 1. Camera, LiDAR의 설치 좌표, Camera Parameter 입력
 # 2. Extrinsic : Transformation Matrix(LiDAR to Camera Frame) 계산
@@ -59,6 +64,32 @@ parameters_lidar = {
 }
 '''
 
+## 차량 뒷축 중심을 기준으로 설치된 센서들의 위치
+## Roll, Pitch, Yaw 입력 시에는 Radian 값으로 변환하여 입력
+## Radian = 도 * (math.pi / 180)
+## 카메라는 Width, Height, Horizontal FOV 값 추가 입력
+## 현재 값은 임의의 값
+parameters_cam = {
+    "WIDTH": 640, # image width
+    "HEIGHT": 480, # image height
+    "FOV": 90, # Field of view
+    "X": 3.5, # meter
+    "Y": 0,
+    "Z":  0.5,
+    "YAW": 0, # radian    
+    "PITCH": 0.0,
+    "ROLL": 0
+}
+
+parameters_lidar = {
+    "X": 2, # meter
+    "Y": 0,
+    "Z": 1.25,
+    "YAW": 0, # radian
+    "PITCH": 0,
+    "ROLL": 0
+}
+
 def getRotMat(RPY):        
     #TODO: (2.1.1) Rotation Matrix 계산 함수 구현
     '''    
@@ -85,6 +116,20 @@ def getRotMat(RPY):
     return rotMat
     '''
 
+    cosR = math.cos(RPY[0])
+    cosP = math.cos(RPY[1])
+    cosY = math.cos(RPY[2])
+    sinR = math.sin(RPY[0])
+    sinP = math.sin(RPY[1])
+    sinY = math.sin(RPY[2])
+
+    rotRoll = np.array([1,0,0, 0,cosR,-sinR, 0,sinR,cosR]).reshape(3,3)
+    rotPitch = np.array([cosP,0,sinP, 0,1,0, -sinP,0,cosP]).reshape(3,3)
+    rotYaw = np.array([cosY,-sinY,0, sinY,cosY,0, 0,0,1]).reshape(3,3)
+    
+    rotMat = rotYaw.dot(rotPitch.dot(rotRoll))
+    return rotMat
+
 def getSensorToVehicleMat(sensorRPY, sensorPosition):
     #TODO: (2.1.2) Transformation Matrix 계산 함수 구현
     '''
@@ -105,6 +150,13 @@ def getSensorToVehicleMat(sensorRPY, sensorPosition):
     
     return Tr_sensor_to_vehicle
     '''
+
+    sensorRotationMat = getRotMat(sensorRPY)
+    sensorTranslationMat = np.array([sensorPosition])
+    Tr_sensor_to_vehicle = np.concatenate((sensorRotationMat,sensorTranslationMat.T),axis = 1)
+    Tr_sensor_to_vehicle = np.insert(Tr_sensor_to_vehicle, 3, values=[0,0,0,1],axis = 0)
+
+    return Tr_sensor_to_vehicle
     
 def getLiDARTOCameraTransformMat(camRPY, camPosition, lidarRPY, lidarPosition):
     #TODO: (2.2) LiDAR to Camera Transformation Matrix 계산
@@ -132,6 +184,14 @@ def getLiDARTOCameraTransformMat(camRPY, camPosition, lidarRPY, lidarPosition):
     print(Tr_lidar_to_cam)
     return Tr_lidar_to_cam
     '''
+
+    Tr_lidar_to_vehicle = getSensorToVehicleMat(lidarRPY, lidarPosition)
+    Tr_cam_to_vehicle = getSensorToVehicleMat(camRPY, camPosition)
+    Tr_vehicle_to_cam = inv(Tr_cam_to_vehicle)
+    Tr_lidar_to_cam = Tr_vehicle_to_cam.dot(Tr_lidar_to_vehicle).round(6)
+    
+    print(Tr_lidar_to_cam)
+    return Tr_lidar_to_cam
 
 def getTransformMat(params_cam, params_lidar):
     #With Respect to Vehicle ISO Coordinate    
@@ -165,6 +225,14 @@ def getCameraMat(params_cam):
     print(CameraMat)
     return CameraMat
     '''
+
+    focalLength = params_cam["WIDTH"]/(2*np.tan(np.deg2rad(params_cam["FOV"]/2)))
+    principalX = params_cam["WIDTH"]/2
+    principalY = params_cam["HEIGHT"]/2
+    CameraMat = np.array([focalLength,0.,principalX,0,focalLength,principalY,0,0,1]).reshape(3,3)
+    
+    print(CameraMat)
+    return CameraMat
 
 # Variables
     # scan_sub : ROS Subscriber of lidar data
