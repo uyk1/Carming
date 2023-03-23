@@ -79,4 +79,4 @@ class IMGParser:
 if __name__ == '__main__':
     rospy.init_node('image_parser', anonymous=True)
     image_parser = IMGParser()
-    rospy.spin() 
+    rospy.spin()
