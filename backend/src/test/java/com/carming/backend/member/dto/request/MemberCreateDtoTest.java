@@ -62,7 +62,7 @@ class MemberCreateDtoTest {
 
     @ParameterizedTest
     @MethodSource("invalidBirthInfo")
-    @DisplayName("올바르지 않은 생년월일")
+    @DisplayName("생년월이 정규식")
     void invalidBirthInfo(String birthYear, String birthMonth, String birthDay, int size) {
         //given
         MemberCreateDto.BirthInfoDto birthInfoDto = new MemberCreateDto.BirthInfoDto(birthYear, birthMonth, birthDay);

@@ -3,6 +3,7 @@ package com.carming.backend.member.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -28,17 +29,17 @@ public class Member {
     @Column(name = "member_name")
     private String name;
 
-    @Embedded
-    private BirthInfo birthInfo;
+    @Column(name = "member_birthday")
+    private LocalDate birthday;
 
     @Builder
     public Member(String phoneNumber, String password,
                   String nickname, String name,
-                  BirthInfo birthInfo) {
+                  LocalDate birthday) {
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.nickname = nickname;
         this.name = name;
-        this.birthInfo = birthInfo;
+        this.birthday = birthday;
     }
 }
