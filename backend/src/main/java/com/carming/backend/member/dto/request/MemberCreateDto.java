@@ -2,9 +2,9 @@ package com.carming.backend.member.dto.request;
 
 import com.carming.backend.member.domain.BirthInfo;
 import com.carming.backend.member.domain.Member;
+import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 
 @Data
@@ -24,7 +24,16 @@ public class MemberCreateDto {
 
     private BirthInfoDto birthInfo;
 
-    private Boolean isValid;
+    @Builder
+    public MemberCreateDto(String phoneNumber, String password, String passwordCheck,
+                           String nickname, String name, BirthInfoDto birthInfo) {
+        this.phoneNumber = phoneNumber;
+        this.password = password;
+        this.passwordCheck = passwordCheck;
+        this.nickname = nickname;
+        this.name = name;
+        this.birthInfo = birthInfo;
+    }
 
     public Member toEntity() {
         return Member.builder()
@@ -47,6 +56,12 @@ public class MemberCreateDto {
 
         @Pattern(regexp = "0[1-9]|[1-2][0-9]|3[0-1]", message = "유효하지 않는 일입니다.")
         private String birthDay;
+
+        public BirthInfoDto(String birthYear, String birthMonth, String birthDay) {
+            this.birthYear = birthYear;
+            this.birthMonth = birthMonth;
+            this.birthDay = birthDay;
+        }
 
         public BirthInfo toEntity() {
             return new BirthInfo(birthYear, birthMonth, birthDay);

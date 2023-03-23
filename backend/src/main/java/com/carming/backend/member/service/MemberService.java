@@ -24,13 +24,12 @@ public class MemberService {
 
     @Transactional
     public Long saveMember(MemberCreateDto request) {
-        isAuthenticated(request);
+        validAuthenticated(request);
         Member savedMember = memberRepository.save(request.toEntity());
-
         return savedMember.getId();
     }
 
-    private void isAuthenticated(MemberCreateDto request) {
+    private void validAuthenticated(MemberCreateDto request) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         AuthenticationInfo authenticationInfo = JsonMapper.toClass(operations.get(request.getPhoneNumber()), AuthenticationInfo.class);
 

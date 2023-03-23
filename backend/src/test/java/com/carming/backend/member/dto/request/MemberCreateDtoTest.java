@@ -20,16 +20,10 @@ class MemberCreateDtoTest {
 
     private Validator validator;
 
-    MemberCreateDto memberCreateDto;
-
-    MemberCreateDto.BirthInfoDto birthInfoDto;
-
     @BeforeEach
     void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-        memberCreateDto = new MemberCreateDto();
-        birthInfoDto = new MemberCreateDto.BirthInfoDto();
     }
 
 
@@ -39,7 +33,9 @@ class MemberCreateDtoTest {
     @DisplayName("올바른 핸드폰 번호")
     void correctPhoneNumber(String phoneNumber) {
         //given
-        memberCreateDto.setPhoneNumber(phoneNumber);
+        MemberCreateDto memberCreateDto = MemberCreateDto.builder()
+                .phoneNumber(phoneNumber)
+                .build();
 
         //when
         Set<ConstraintViolation<MemberCreateDto>> resultSet = validator.validate(memberCreateDto);
@@ -53,7 +49,9 @@ class MemberCreateDtoTest {
     @DisplayName("올바르지 않은 핸드폰 번호")
     void notValidPhoneNumber(String phoneNumber) {
         //given
-        memberCreateDto.setPhoneNumber(phoneNumber);
+        MemberCreateDto memberCreateDto = MemberCreateDto.builder()
+                .phoneNumber(phoneNumber)
+                .build();
 
         //when
         Set<ConstraintViolation<MemberCreateDto>> resultSet = validator.validate(memberCreateDto);
@@ -67,9 +65,7 @@ class MemberCreateDtoTest {
     @DisplayName("올바르지 않은 생년월일")
     void invalidBirthInfo(String birthYear, String birthMonth, String birthDay, int size) {
         //given
-        birthInfoDto.setBirthYear(birthYear);
-        birthInfoDto.setBirthMonth(birthMonth);
-        birthInfoDto.setBirthDay(birthDay);
+        MemberCreateDto.BirthInfoDto birthInfoDto = new MemberCreateDto.BirthInfoDto(birthYear, birthMonth, birthDay);
 
         //when
         Set<ConstraintViolation<MemberCreateDto.BirthInfoDto>> resultSet = validator.validate(birthInfoDto);
