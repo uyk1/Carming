@@ -33,6 +33,9 @@ import numpy as np
 # 아래 예제는 경로 상 장애물의 유무를 판단하고 장애물이 있다면 Lattice Path 를 생성하여 회피 할 수 있는 경로를 탐색합니다.
 
 '''
+## 충돌 회피Collision Avoidance = 경로 제작 + 경로 중 적합한 길 선택
+## 경로 제작 중 격자Lattice 활용해서 만들 것 -> Lattice Path Planner 
+
 class latticePlanner:
     def __init__(self):
         rospy.init_node('lattice_planner', anonymous=True)
@@ -65,6 +68,10 @@ class latticePlanner:
 
 
         '''
+        rospy.Subscriber("/local_path", Path, self.path_callback)
+        rospy.Subscriber("/Ego_topic",EgoVehicleStatus, self.status_callback)
+
+        self.lattice_path_pub = rospy.Publisher('/lattice_path', Path, queue_size = 1)
 
         self.is_path = False
         self.is_status = False
@@ -100,6 +107,13 @@ class latticePlanner:
                     break
 
         '''
+        is_crash = False
+        for obstacle in object_data.obstacle_list:
+            for path in ref_path.poses:  
+                dis = sqrt(pow(path.pose.position.x - obstacle.position.x, 2) + pow(path.pose.position.y - obstacle.position.y, 2))                
+                if dis < 2.35: # 장애물의 좌표값이 지역 경로 상의 좌표값과의 직선거리가 2.35 미만일때 충돌이라 판단.
+                    is_crash = True
+                    break
 
         return is_crash
 
@@ -197,6 +211,48 @@ class latticePlanner:
             for end_point in local_lattice_points :
 
             '''
+            for end_point in local_lattice_points :
+                lattice_path = Path()
+                lattice_path.header.frame_id = 'map'
+                x = []
+                y = []
+                x_interval = 0.5
+                xs = 0
+                xf = end_point[0]
+                ps = local_ego_vehicle_position[1][0]
+
+                pf = end_point[1]
+                x_num = xf / x_interval
+
+                for i in range(xs,int(x_num)) : 
+                    x.append(i*x_interval)
+                
+                a = [0.0, 0.0, 0.0, 0.0]
+                a[0] = ps
+                a[1] = 0
+                a[2] = 3.0 * (pf - ps) / (xf * xf)
+                a[3] = -2.0 * (pf - ps) / (xf * xf * xf)
+                
+                # 3차 곡선 계획
+                for i in x:
+                    result = a[3] * i * i * i + a[2] * i * i + a[1] * i + a[0]
+                    y.append(result)
+
+                for i in range(0,len(y)) :
+                    local_result = np.array([[x[i]], [y[i]], [1]])
+                    global_result = trans_matrix.dot(local_result)
+
+                    read_pose = PoseStamped()
+                    read_pose.pose.position.x = global_result[0][0]
+                    read_pose.pose.position.y = global_result[1][0]
+                    read_pose.pose.position.z = 0
+                    read_pose.pose.orientation.x = 0
+                    read_pose.pose.orientation.y = 0
+                    read_pose.pose.orientation.z = 0
+                    read_pose.pose.orientation.w = 1
+                    lattice_path.poses.append(read_pose)
+
+                out_path.append(lattice_path)
 
             # Add_point            
             # 3 차 곡선 경로가 모두 만들어 졌다면 이후 주행 경로를 추가 합니다.
@@ -232,6 +288,11 @@ class latticePlanner:
                 globals()['lattice_pub_{}'.format(i+1)].publish(out_path[i])
 
             '''
+
+            for i in range(len(out_path)):          
+                globals()['lattice_pub_{}'.format(i+1)] = rospy.Publisher('/lattice_path_{}'.format(i+1),Path,queue_size=1)
+                globals()['lattice_pub_{}'.format(i+1)].publish(out_path[i])
+
         return out_path
 
 if __name__ == '__main__':
