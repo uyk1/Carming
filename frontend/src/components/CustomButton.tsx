@@ -1,15 +1,15 @@
 import {
   TouchableOpacity,
   Text,
-  Alert,
   ViewStyle,
   StyleSheet,
+  TextStyle,
 } from 'react-native'; // 리액트 네이티브에서 제공하는 컴포넌트 추가
 
 interface CustomButtonProps {
   text: string;
   buttonStyle?: ViewStyle;
-  textStyle?: ViewStyle;
+  textStyle?: TextStyle;
   onPress?: () => void;
 }
 
