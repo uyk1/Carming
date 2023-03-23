@@ -12,6 +12,8 @@ from cv_bridge import CvBridgeError
 
 # image_lane_roi 는 카메라 센서를 통하여 받아온 이미지에 관심있는 부분만(차선) 만 남기고
 # 나머지 부분은 마스킹 하는 이미리 처리입니다. 관심 영역을 지정하고, 마스크를 생성, 마스크를 이미지에 합치는 과정
+
+## ROI : Region of Interest
 class IMGParser:
     def __init__(self):
         self.image_sub = rospy.Subscriber("/image_jpeg/compressed", CompressedImage, self.callback)
@@ -60,8 +62,8 @@ class IMGParser:
         # TODO (1) 에서 마스킹 영역을 만들었고, 관심 있는 부분만을 이미지 원본으로 하고 나머지는 255(검은색)로 반환 해 주는 내용이 들어가야 합니다.
 
         # TODO: (2)
-        # 먼저 원하는 만큼의 좌표 점들을 선으로 긋고
-        # 시작점과 끝점을 자동으로 연결하여 다각형을 그리는 함수를 opencv 함수를 찾습니다.
+        # 먼저 원하는 만큼의 좌표 점들을 선으로 긋고, 시작점과 끝점을 자동으로 연결하여 다각형을 그리는 함수를 opencv 함수를
+        # 찾습니다.
         ## 직접 포인트 지정
         points = np.array([[0, 350], [280, 200], [360, 200], [640, 350]])
         ## 타겟이미지, 다각형 포인트 어레이, 다각형 색상, 다각형 라인 타입
@@ -77,4 +79,4 @@ class IMGParser:
 if __name__ == '__main__':
     rospy.init_node('image_parser', anonymous=True)
     image_parser = IMGParser()
-    rospy.spin()
+    rospy.spin() 
