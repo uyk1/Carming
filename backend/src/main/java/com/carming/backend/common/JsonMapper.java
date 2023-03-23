@@ -11,7 +11,7 @@ public class JsonMapper {
         try {
             return objectMapper.writeValueAsString(object);
         } catch (JsonProcessingException e) {
-            throw null;
+            throw new FailConvertJson();
         }
     }
 
@@ -19,7 +19,7 @@ public class JsonMapper {
         try {
             return objectMapper.readValue(json, clazz);
         } catch (JsonProcessingException e) {
-            return null;
+            throw new FailConvertJson();
         }
     }
 }

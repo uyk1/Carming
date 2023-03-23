@@ -1,5 +1,6 @@
 package com.carming.backend.member.service;
 
+import com.carming.backend.common.JsonMapper;
 import com.carming.backend.member.domain.valid.AuthNumberFactory;
 import com.carming.backend.member.domain.valid.AuthenticationInfo;
 import com.carming.backend.member.dto.request.AuthNumbersDto;
@@ -31,7 +32,7 @@ public class AuthNumbersService {
     public String saveAuthNumbers(PhoneNumberDto request) {
         String phoneNumber = request.getPhoneNumber();
         String authNumbers = AuthNumberFactory.createValidNumbers().getAuthNumbers();
-        String authenticationInfo = convertObjectToJson(new AuthenticationInfo(authNumbers, false));
+        String authenticationInfo = JsonMapper.toJson(new AuthenticationInfo(authNumbers, false));
 
         if (!StringUtils.hasText(authenticationInfo)) {
             throw new InvalidAuthRequest();
