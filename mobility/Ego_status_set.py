@@ -1,6 +1,17 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""
+레디스 설치 전
+sudo apt-get update
+sudo apt-get upgrade
+레디스 서버 설치
+sudo apt-get install redis-server
+레디스 설치 확인
+redis-server --version
+현재 서버의 총 메모리 확인
+vmstat -s
+"""
 import redis
 
 
