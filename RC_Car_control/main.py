@@ -17,4 +17,10 @@ if __name__ == "__main__":
     ## Global Variable 선언
     global input_1, input_2, enable, servo_pin
     global steering, drive  ## 각각 조향/주행 함수
+    
+    input_1 = 15
+    input_2 = 18
+    enable = 27
+    servo_pin = 17
+    
     pass
