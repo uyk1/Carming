@@ -28,6 +28,9 @@ dependencies {
     //Embedded - Redis
     testImplementation ('it.ozimov:embedded-redis:0.7.3') { exclude group: "org.slf4j", module: "slf4j-simple" }
 
+    // Rest Assured for test
+    testImplementation 'io.rest-assured:rest-assured'
+
     //queryDsl 설정
     implementation 'com.querydsl:querydsl-core'
     implementation 'com.querydsl:querydsl-jpa'
