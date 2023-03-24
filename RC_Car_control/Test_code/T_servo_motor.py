@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 # 서보 모터 핀 설정
-servo_pin = 12
+servo_pin = 17
 
 # GPIO 초기화
 GPIO.setmode(GPIO.BCM)

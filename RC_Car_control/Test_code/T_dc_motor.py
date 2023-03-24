@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 # DC 모터 핀 설정
-DC_pin1 = 17
+DC_pin1 = 15
 DC_pin2 = 18
 
 # GPIO 초기화
