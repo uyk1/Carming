@@ -61,6 +61,12 @@ class lc_path_pub :
         self.local_path_pub = 
 
         '''
+        
+        rospy.Subscriber("odom", Odometry, self.odom_callback)
+        rospy.Subscriber(object_topic_name, ObjectStatusList, self.object_info_callback)
+        self.global_path_pub = rospy.Publisher('/global_path',Path, queue_size=1)
+        self.local_path_pub = rospy.Publisher('/lane_change_path',Path, queue_size=1)
+
 
         self.lc_1=Path()
         self.lc_1.header.frame_id='/map'
@@ -83,6 +89,30 @@ class lc_path_pub :
 
         '''
 
+        lc_1 = pkg_path+'/path'+'/lc_1.txt'
+        self.f=open(lc_1,'r')
+        lines=self.f.readlines()
+        for line in lines :
+            tmp=line.split()
+            read_pose=PoseStamped()
+            read_pose.pose.position.x=float(tmp[0])
+            read_pose.pose.position.y=float(tmp[1])
+            read_pose.pose.orientation.w=1
+            self.lc_1.poses.append(read_pose)        
+        self.f.close()
+
+        lc_2 = pkg_path+'/path'+'/lc_2.txt'
+        self.f=open(lc_2,'r')
+        lines=self.f.readlines()
+        for line in lines :
+            tmp=line.split()
+            read_pose=PoseStamped()
+            read_pose.pose.position.x=float(tmp[0])
+            read_pose.pose.position.y=float(tmp[1])
+            read_pose.pose.orientation.w=1
+            self.lc_2.poses.append(read_pose)        
+        self.f.close()
+
         self.is_object_info = False
         self.is_odom = False
 
@@ -97,6 +127,8 @@ class lc_path_pub :
         global_path = self.lc_1
 
         '''
+
+        global_path = self.lc_1
 
         rate = rospy.Rate(10) # 10hz
         while not rospy.is_shutdown():
@@ -119,6 +151,9 @@ class lc_path_pub :
                 self.global_path_pub.
                 
                 '''
+
+                self.local_path_pub.publish(self.local_path_msg)
+                self.global_path_pub.publish(global_path)
 
             rate.sleep()
 
@@ -283,6 +318,18 @@ class lc_path_pub :
                                 self.object=[True,i]
         '''
 
+        if len(global_vaild_object) >0  :
+            min_rel_distance=float('inf')
+            for i in range(len(global_vaild_object)):
+                for path in ref_path.poses :   
+                    if global_vaild_object[i][0]==1 or global_vaild_object[i][0]==2 :  
+                        dis=sqrt(pow(path.pose.position.x-global_vaild_object[i][1],2)+pow(path.pose.position.y-global_vaild_object[i][2],2))
+                        if dis<2.5:
+                            rel_distance= sqrt(pow(local_vaild_object[i][1],2)+pow(local_vaild_object[i][2],2))                            
+                            if rel_distance < min_rel_distance:
+                                min_rel_distance=rel_distance
+                                self.object=[True,i]
+
     def getLaneChangePath(self,ego_path,lc_path,start_point,end_point,start_next_point, end_waypoint_idx): ## 
         out_path=Path()  
         out_path.header.frame_id='/map'
@@ -335,6 +382,42 @@ class lc_path_pub :
             out_path.poses.append(read_pose)
 
         '''
+        
+        point_to_point_distance = 0.5
+        start_path_distance = sqrt(pow(end_point.pose.position.x-start_point.pose.position.x,2)+pow(end_point.pose.position.y-start_point.pose.position.y,2))
+        start_path_repeat = int(start_path_distance/point_to_point_distance)
+
+        theta=atan2(end_point.pose.position.y-start_point.pose.position.y,end_point.pose.position.x-start_point.pose.position.x)
+
+        ratation_matric_1 = np.array([  [   cos(theta), -sin(theta)  ],
+                                        [   sin(theta),  cos(theta)  ]    ])
+
+        for k in range(0,start_path_repeat+1):
+            ratation_matric_2 = np.array([  [ k*point_to_point_distance ],  
+                                            [ 0                         ]   ])
+            roation_matric_calc = np.matmul(ratation_matric_1,ratation_matric_2)
+            read_pose=PoseStamped()
+            read_pose.pose.position.x = start_point.pose.position.x + roation_matric_calc[0][0]
+            read_pose.pose.position.y = start_point.pose.position.y + roation_matric_calc[1][0]
+            read_pose.pose.position.z = 0
+            read_pose.pose.orientation.x = 0
+            read_pose.pose.orientation.y = 0
+            read_pose.pose.orientation.z = 0
+            read_pose.pose.orientation.w = 1
+            out_path.poses.append(read_pose)
+        
+        # 직선 거리 추가
+
+        for k in range(end_waypoint_idx,end_waypoint_idx+40):
+            read_pose=PoseStamped()
+            read_pose.pose.position.x = lc_path.poses[k].pose.position.x
+            read_pose.pose.position.y = lc_path.poses[k].pose.position.y
+            read_pose.pose.position.z=0
+            read_pose.pose.orientation.x=0
+            read_pose.pose.orientation.y=0
+            read_pose.pose.orientation.z=0
+            read_pose.pose.orientation.w=1
+            out_path.poses.append(read_pose)
 
         return out_path
 

@@ -60,6 +60,11 @@ class lc_path_pub :
 
         '''
 
+        rospy.Subscriber("odom", Odometry, self.odom_callback)
+        rospy.Subscriber(object_topic_name, ObjectStatusList, self.object_info_callback)
+        self.global_path_pub = rospy.Publisher('/global_path',Path, queue_size=1)
+        self.local_path_pub = rospy.Publisher('/lane_change_path',Path, queue_size=1)
+
         self.lc_1=Path()
         self.lc_1.header.frame_id='/map'
         self.lc_2=Path()
@@ -81,6 +86,30 @@ class lc_path_pub :
 
         '''
 
+        lc_1 = pkg_path+'/path'+'/lc_1.txt'
+        self.f=open(lc_1,'r')
+        lines=self.f.readlines()
+        for line in lines :
+            tmp=line.split()
+            read_pose=PoseStamped()
+            read_pose.pose.position.x=float(tmp[0])
+            read_pose.pose.position.y=float(tmp[1])
+            read_pose.pose.orientation.w=1
+            self.lc_1.poses.append(read_pose)        
+        self.f.close()
+
+        lc_2 = pkg_path+'/path'+'/lc_2.txt'
+        self.f=open(lc_2,'r')
+        lines=self.f.readlines()
+        for line in lines :
+            tmp=line.split()
+            read_pose=PoseStamped()
+            read_pose.pose.position.x=float(tmp[0])
+            read_pose.pose.position.y=float(tmp[1])
+            read_pose.pose.orientation.w=1
+            self.lc_2.poses.append(read_pose)        
+        self.f.close()
+
         self.is_object_info = False
         self.is_odom = False
 
@@ -95,6 +124,8 @@ class lc_path_pub :
         global_path = self.lc_1
 
         '''
+
+        global_path = self.lc_1
         
         rate = rospy.Rate(10) # 10hz
         while not rospy.is_shutdown():
@@ -117,6 +148,9 @@ class lc_path_pub :
                 self.global_path_pub.
                 
                 '''
+
+                self.local_path_pub.publish(self.local_path_msg)
+                self.global_path_pub.publish(global_path)
 
             rate.sleep()
 
@@ -268,6 +302,18 @@ class lc_path_pub :
                                 min_rel_distance = 
                                 self.object=[True,i]
         '''
+
+        if len(global_vaild_object) >0  :
+            min_rel_distance=float('inf')
+            for i in range(len(global_vaild_object)):
+                for path in ref_path.poses :   
+                    if global_vaild_object[i][0]==1 or global_vaild_object[i][0]==2 :  
+                        dis=sqrt(pow(path.pose.position.x-global_vaild_object[i][1],2)+pow(path.pose.position.y-global_vaild_object[i][2],2))
+                        if dis<2.5:
+                            rel_distance= sqrt(pow(local_vaild_object[i][1],2)+pow(local_vaild_object[i][2],2))                            
+                            if rel_distance < min_rel_distance:
+                                min_rel_distance=rel_distance
+                                self.object=[True,i]
 
 if __name__ == '__main__':
     try:
