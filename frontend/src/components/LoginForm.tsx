@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {View, Text, TextInput, Button} from 'react-native';
+import {View, Text, TextInput, Button, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {loginApi} from '../apis/loginApi';
 import {
@@ -46,26 +46,36 @@ const LoginForm = () => {
       dispatch(loginFailure(message));
     }
   };
-
+  
   return (
     <View>
-      <Text>전화번호</Text>
+      <Text style={styles.loginFormText}>전화번호</Text>
       <TextInput
         value={phone}
         onChangeText={setPhone}
-        placeholder="전화번호를 입력하세요"
+        placeholder="전화번호를 입력하세요"  placeholderTextColor="lightgray"
+        style={styles.loginFormText}
       />
-      <Text>비밀번호</Text>
+      <Text style={styles.loginFormText}>비밀번호</Text>
       <TextInput
         value={password}
         onChangeText={setPassword}
         placeholder="비밀번호를 입력하세요"
         secureTextEntry
+        placeholderTextColor="lightgray"
+        style={styles.loginFormText}
       />
-      <Button title="로그인" onPress={handleLogin} disabled={isLoading} />
-      {errorText && <Text style={{color: 'white'}}>{errorText}</Text>}
+      <Button title="로그인" color={'#8398D1'} onPress={handleLogin} disabled={isLoading} />
+      {errorText && <Text style={[styles.loginFormText, {marginTop: '2%'}]}>{errorText}</Text>}
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  loginFormText: {
+    color: 'white',
+    fontFamily: 'SeoulNamsanM',
+  }
+});
 
 export default LoginForm;
