@@ -116,17 +116,23 @@ def getRotMat(RPY):
     return rotMat
     '''
 
-    cosR = math.cos(RPY[0])
-    cosP = math.cos(RPY[1])
-    cosY = math.cos(RPY[2])
+    ## https://gaussian37.github.io/math-la-rotation_matrix/ 참고
+    ## https://en.wikipedia.org/wiki/Rotation_matrix 참고
+
+    cosR = math.cos(RPY[0]) ## Roll의 cos 값 (진행 방향 기준, x축)
+    cosP = math.cos(RPY[1]) ## Pitch의 cos 값 (측면 기준, y축)
+    cosY = math.cos(RPY[2]) ## Yaw의 cos 값 (지면 방향, z축)
     sinR = math.sin(RPY[0])
     sinP = math.sin(RPY[1])
     sinY = math.sin(RPY[2])
 
+    ## reshape()는 배열을 다차원으로 변형하는 역할
+    ## rorRoll은 x축(Roll) 중심으로 회전하는 회전 변환 행렬
     rotRoll = np.array([1,0,0, 0,cosR,-sinR, 0,sinR,cosR]).reshape(3,3)
     rotPitch = np.array([cosP,0,sinP, 0,1,0, -sinP,0,cosP]).reshape(3,3)
     rotYaw = np.array([cosY,-sinY,0, sinY,cosY,0, 0,0,1]).reshape(3,3)
     
+    ## rotRoll rotPitch rotYaw를 내적한 것
     rotMat = rotYaw.dot(rotPitch.dot(rotRoll))
     return rotMat
 
@@ -151,6 +157,9 @@ def getSensorToVehicleMat(sensorRPY, sensorPosition):
     return Tr_sensor_to_vehicle
     '''
 
+    ## https://www.brainvoyager.com/bv/doc/UsersGuide/CoordsAndTransforms/SpatialTransformationMatrices.html 참고
+    ## 3D Affine Transformation Matrices 참고
+    
     sensorRotationMat = getRotMat(sensorRPY)
     sensorTranslationMat = np.array([sensorPosition])
     Tr_sensor_to_vehicle = np.concatenate((sensorRotationMat,sensorTranslationMat.T),axis = 1)

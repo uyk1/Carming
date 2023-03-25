@@ -82,7 +82,7 @@ class latticePlanner:
 
         '''
         rospy.Subscriber("/local_path", Path, self.path_callback)
-        rospy.Subscriber("/Ego_topic",EgoVehicleStatus, self.status_callback)
+        rospy.Subscriber("/Ego_topic",EgoVehicleStatus, self.status_callback) ## 차량의 현재 속도를 알기 위해 사용
 
         self.lattice_path_pub = rospy.Publisher('/lattice_path', Path, queue_size = 1)
 
@@ -120,6 +120,7 @@ class latticePlanner:
                     break
 
         '''
+        
         is_crash = False
         for obstacle in object_data.obstacle_list:
             for path in ref_path.poses:  
