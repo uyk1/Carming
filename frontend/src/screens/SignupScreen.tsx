@@ -23,7 +23,7 @@ const SignupScreen = () => {
             <View>
               <View style={{ flexDirection: 'row', marginBottom:'15%', alignItems:'center', justifyContent:'space-between' }}>
                 <BackButton />
-                <Image source={require('../assets/images/logo_white.png')} style={{height:30, resizeMode:'contain'}} />
+                <Image source={require('../assets/images/logo_white.png')} style={{height:30, width:114, resizeMode:'contain'}} />
               </View>
               {/* <View style={styles.logoContainer}>
                 <Image source={require('../assets/images/logo_white.png')}/>

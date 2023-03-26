@@ -92,7 +92,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 keyboardType='numeric'
                 style={{ color: '#747273' }}
               />
-              {errors.phone && <RegistFormText>{errors.phone}</RegistFormText>}
+              {errors.phone && <RegistErrorMessage>{errors.phone}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -104,7 +104,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onChangeText={handleChange('name')}
                 onBlur={handleBlur('name')}
               />
-              {errors.name && <RegistFormText>{errors.name}</RegistFormText>}
+              {errors.name && <RegistErrorMessage>{errors.name}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -116,7 +116,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onChangeText={handleChange('nickname')}
                 onBlur={handleBlur('nickname')}
               />
-              {errors.nickname && <RegistFormText>{errors.nickname}</RegistFormText>}
+              {errors.nickname && <RegistErrorMessage>{errors.nickname}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -129,7 +129,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onBlur={handleBlur('password')}
                 secureTextEntry
               />
-              {errors.password && <RegistFormText>{errors.password}</RegistFormText>}
+              {errors.password && <RegistErrorMessage>{errors.password}</RegistErrorMessage>}
             </View>
 
             <View>
@@ -142,7 +142,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onBlur={handleBlur('passwordConfirm')}
                 secureTextEntry
               />
-              {errors.passwordConfirm && <RegistFormText>{errors.passwordConfirm}</RegistFormText>}
+              {errors.passwordConfirm && <RegistErrorMessage>{errors.passwordConfirm}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -164,7 +164,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                   <Picker.Item style={{fontSize:13}} label="여성" value="female" />
                 </Picker>
               </View>
-              {errors.gender && <RegistFormText>{errors.gender}</RegistFormText>}
+              {errors.gender && <RegistErrorMessage>{errors.gender}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -176,7 +176,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onChangeText={handleChange('birthDate')}
                 onBlur={handleBlur('birthDate')}
               />
-              {errors.birthDate && <RegistFormText>{errors.birthDate}</RegistFormText>}
+              {errors.birthDate && <RegistErrorMessage>{errors.birthDate}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -188,7 +188,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onChangeText={handleChange('cardNumber')}
                 onBlur={handleBlur('cardNumber')}
               />
-              {errors.cardNumber && <RegistFormText>{errors.cardNumber}</RegistFormText>}
+              {errors.cardNumber && <RegistErrorMessage>{errors.cardNumber}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -200,7 +200,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onChangeText={handleChange('ccv')}
                 onBlur={handleBlur('ccv')}
               />
-              {errors.ccv && <RegistFormText>{errors.ccv}</RegistFormText>}
+              {errors.ccv && <RegistErrorMessage>{errors.ccv}</RegistErrorMessage>}
             </View>
             
             <View>
@@ -212,7 +212,7 @@ const RegistForm: React.FC<RegistFormProps> = ({ onSubmit }) => {
                 onChangeText={handleChange('cardExp')}
                 onBlur={handleBlur('cardExp')}
               />
-              {errors.cardExp && <RegistFormText>{errors.cardExp}</RegistFormText>}
+              {errors.cardExp && <RegistErrorMessage>{errors.cardExp}</RegistErrorMessage>}
             </View>
 
             <View style={{marginTop:'5%'}}>
@@ -232,7 +232,16 @@ const RegistFormView = styled(View)`
 `;
 
 const RegistFormText = styled(Text)`
-  color: 'charcol';
+  // font-family: SeoulNamsanM,
+  font-size: 12px;
+  color: grey;
+`;
+
+const RegistErrorMessage = styled(Text)`
+  color: red;
+  font-size: 10px;
+  margin-left: 5px;
+  margin-bottom: 3px;
 `;
 
 export default RegistForm;
