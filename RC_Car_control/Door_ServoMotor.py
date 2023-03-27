@@ -3,6 +3,8 @@ import time
 
 
 def openclose():
+    GPIO.setwarnings(False)
+
     # GPIO 핀 모드 설정
     GPIO.setmode(GPIO.BCM)
 
@@ -49,6 +51,5 @@ def openclose():
     # PWM 신호 출력 종료
     pwm.stop()
 
-
-# GPIO 모드 초기화
-GPIO.cleanup()
+    # GPIO 모드 초기화
+    GPIO.cleanup()
