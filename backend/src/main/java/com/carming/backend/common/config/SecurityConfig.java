@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(new AuthEntryPoint())
         .and()
                 .authorizeRequests()
-                        .antMatchers("/api/member/signup", "/api/login", "/api/logout").permitAll()
+                        .antMatchers("/api/member/**", "/api/login", "/api/logout").permitAll()
                         .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
