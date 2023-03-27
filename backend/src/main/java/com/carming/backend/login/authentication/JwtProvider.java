@@ -61,8 +61,11 @@ public class JwtProvider {
     }
 
     public static String resolveToken(HttpServletRequest request) {
+        log.info(">>>>>>>>>>>>>> resolveToken");
         String bearerToken = request.getHeader(JwtConst.HEADER_STRING);
+        log.info(">>>>>>>>>>>>>>>> bearerToken = {}", bearerToken);
         if (bearerToken != null && bearerToken.startsWith(JwtConst.TOKEN_TYPE)) {
+            log.info(">>>>>>>>>>>>>>>>>>> not null");
             return bearerToken.substring(7);
         }
         return null;
