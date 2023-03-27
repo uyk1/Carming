@@ -48,8 +48,9 @@ public class LogAop {
     }
 
     @AfterReturning(value = "logCut()", returning = "response")
-    public void afterReturningLogCut(JoinPoint joinPoint, Object response) {
+    public Object afterReturningLogCut(JoinPoint joinPoint, Object response) {
         log.info(" - returnTYPE[{}] = {}", response.getClass().getSimpleName(), response);
+        return response;
     }
 
     //JoinPoint로 메소드 정보 가져오기
