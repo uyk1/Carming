@@ -4,25 +4,34 @@ import os
 import sys
 import socket
 from Door_ServoMotor import openclose
-import Redis_get
 from DC_motor import DC_MOTOR
+import redis
 
 
 class main():
     def __init__(self):
         pass
 
-    ## 계속 실행시켜야함
-    ## [속도,정지,목적지도달,가속도,현재위치x,현재위치y]
+    redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0, password='carming123')
 
-    current_state = Redis_get.get_data()
+    ## redis에서 데이터 확인
+    while True:
+        ## 속도 b'1.4650933742523193' 형태로 출력
+        current_velocity = redis_client.get('current_velocity')
+        ## 정지 b'1.0' 형태로 출력
+        current_brake = redis_client.get('current_brake')
+        ## destination = redis_client.get('destination')
+        current_acceleration = redis_client.get('current_acceleration')
+        current_position_x = redis_client.get('current_position_x')
+        current_position_y = redis_client.get('current_position_y')
 
-    DC_MOTOR.drive(current_state[2])
+        DC_MOTOR.drive(current_velocity)
+        ## print(current_velocity)
 
-    if current_state[1] == 1:
-        print(current_state[1])
-        openclose()
-    
+        ## 시뮬레이터상에터 brake 동작한 경우 문열림, 문닫힘 구현
+        if current_brake == b'1.0':
+            print('okok')
+            openclose()
 
 
 if __name__ == "__main__":
@@ -35,6 +44,5 @@ if __name__ == "__main__":
     servo_pin = 17
     current_state = []
 
-    while True:
-        main()
+    main()
 
