@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .exceptionHandling().authenticationEntryPoint(new AuthEntryPoint())
         .and()
                 .authorizeRequests()
-                        .antMatchers("/api/member/**", "/api/login", "/api/logout").permitAll()
+                        .antMatchers("/api/member/**", "/api/auth/**").permitAll()
                         .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -37,6 +37,10 @@ public class SecurityConfig {
     }
 
 
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
