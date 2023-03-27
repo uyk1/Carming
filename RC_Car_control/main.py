@@ -5,7 +5,7 @@ import sys
 import socket
 from DC_motor import DC_MOTOR
 from servo_motor import SERVO_MOTOR
-
+from Door_ServoMotor import DOOR
 class main():
     def __init__(self):
         pass
