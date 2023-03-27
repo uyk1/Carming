@@ -5,6 +5,7 @@ import sys
 import socket
 from Door_ServoMotor import openclose
 import Redis_get
+from DC_motor import DC_MOTOR
 
 
 class main():
@@ -15,9 +16,13 @@ class main():
     ## [속도,정지,목적지도달,가속도,현재위치x,현재위치y]
 
     current_state = Redis_get.get_data()
+
+    DC_MOTOR.drive(current_state[2])
+
     if current_state[1] == 1:
         print(current_state[1])
         openclose()
+    
 
 
 if __name__ == "__main__":
@@ -29,5 +34,7 @@ if __name__ == "__main__":
     enable = 27
     servo_pin = 17
     current_state = []
-    main()
+
+    while True:
+        main()
 

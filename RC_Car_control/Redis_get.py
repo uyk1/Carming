@@ -25,7 +25,8 @@ def get_data():
     redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0)
 
     while True:
-      # current_velocity_x = redis_client.get('current_velocity')
+      #current_velocity = redis_client.get('current_velocity')
+      current_velocity = 100
       # current_brake = redis_client.get('current_brake')
       # destination = redis_client.get('destination')
       # current_acceleration = redis_client.get('current_acceleration')
@@ -33,9 +34,12 @@ def get_data():
       # current_position_y = redis_client.get('current_position_y')
       hi = 1234
       hello = 1515
-      return [hi, hello]
+      return [hi, hello, current_velocity]
+    ## 이렇게하면, while 문을 돌리는 의미가 없음
+    ## redis_get 함수 내의 변수에 main이 접급하는 방법에 대해 생각해보자 
+    
 
-    # return [current_velocity_x, current_brake, destination,
+    # return [current_velocity, current_brake, destination,
     #         current_acceleration, current_position_x, current_position_y]
 
   except Exception as ex:
