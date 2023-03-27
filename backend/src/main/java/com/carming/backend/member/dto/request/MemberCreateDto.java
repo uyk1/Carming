@@ -95,6 +95,15 @@ public class MemberCreateDto {
 
         private String companyName;
 
+        @Builder
+        public CardDto(String cardNumber, String cvv, String cardExp, String cardPassword, String companyName) {
+            this.cardNumber = cardNumber;
+            this.cvv = cvv;
+            this.cardExp = cardExp;
+            this.cardPassword = cardPassword;
+            this.companyName = companyName;
+        }
+
         public Card toEntity() {
             return Card.builder()
                     .number(cardNumber)
