@@ -1,5 +1,6 @@
 package com.carming.backend.member.dto.request;
 
+import com.carming.backend.login.authentication.PasswordEncoder;
 import com.carming.backend.member.domain.Card;
 import com.carming.backend.member.domain.Gender;
 import com.carming.backend.member.domain.Member;
@@ -49,7 +50,7 @@ public class MemberCreateDto {
     public Member toEntity() {
         return Member.builder()
                 .phoneNumber(phone)
-                .password(password)
+                .password(PasswordEncoder.encode(password))
                 .nickname(nickname)
                 .name(name)
                 .gender(gender)

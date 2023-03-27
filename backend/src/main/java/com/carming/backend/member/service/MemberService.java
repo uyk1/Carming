@@ -9,13 +9,14 @@ import com.carming.backend.member.exception.NotAuthentication;
 import com.carming.backend.member.repository.CardRepository;
 import com.carming.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 @Service
 public class MemberService {
 
@@ -40,7 +41,10 @@ public class MemberService {
 
     public void validAuthenticated(MemberCreateDto request) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        AuthenticationInfo authenticationInfo = JsonMapper.toClass(operations.get(request.getPhone()), AuthenticationInfo.class);
+        log.info(">>>>>>>>>>>> request.getPhone = {}", request.getPhone());
+        String json = operations.get(request.getPhone());
+        log.info(">>>>>>> json = {}", json);
+        AuthenticationInfo authenticationInfo = JsonMapper.toClass(json, AuthenticationInfo.class);
 
         if (!authenticationInfo.getAuthenticated()) {
             throw new NotAuthentication();
