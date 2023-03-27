@@ -22,7 +22,7 @@ import redis
 def get_data():
 
   try:
-    redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0)
+    redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0,password='carming123')
 
     while True:
       #current_velocity = redis_client.get('current_velocity')
