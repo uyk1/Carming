@@ -1,12 +1,12 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {Member} from '../../types';
+import {MemberInfo} from '../../types/MemberInfo';
 import {LoginRequestPayload} from '../../types/LoginRequestPayload';
 import {LoginResponsePayload} from '../../types/LoginResponsePayload';
 import {loginApi} from './../../apis/loginApi';
 
 type AuthState = {
   token: string | null;
-  member: Member | null;
+  memberInfo: MemberInfo | null;
   isLoading: boolean;
   error: string | null;
   isLoggedIn: boolean;
@@ -14,7 +14,7 @@ type AuthState = {
 
 const initialState: AuthState = {
   token: null,
-  member: null,
+  memberInfo: null,
   isLoading: false,
   error: null,
   isLoggedIn: false,
@@ -38,9 +38,12 @@ const authSlice = createSlice({
       state.error = null;
     },
     loginSuccess: (state, action: PayloadAction<LoginResponsePayload>) => {
-      const {token, member} = action.payload;
+      const {tokenType, accessToken, nickname, profile} = action.payload;
+      const token = tokenType + accessToken;
+      const memberInfo = {nickname, profile};
+
       state.token = token;
-      state.member = member;
+      state.memberInfo = memberInfo;
       state.isLoading = false;
       state.error = null;
       state.isLoggedIn = true;
@@ -48,10 +51,11 @@ const authSlice = createSlice({
     loginFailure: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       state.error = action.payload;
+      console.log(state.error);
     },
     logout: state => {
       state.token = null;
-      state.member = null;
+      state.memberInfo = null;
       state.isLoading = false;
       state.error = null;
       state.isLoggedIn = false;
@@ -66,9 +70,12 @@ const authSlice = createSlice({
       .addCase(
         login.fulfilled,
         (state, action: PayloadAction<LoginResponsePayload>) => {
-          const {token, member} = action.payload;
+          const {tokenType, accessToken, nickname, profile} = action.payload;
+          const token = tokenType + accessToken;
+          const memberInfo = {nickname, profile};
+
           state.token = token;
-          state.member = member;
+          state.memberInfo = memberInfo;
           state.isLoading = false;
           state.error = null;
           state.isLoggedIn = true;
@@ -77,6 +84,7 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.error.message ?? '로그인 중 오류가 발생했습니다.';
+        console.log(state.error);
       });
   },
 });

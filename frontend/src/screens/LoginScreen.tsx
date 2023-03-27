@@ -2,32 +2,44 @@ import {Text, StyleSheet, View, ImageBackground, Image} from 'react-native';
 import LoginForm from '../components/LoginForm';
 import styled from 'styled-components/native';
 import BackButton from '../components/BackButton';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { L2_LandingStackParamList } from '../navigations/L2_LandingStackNavigator';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {L2_LandingStackParamList} from '../navigations/L2_LandingStackNavigator';
 
-type LoginScreenNavigationProp = NavigationProp<L2_LandingStackParamList, 'Login'>;
+type LoginScreenNavigationProp = NavigationProp<
+  L2_LandingStackParamList,
+  'Login'
+>;
 
 const LoginScreen = () => {
   const navigation = useNavigation<LoginScreenNavigationProp>();
 
   return (
-      <Container source={require('../assets/images/login_screen.png')}>
-        <View style={styles.container}>
-          <View>
-            <View style={{ flexDirection: 'row', marginBottom:'15%' }}>
-              <BackButton />
-            </View>
-            <View style={styles.logoContainer}>
-              <Image source={require('../assets/images/logo_white.png')}/>
-            </View>
-            <LoginForm />
+    <Container source={require('../assets/images/login_screen.png')}>
+      <View style={styles.container}>
+        <View>
+          <View style={{flexDirection: 'row', marginBottom: '15%'}}>
+            <BackButton />
           </View>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', justifyContent:'center'}}>
-            <Text style={styles.signUpText}>아직 회원이 아니신가요? </Text>
-            <Text style={[styles.signUpText, {fontSize: 16}]} onPress={() => navigation.navigate('Signup')}>회원가입</Text>
+          <View style={styles.logoContainer}>
+            <Image source={require('../assets/images/logo_white.png')} />
           </View>
+          <LoginForm />
         </View>
-      </Container>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+          }}>
+          <Text style={styles.signUpText}>아직 회원이 아니신가요? </Text>
+          <Text
+            style={[styles.signUpText, {fontSize: 16}]}
+            onPress={() => navigation.navigate('Signup')}>
+            회원가입
+          </Text>
+        </View>
+      </View>
+    </Container>
   );
 };
 
@@ -53,8 +65,8 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     color: 'white',
-    fontSize: 12
-  }
+    fontSize: 12,
+  },
 });
 
 export default LoginScreen;

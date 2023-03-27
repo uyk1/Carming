@@ -1,11 +1,13 @@
 import {ImageBackground, View} from 'react-native';
 import styled from 'styled-components/native';
 import CustomButton from '../components/CustomButton';
-import { NavigationProp, useNavigation } from '@react-navigation/native';
-import { L2_LandingStackParamList } from '../navigations/L2_LandingStackNavigator';
+import {NavigationProp, useNavigation} from '@react-navigation/native';
+import {L2_LandingStackParamList} from '../navigations/L2_LandingStackNavigator';
 
-
-type LandingScreenNavigationProp = NavigationProp<L2_LandingStackParamList, 'Landing'>;
+type LandingScreenNavigationProp = NavigationProp<
+  L2_LandingStackParamList,
+  'Landing'
+>;
 
 const LandingScreen = () => {
   const navigation = useNavigation<LandingScreenNavigationProp>();

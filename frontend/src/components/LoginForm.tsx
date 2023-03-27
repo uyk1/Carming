@@ -38,22 +38,27 @@ const LoginForm = () => {
 
     dispatch(loginStart());
     try {
-      const {member, token} = await loginApi({phone, password});
-      dispatch(loginSuccess({member, token}));
+      const {tokenType, accessToken, nickname, profile} = await loginApi({
+        phone,
+        password,
+      });
+      dispatch(loginSuccess({tokenType, accessToken, nickname, profile}));
     } catch (error: any) {
+      //any 말고 다른 방법은..?
       const message =
         error?.response?.data?.message ?? '로그인 중 오류가 발생했습니다.';
       dispatch(loginFailure(message));
     }
   };
-  
+
   return (
     <View>
       <Text style={styles.loginFormText}>전화번호</Text>
       <TextInput
         value={phone}
         onChangeText={setPhone}
-        placeholder="전화번호를 입력하세요"  placeholderTextColor="lightgray"
+        placeholder="전화번호를 입력하세요"
+        placeholderTextColor="lightgray"
         style={styles.loginFormText}
       />
       <Text style={styles.loginFormText}>비밀번호</Text>
@@ -65,8 +70,17 @@ const LoginForm = () => {
         placeholderTextColor="lightgray"
         style={styles.loginFormText}
       />
-      <Button title="로그인" color={'#8398D1'} onPress={handleLogin} disabled={isLoading} />
-      {errorText && <Text style={[styles.loginFormText, {marginTop: '2%'}]}>{errorText}</Text>}
+      <Button
+        title="로그인"
+        color={'#8398D1'}
+        onPress={handleLogin}
+        disabled={isLoading}
+      />
+      {errorText && (
+        <Text style={[styles.loginFormText, {marginTop: '2%'}]}>
+          {errorText}
+        </Text>
+      )}
     </View>
   );
 };
@@ -75,7 +89,7 @@ const styles = StyleSheet.create({
   loginFormText: {
     color: 'white',
     fontFamily: 'SeoulNamsanM',
-  }
+  },
 });
 
 export default LoginForm;
