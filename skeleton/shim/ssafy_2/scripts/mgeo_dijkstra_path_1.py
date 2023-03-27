@@ -61,7 +61,7 @@ class dijkstra_path_pub:
         self.global_path_pub = rospy.Publisher('/global_path', Path, queue_size=1)
 
         # TODO: (1) Mgeo data 읽어온 후 데이터 확인
-        load_path = os.path.normpath(os.path.join(current_path, 'lib/mgeo_data/R_KR_PG_K-City'))
+        load_path = os.path.normpath(os.path.join(current_path, 'lib/mgeo_data/R_KR_PR_Sangam_nobuildings'))
         mgeo_planner_map = MGeo.create_instance_from_json(load_path)
 
         node_set = mgeo_planner_map.node_set
