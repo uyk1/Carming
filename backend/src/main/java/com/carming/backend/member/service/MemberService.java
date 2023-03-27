@@ -28,8 +28,7 @@ public class MemberService {
 
     @Transactional
     public Long saveMember(MemberCreateDto request) {
-        validAuthenticated(request);
-        Card card = request.getCardDto().toEntity();
+        Card card = request.getCard().toEntity();
         cardRepository.save(card);
 
         Member member = request.toEntity();
@@ -39,7 +38,7 @@ public class MemberService {
         return savedMember.getId();
     }
 
-    private void validAuthenticated(MemberCreateDto request) {
+    public void validAuthenticated(MemberCreateDto request) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
         AuthenticationInfo authenticationInfo = JsonMapper.toClass(operations.get(request.getPhone()), AuthenticationInfo.class);
 

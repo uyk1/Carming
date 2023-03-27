@@ -30,7 +30,7 @@ public class MemberCreateDto {
 
     private BirthInfoDto birthInfo;
 
-    private CardDto cardDto;
+    private CardDto card;
 
     @Builder
     public MemberCreateDto(String phone, String password, String passwordConfirm,
@@ -43,7 +43,7 @@ public class MemberCreateDto {
         this.name = name;
         this.gender = gender;
         this.birthInfo = birthInfo;
-        this.cardDto = cardDto;
+        this.card = cardDto;
     }
 
     public Member toEntity() {
