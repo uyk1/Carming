@@ -20,13 +20,15 @@ public class AuthNumberController {
 
     private final AuthNumbersService authNumberService;
 
-    private final SmsFactory smsFactory;
+    //todo _ DELETE Mockito
+//    private final SmsFactory smsFactory;
 
     @PostMapping("/request")
     public ResponseEntity<Void> makeAuthNumber(@RequestBody PhoneNumberDto request) {
         String authNumbers = authNumberService.saveAuthNumbers(request);
-        SmsResponse response = smsFactory.send(request.getPhoneNumber(), authNumbers);
-        return new ResponseEntity<>(HttpStatus.resolve(Integer.parseInt(response.getStatusCode())));
+//        SmsResponse response = smsFactory.send(request.getPhoneNumber(), authNumbers);
+//        return new ResponseEntity<>(HttpStatus.resolve(Integer.parseInt(response.getStatusCode())));
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PostMapping("/valid")
