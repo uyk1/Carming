@@ -1,10 +1,12 @@
 package com.carming.backend.member.service;
 
 import com.carming.backend.common.JsonMapper;
+import com.carming.backend.member.domain.Card;
 import com.carming.backend.member.domain.Member;
 import com.carming.backend.member.domain.valid.AuthenticationInfo;
 import com.carming.backend.member.dto.request.MemberCreateDto;
 import com.carming.backend.member.exception.NotAuthentication;
+import com.carming.backend.member.repository.CardRepository;
 import com.carming.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,13 +21,21 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
+    private final CardRepository cardRepository;
+
     private final RedisTemplate redisTemplate;
 
 
     @Transactional
     public Long saveMember(MemberCreateDto request) {
         validAuthenticated(request);
-        Member savedMember = memberRepository.save(request.toEntity());
+        Card card = request.getCardDto().toEntity();
+        cardRepository.save(card);
+
+        Member member = request.toEntity();
+        member.changeCard(card);
+
+        Member savedMember = memberRepository.save(member);
         return savedMember.getId();
     }
 

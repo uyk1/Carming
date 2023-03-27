@@ -35,6 +35,10 @@ public class Member implements UserDetails {
     @Column(name = "member_birthday")
     private LocalDate birthday;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_card_id")
+    private Card card;
+
     @Builder
     public Member(String phoneNumber, String password,
                   String nickname, String name,
@@ -44,6 +48,10 @@ public class Member implements UserDetails {
         this.nickname = nickname;
         this.name = name;
         this.birthday = birthday;
+    }
+
+    public void changeCard(Card card) {
+        this.card = card;
     }
 
     @Override

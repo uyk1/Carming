@@ -1,5 +1,6 @@
 package com.carming.backend.member.dto.request;
 
+import com.carming.backend.member.domain.Card;
 import com.carming.backend.member.domain.Member;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class MemberCreateDto {
 
     private String password;
 
-    private String passwordCheck;
+    private String passwordConfirm;
 
     private String nickname;
 
@@ -26,15 +27,18 @@ public class MemberCreateDto {
 
     private BirthInfoDto birthInfo;
 
+    private CardDto cardDto;
+
     @Builder
-    public MemberCreateDto(String phoneNumber, String password, String passwordCheck,
-                           String nickname, String name, BirthInfoDto birthInfo) {
+    public MemberCreateDto(String phoneNumber, String password, String passwordConfirm,
+                           String nickname, String name, BirthInfoDto birthInfo, CardDto cardDto) {
         this.phoneNumber = phoneNumber;
         this.password = password;
-        this.passwordCheck = passwordCheck;
+        this.passwordConfirm = passwordConfirm;
         this.nickname = nickname;
         this.name = name;
         this.birthInfo = birthInfo;
+        this.cardDto = cardDto;
     }
 
     public Member toEntity() {
@@ -68,6 +72,31 @@ public class MemberCreateDto {
 
         public LocalDate toLocalDate() {
             return LocalDate.of(Integer.valueOf(year), Integer.valueOf(month), Integer.valueOf(day));
+        }
+    }
+
+    @NoArgsConstructor
+    @Data
+    public static class CardDto {
+
+        private String number;
+
+        private String cvv;
+
+        private String cardExp;
+
+        private String cardPassword;
+
+        private String companyName;
+
+        public Card toEntity() {
+            return Card.builder()
+                    .number(number)
+                    .cvv(cvv)
+                    .expiredDate(cardExp)
+                    .password(cardPassword)
+                    .companyName(companyName)
+                    .build();
         }
     }
 }
