@@ -41,7 +41,7 @@ public class MemberService {
 
     private void validAuthenticated(MemberCreateDto request) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        AuthenticationInfo authenticationInfo = JsonMapper.toClass(operations.get(request.getPhoneNumber()), AuthenticationInfo.class);
+        AuthenticationInfo authenticationInfo = JsonMapper.toClass(operations.get(request.getPhone()), AuthenticationInfo.class);
 
         if (!authenticationInfo.getAuthenticated()) {
             throw new NotAuthentication();

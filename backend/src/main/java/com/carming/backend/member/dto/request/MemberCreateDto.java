@@ -1,6 +1,7 @@
 package com.carming.backend.member.dto.request;
 
 import com.carming.backend.member.domain.Card;
+import com.carming.backend.member.domain.Gender;
 import com.carming.backend.member.domain.Member;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +16,7 @@ public class MemberCreateDto {
 
     @Pattern(regexp = "^01(?:0|1|[6-9])(?:\\d{3}|\\d{4})\\d{4}$",
             message = "휴대폰번호가 올바르지 않습니다. 다시 입력해주세요.")
-    private String phoneNumber;
+    private String phone;
 
     private String password;
 
@@ -25,28 +26,33 @@ public class MemberCreateDto {
 
     private String name;
 
+    private Gender gender;
+
     private BirthInfoDto birthInfo;
 
     private CardDto cardDto;
 
     @Builder
-    public MemberCreateDto(String phoneNumber, String password, String passwordConfirm,
-                           String nickname, String name, BirthInfoDto birthInfo, CardDto cardDto) {
-        this.phoneNumber = phoneNumber;
+    public MemberCreateDto(String phone, String password, String passwordConfirm,
+                           String nickname, String name, Gender gender,
+                           BirthInfoDto birthInfo, CardDto cardDto) {
+        this.phone = phone;
         this.password = password;
         this.passwordConfirm = passwordConfirm;
         this.nickname = nickname;
         this.name = name;
+        this.gender = gender;
         this.birthInfo = birthInfo;
         this.cardDto = cardDto;
     }
 
     public Member toEntity() {
         return Member.builder()
-                .phoneNumber(phoneNumber)
+                .phoneNumber(phone)
                 .password(password)
                 .nickname(nickname)
                 .name(name)
+                .gender(gender)
                 .birthday(birthInfo.toLocalDate())
                 .build();
     }
@@ -79,7 +85,7 @@ public class MemberCreateDto {
     @Data
     public static class CardDto {
 
-        private String number;
+        private String cardNumber;
 
         private String cvv;
 
@@ -91,7 +97,7 @@ public class MemberCreateDto {
 
         public Card toEntity() {
             return Card.builder()
-                    .number(number)
+                    .number(cardNumber)
                     .cvv(cvv)
                     .expiredDate(cardExp)
                     .password(cardPassword)
