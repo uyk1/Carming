@@ -14,6 +14,7 @@ import * as Yup from 'yup';
 import CommonIcon from './CommonIcon';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomButton from './CustomButton';
+import VerificationModal from './VerificationModal';
 
 export type RegistFormValues = {
   phone: string;
@@ -24,6 +25,8 @@ export type RegistFormValues = {
   gender: 'MAIL' | 'FEMAIL';
   birthDate: string;
   cardNumber: string;
+  companyName: '현대' | '신한' | 'KB국민' | '롯데' | '하나' | '우리' | 'NH농협' | 'IBK';
+  cardPassword: string;
   cvv: string;
   cardExp: string;
 };
@@ -37,6 +40,8 @@ const initialValues: RegistFormValues = {
   gender: 'MAIL',
   birthDate: '',
   cardNumber: '',
+  companyName: '현대',
+  cardPassword: '',
   cvv: '',
   cardExp: '',
 };
@@ -74,6 +79,14 @@ const RegistSchema = Yup.object().shape({
       'XXXX/XXXX/XXXX/XXXX형식으로 입력해주세요.',
     )
     .max(19, '카드번호는 16자리여야 합니다.'),
+  companyName: Yup.string().oneOf(
+    ['현대' , '신한' , 'KB국민' , '롯데' , '하나' , '우리' , 'NH농협' , 'IBK'],
+     '카드사를 선택해주세요.'),
+  cardPassword: Yup.string()
+     // .required('필수 항목입니다.')
+     .matches(/^[0-9]+$/, '숫자만 입력 가능합니다.')
+     .min(2, '앞 두 숫자만 입력해주세요.')
+     .max(2, '앞 두 숫자만 입력해주세요.'),
   cvv: Yup.string()
     // .required('필수 항목입니다.')
     .matches(/^[0-9]+$/, '숫자만 입력 가능합니다.')
@@ -93,6 +106,16 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
     onSubmit(values);
   };
 
+  const [isVerificationModalVisible, setIsVerificationModalVisible] = useState(false);
+
+  const handleVerificationButtonPress = () => {
+    setIsVerificationModalVisible(true);
+  };
+
+  const handleVerificationModalClose = () => {
+    setIsVerificationModalVisible(false);
+  };
+
   return (
     <RegistFormView>
       <Formik
@@ -107,24 +130,27 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
                   iconName="call-outline"
                   iconStyle={{marginRight: 5}}
                 />
-                <TextInput
-                  value={values.phone}
-                  placeholder="전화번호를 입력해주세요"
-                  placeholderTextColor="#747273"
-                  onChangeText={handleChange('phone')}
-                  onBlur={handleBlur('phone')}
-                  keyboardType="numeric"
-                  style={{color: '#747273'}}
-                />
-                <CustomButton
-                  text="인증하기"
-                  textStyle={{color: 'white', fontSize: 12}}
-                  buttonStyle={{
-                    backgroundColor: '#FFBDC1',
-                    padding: 7,
-                    borderRadius: 3,
-                  }}
-                />
+                <View style={{flex: 1, flexDirection:'row', justifyContent:'space-between'}}>
+                  <TextInput
+                    value={values.phone}
+                    placeholder="전화번호"
+                    placeholderTextColor="grey"
+                    onChangeText={handleChange('phone')}
+                    onBlur={handleBlur('phone')}
+                    keyboardType="numeric"
+                    style={{color: '#747273'}}
+                  />
+                  <CustomButton
+                    text="인증하기"
+                    textStyle={{color: 'white', fontSize: 12}}
+                    buttonStyle={{
+                      backgroundColor: '#FFBDC1',
+                      padding: 7,
+                      borderRadius: 3,
+                    }}
+                    onPress={handleVerificationButtonPress}
+                  />
+                </View>
               </InputView>
               {errors.phone && (
                 <RegistErrorMessage>{errors.phone}</RegistErrorMessage>
@@ -139,10 +165,11 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
                 />
                 <TextInput
                   value={values.name}
-                  placeholder="이름을 입력해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="이름"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
+                  style={{color: '#747273'}}
                 />
               </InputView>
               {errors.name && (
@@ -158,10 +185,11 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
                 />
                 <TextInput
                   value={values.nickname}
-                  placeholder="사용할 닉네임을 입력해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="닉네임"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('nickname')}
                   onBlur={handleBlur('nickname')}
+                  style={{color: '#747273'}}
                 />
               </InputView>
               {errors.nickname && (
@@ -177,11 +205,12 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
                 />
                 <TextInput
                   value={values.password}
-                  placeholder="비밀번호를 입력해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="비밀번호"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
                   secureTextEntry
+                  style={{color: '#747273'}}
                 />
               </InputView>
               {errors.password && (
@@ -197,8 +226,8 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
                 />
                 <TextInput
                   value={values.passwordConfirm}
-                  placeholder="비밀번호를 확인해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="비밀번호 확인"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('passwordConfirm')}
                   onBlur={handleBlur('passwordConfirm')}
                   secureTextEntry
@@ -221,10 +250,9 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
               {/* <RegistFormText>성별</RegistFormText> */}
               <View
                 style={{
-                  width: '40%',
+                  width: '50%',
                   marginTop: 2,
                   marginBottom: 5,
-                  // backgroundColor: 'rgba(255,255,255,0.3)',
                   borderRadius: 10,
                 }}>
                 <Picker
@@ -257,10 +285,11 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
                 />
                 <TextInput
                   value={values.birthDate}
-                  placeholder="생년월일을 입력해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="생년월일"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('birthDate')}
                   onBlur={handleBlur('birthDate')}
+                  style={{color: '#747273'}}
                 />
               </InputView>
               {errors.birthDate && (
@@ -273,13 +302,14 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
                 <CommonIcon
                   iconName="card-outline"
                   iconStyle={{marginRight: 5}}
-                />
+                />                
                 <TextInput
                   value={values.cardNumber}
-                  placeholder="카드 번호를 입력해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="카드 번호"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('cardNumber')}
                   onBlur={handleBlur('cardNumber')}
+                  style={{color: '#747273'}}
                 />
               </InputView>
               {errors.cardNumber && (
@@ -289,19 +319,67 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
 
             <View>
               <InputView>
-                {/* <CommonIcon
-                  iconName="add-outline"
-                  iconStyle={{marginRight: 5}}
-                /> */}
+                <RegistFormText style={{marginRight: 5}}>
+                  카드사
+                </RegistFormText>
+                <View
+                style={{
+                  width: '50%',
+                  marginTop: 2,
+                  marginBottom: 5,
+                  borderRadius: 10,
+                }}>
+                <Picker
+                  selectedValue={values.companyName}
+                  onValueChange={handleChange('companyName')}
+                  style={{color: '#747273'}}>
+                  <Picker.Item style={{fontSize: 13}} label="현대" value="현대" />
+                  <Picker.Item style={{fontSize: 13}} label="신한" value="신한" />
+                  <Picker.Item style={{fontSize: 13}} label="KB국민" value="KB국민" />
+                  <Picker.Item style={{fontSize: 13}} label="롯데" value="롯데" />
+                  <Picker.Item style={{fontSize: 13}} label="하나" value="하나" />
+                  <Picker.Item style={{fontSize: 13}} label="우리" value="우리" />
+                  <Picker.Item style={{fontSize: 13}} label="NH농협" value="NH농협" />
+                  <Picker.Item style={{fontSize: 13}} label="IBK" value="IBK" />
+                </Picker>
+              </View>
+              </InputView>
+              {errors.cvv && (
+                <RegistErrorMessage>{errors.companyName}</RegistErrorMessage>
+              )}
+            </View>
+
+            <View>
+              <InputView>
+                <RegistFormText style={{marginRight: 5}}>
+                  비밀번호
+                </RegistFormText>
+                <TextInput
+                  value={values.cardPassword}
+                  placeholder="카드 비밀번호 앞 두 자리"
+                  placeholderTextColor="grey"
+                  onChangeText={handleChange('cardPassword')}
+                  onBlur={handleBlur('cardPassword')}
+                  style={{color: '#747273'}}
+                />
+              </InputView>
+              {errors.cardPassword && (
+                <RegistErrorMessage>{errors.cardPassword}</RegistErrorMessage>
+              )}
+            </View>
+
+            <View>
+              <InputView>
                 <RegistFormText style={{marginRight: 5}}>
                   CVV/CVC
                 </RegistFormText>
                 <TextInput
                   value={values.cvv}
-                  placeholder="CVV/CVC를 입력해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="CVV/CVC"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('cvv')}
                   onBlur={handleBlur('cvv')}
+                  style={{color: '#747273'}}
                 />
               </InputView>
               {errors.cvv && (
@@ -311,19 +389,16 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
 
             <View>
               <InputView>
-                {/* <CommonIcon
-                  iconName="add-outline"
-                  iconStyle={{marginRight: 5}}
-                /> */}
                 <RegistFormText style={{marginRight: 5}}>
                   유효기간
                 </RegistFormText>
                 <TextInput
                   value={values.cardExp}
-                  placeholder="유효기간을 입력해주세요"
-                  placeholderTextColor="#747273"
+                  placeholder="카드 유효기간"
+                  placeholderTextColor="grey"
                   onChangeText={handleChange('cardExp')}
                   onBlur={handleBlur('cardExp')}
+                  style={{color: '#747273'}}
                 />
               </InputView>
               {errors.cardExp && (
@@ -341,6 +416,11 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit}) => {
           </View>
         )}
       </Formik>
+
+      <VerificationModal
+       isVisible={isVerificationModalVisible}
+       onClose={handleVerificationModalClose}
+      />
     </RegistFormView>
   );
 };
@@ -352,7 +432,6 @@ const RegistFormView = styled(View)`
 `;
 
 const RegistFormText = styled(Text)`
-  // font-family: SeoulNamsanM,
   font-size: 12px;
   color: grey;
 `;

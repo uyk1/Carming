@@ -42,15 +42,16 @@ const VerificationModal = ({isVisible, onClose}: VerificationModalProps) => {
             borderRadius: 5,
             padding: 20,
           }}>
-          <Text style={{fontWeight: 'bold', fontSize: 18, marginBottom: 10}}>
+          <Text style={{fontFamily:'SeoulNamsanB', fontSize: 18, marginBottom: 10}}>
             인증번호 입력
           </Text>
           <TextInput
             style={{
-              borderWidth: 1,
+              borderWidth: 0.5,
               borderRadius: 5,
-              padding: 10,
+              padding: 5,
               marginBottom: 10,
+              textAlign: 'center'
             }}
             value={verificationCode}
             onChangeText={handleVerificationCodeChange}
@@ -59,28 +60,31 @@ const VerificationModal = ({isVisible, onClose}: VerificationModalProps) => {
           <View
             style={{
               flexDirection: 'row',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-end',
+              gap: 10
             }}>
-            <TouchableOpacity
-              onPress={handleCancel}
-              style={{
-                backgroundColor: '#a5a5a5',
-                padding: 10,
-                borderRadius: 5,
-                alignItems: 'center',
-              }}>
-              <Text style={{color: '#fff', fontWeight: 'bold'}}>취소</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleVerificationCodeSubmit}
-              style={{
-                backgroundColor: '#FFBDC1',
-                padding: 10,
-                borderRadius: 5,
-                alignItems: 'center',
-              }}>
-              <Text style={{color: '#fff', fontWeight: 'bold'}}>확인</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleVerificationCodeSubmit}
+                style={{
+                  backgroundColor: '#FFBDC1',
+                  paddingHorizontal: 15,
+                  padding: 7,
+                  borderRadius: 5,
+                  alignItems: 'center',
+                }}>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>확인</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleCancel}
+                style={{
+                  backgroundColor: '#a5a5a5',
+                  paddingHorizontal: 15,
+                  padding: 7,
+                  borderRadius: 5,
+                  alignItems: 'center',
+                }}>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>취소</Text>
+              </TouchableOpacity>
           </View>
         </View>
       </View>

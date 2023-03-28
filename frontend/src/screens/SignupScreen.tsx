@@ -1,4 +1,5 @@
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useState } from 'react';
 import {ImageBackground, Text, View, Image, StyleSheet, KeyboardAvoidingView, ScrollView} from 'react-native';
 import styled from 'styled-components';
 import BackButton from '../components/BackButton';
