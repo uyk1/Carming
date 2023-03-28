@@ -1,14 +1,7 @@
 import React, {useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
-import {Formik, Form, Field, ErrorMessage} from 'formik';
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  KeyboardAvoidingView,
-  ScrollView,
-} from 'react-native';
+import {Formik} from 'formik';
+import {View, Text, TextInput, Button} from 'react-native';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import CommonIcon from './CommonIcon';
