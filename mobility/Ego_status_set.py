@@ -62,6 +62,7 @@ class get_Ego_Status:
         self.is_Ego_data_received = True
         ## 시뮬레이터상에서 나타나는 속도 단위는 km/h
         ## ros를 통해 받는 속도 단위는 m/s
+        ## 최대값을 60 / 커브에서는 50 - skeleton2 velocity_planning 함수 확인
         self.current_velocity_x = Ego_data.velocity.x
         self.current_acceleration = Ego_data.acceleration.x
         ## brake잡은 경우 1 안잡은 경우 0
