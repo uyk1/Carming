@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: naver-sms-local.properties
+
   datasource:
     url: jdbc:mysql://localhost:3306/carming?serverTimezone=UTC&characterEncoding=UTF-8
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -26,3 +29,8 @@ spring:
       pageable:
         one-indexed-parameters: true
 
+## naver-sms
+#key:
+#  service: ncp:sms:kr:297853391013:carming
+#  access: cAeEXzNhz9oRCqJJJlcr
+#  secret: lKl7HkNpeuwjP9U6W6FIZJxja5edE4mLMY4fFimj
