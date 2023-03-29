@@ -50,8 +50,6 @@ class SplitFactoryTest {
         strings.stream().map(Long::valueOf)
                 .collect(Collectors.toList());
         long map = System.currentTimeMillis() - start_map;
-
-        
     }
 
     private List<String> getStringList(int size) {
