@@ -3,6 +3,7 @@ import threading
 import os
 import sys
 import socket
+import RPi.GPIO as GPIO
 from Door_ServoMotor import openclose
 from DC_motor import DC_MOTOR
 import redis
@@ -18,6 +19,11 @@ class main():
     while True:
         ## 속도 b'1.4650933742523193' 형태로 출력
         current_velocity = redis_client.get('current_velocity')
+
+        ## 모터의 출력율로 변환 (대충 20이하의 값이 나오므로 5배 처리)
+        ## drive 함수에 해당 값을 인수로 넣어서 하면 된다.
+        speed = 5 * current_velocity
+
         ## 정지 b'1.0' 형태로 출력
         current_brake = redis_client.get('current_brake')
         ## destination = redis_client.get('destination')
