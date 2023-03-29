@@ -6,13 +6,15 @@ import Carousel from 'react-native-snap-carousel-v4';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import styled from 'styled-components/native';
-import {Place, Category} from '../types';
+import {Place, Category, Tag} from '../types';
 import PlaceRecommendCard from '../components/PlaceRecommendCard';
 import CustomButton from '../components/CustomButton';
 import TagChip from '../components/TagChip';
 import {RootState} from '../redux/store';
 import {
+  addCheckedTag,
   addPlaceToPlaceCart,
+  deleteCheckedTag,
   deletePlaceFromPlaceCartById,
   selectCategory,
 } from '../redux/slices/placeSlice';
@@ -24,18 +26,14 @@ const PlacesRecommendScreen = () => {
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
 
-  const {placeList, placeCart, category} = useSelector(
+  const {placeList, placeCart, placeTagList, checkedTagList} = useSelector(
     (state: RootState) => state.place,
   );
-  const {tagList} = useSelector((state: RootState) => state.tag);
 
-  const [checkedTagIdList, setCheckedTagIdList] = useState<number[]>([]);
-
-  const tagPressed = (tagId: number) => {
-    checkedTagIdList.includes(tagId)
-      ? checkedTagIdList.splice(checkedTagIdList.indexOf(tagId), 1)
-      : checkedTagIdList.push(tagId);
-    setCheckedTagIdList([...checkedTagIdList]);
+  const tagPressed = (tag: Tag) => {
+    checkedTagList.includes(tag)
+      ? dispatch(deleteCheckedTag(tag))
+      : dispatch(addCheckedTag(tag));
   };
 
   const placeAddBtnPressed = () => {
@@ -44,7 +42,7 @@ const PlacesRecommendScreen = () => {
     dispatch(addPlaceToPlaceCart(place));
   };
 
-  const cancelPlaceCartItemById = (placeId: number) => {
+  const placeCancelBtnPressed = (placeId: number) => {
     dispatch(deletePlaceFromPlaceCartById(placeId));
   };
 
@@ -75,15 +73,15 @@ const PlacesRecommendScreen = () => {
             rowTextStyle={styles.dropdown2RowTxtStyle}
           />
         </View>
-        {tagList.map(tag => {
+        {placeTagList.map(tag => {
           return (
             <TagChip
               key={tag.id}
               style={{marginLeft: 5}}
               text={tag.name}
-              selected={checkedTagIdList.includes(tag.id)}
+              selected={checkedTagList.includes(tag)}
               selectedBackgroundColor={theme.colors.secondary}
-              onPress={() => tagPressed(tag.id)}
+              onPress={() => tagPressed(tag)}
             />
           );
         })}
@@ -123,7 +121,7 @@ const PlacesRecommendScreen = () => {
                   icon="close-circle"
                   iconColor={theme.colors.background}
                   size={15}
-                  onPress={() => cancelPlaceCartItemById(place.id)}
+                  onPress={() => placeCancelBtnPressed(place.id)}
                 />
               </View>
             </Tooltip>
