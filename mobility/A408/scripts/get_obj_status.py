@@ -5,6 +5,8 @@ import os
 import rospy
 from morai_msgs.msg import ObjectStatusList
 
+
+## GT값의 장애물 정보를 바탕으로 움직이게 될 함수
 # Obj_status_listener 는 시뮬레이터에서 송신하는 Object 정보를 Subscriber 하는 예제 입니다.
 # 시뮬레이터 내 Object 정보인 /Object_topic 라는 메세지를 Subscribe 합니다.
 
