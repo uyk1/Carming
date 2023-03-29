@@ -1,23 +1,25 @@
-import {LoginRequestPayload} from '../types/LoginRequestPayload';
-import {LoginResponsePayload} from '../types/LoginResponsePayload';
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
+import {REACT_APP_API_URL} from '@env';
 
-const API_URL = 'http://api.example.com'; // API 기본 URL 설정
+const apiUrl: string = REACT_APP_API_URL;
 
-export const memberRegistApi = async (
-  payload: LoginRequestPayload,
-): Promise<LoginResponsePayload> => {
-  const response = await fetch(`${API_URL}/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+export const memberRegistApi = createApi({
+  reducerPath: 'memberRegistApi',
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${apiUrl}`,
+  }),
+  endpoints: builder => ({
+    signup: builder.mutation({
+      query: member => ({
+        url: '/member/signup',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: member,
+      }),
+    }),
+  }),
+});
 
-  if (!response.ok) {
-    const errorResponse = await response.json();
-    throw new Error(errorResponse.message);
-  }
-
-  return response.json();
-};
+export const {useSignupMutation} = memberRegistApi;

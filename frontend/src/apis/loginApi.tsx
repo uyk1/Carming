@@ -11,10 +11,7 @@ export const loginApi = async (
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({
-      phoneNumber: payload.phone,
-      password: payload.password,
-    }),
+    body: JSON.stringify(payload),
   });
 
   console.log(response);
