@@ -15,6 +15,7 @@ import MemberRegistForm, {
   RegistFormValues,
 } from '../components/MemberRegistForm';
 import {L2_LandingStackParamList} from '../navigations/L2_LandingStackNavigator';
+import {RegistRequestPayload} from '../types/RegistRequestPayload';
 
 type SignupScreenNavigationProp = NavigationProp<
   L2_LandingStackParamList,
@@ -26,7 +27,7 @@ const SignupScreen = () => {
   const [signup, {isLoading}] = useSignupMutation();
 
   const handleSubmit = (data: RegistFormValues) => {
-    const newMember = {
+    const newMember: RegistRequestPayload = {
       phone: data.phone,
       name: data.name,
       nickname: data.nickname,

@@ -6,9 +6,11 @@ export type RegistRequestPayload = {
   passwordConfirm: string;
   gender: string;
   birthDate: string;
-  cardNumber: string;
-  companyName: string;
-  cardPassword: string;
-  cvv: string;
-  cardExp: string;
+  card: {
+    cardNumber: string;
+    companyName: string;
+    cardPassword: string;
+    cvv: string;
+    cardExp: string;
+  };
 };
