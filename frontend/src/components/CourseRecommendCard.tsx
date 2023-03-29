@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import {View} from 'react-native';
 import styled from 'styled-components';
 import {Coordinate, Course} from '../types';
@@ -15,12 +15,10 @@ interface CourseRecommendCardProps {
 
 const CourseRecommendCard: React.FC<CourseRecommendCardProps> = ({item}) => {
   const {course, isActive} = item;
-  console.log(course);
   const coordinates = course.places.map<Coordinate>(place => {
     return {latitude: place.lat, longitude: place.lon};
   });
   const {midLat, midLon, latDelta, lonDelta} = calcCoordinates(coordinates);
-  console.log('isactive: ', isActive);
   return (
     <CardContainer pointerEvents="none">
       {isActive ? (

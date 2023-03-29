@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from 'react';
+import {useRef} from 'react';
 import {Dimensions, StyleSheet, View} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {Avatar, IconButton, Tooltip, useTheme} from 'react-native-paper';
@@ -37,8 +37,7 @@ const PlacesRecommendScreen = () => {
   };
 
   const placeAddBtnPressed = () => {
-    const place: Place =
-      carouselRef.current.props.data[carouselRef.current._activeItem];
+    const place: Place = placeList[carouselRef.current._activeItem];
     dispatch(addPlaceToPlaceCart(place));
   };
 
@@ -137,7 +136,7 @@ const PlacesRecommendScreen = () => {
             borderRadius: 30,
             backgroundColor: theme.colors.surfaceVariant,
           }}
-          textStyle={{fontWeight: 900, fontSize: 16, textAlign: 'center'}}
+          textStyle={{fontWeight: 'bold', fontSize: 16, textAlign: 'center'}}
         />
       </StyledView>
     </>

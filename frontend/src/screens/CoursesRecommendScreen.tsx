@@ -4,50 +4,50 @@ import {Avatar, IconButton, Tooltip, useTheme} from 'react-native-paper';
 import {useEffect, useRef, useState} from 'react';
 import Carousel from 'react-native-snap-carousel-v4';
 import CourseRecommendCard from '../components/CourseRecommendCard';
-import {Dimensions, StyleSheet, View} from 'react-native';
-import {Place, Tag} from '../types';
+import {Dimensions, View} from 'react-native';
+import {Course, Tag} from '../types';
 import CustomButton from '../components/CustomButton';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
+import {
+  addCheckedTag,
+  deleteCheckedTag,
+  deletePlaceFromCourseCartById,
+  setCourseToCourseCart,
+} from '../redux/slices/courseSlice';
 
 const {width: screenWidth} = Dimensions.get('window');
 
 const CoursesRecommendScreen = () => {
   const theme = useTheme();
-  const carouselRef = useRef<any>(null);
   const dispatch = useDispatch();
+  const carouselRef = useRef<any>(null);
 
   const {courseList, courseCart, courseTagList, checkedTagList} = useSelector(
     (state: RootState) => state.course,
   );
-  const [carouselIdx, setCarouselIdx] = useState<number>(0);
   const [carouselData, setCarouselData] = useState<any[]>([]);
 
   useEffect(() => {
-    makeActiveMapList(0);
+    makeCarouselData(0);
   }, []);
 
   const tagPressed = (tag: Tag) => {
-    // checkedTagList.includes(tagId)
-    //   ? checkedTagList.splice(checkedTagList.indexOf(tagId), 1)
-    //   : checkedTagList.push(tagId);
-    // setCheckedTagIdList([...checkedTagList]);
+    checkedTagList.includes(tag)
+      ? dispatch(deleteCheckedTag(tag))
+      : dispatch(addCheckedTag(tag));
   };
 
   const courseAddBtnPressed = () => {
-    // const place: Place =
-    //   carouselRef.current.props.data[carouselRef.current._activeItem];
-    // addPlaceCartItemById(place.id);
+    const course: Course = courseList[carouselRef.current._activeItem];
+    dispatch(setCourseToCourseCart(course));
   };
 
   const canclePlaceBtnPressed = (placeId: number) => {
-    // const idx = courseCart.map(place => place.id).indexOf(placeId);
-    // const cart = [...courseCart];
-    // cart.splice(idx, 1);
-    // setPlaceCart([...cart]);
+    dispatch(deletePlaceFromCourseCartById(placeId));
   };
 
-  const makeActiveMapList = (index: number) => {
+  const makeCarouselData = (index: number) => {
     const tmpList: any[] = courseList.map((course, idx) => {
       return {course: course, isActive: idx === index};
     });
@@ -86,7 +86,7 @@ const CoursesRecommendScreen = () => {
         useScrollView={true}
         onScrollIndexChanged={index => {
           console.log('carouselRef', carouselRef.current._activeItem, index);
-          makeActiveMapList(index);
+          makeCarouselData(index);
         }}
       />
       <StyledView style={{justifyContent: 'center'}}>
