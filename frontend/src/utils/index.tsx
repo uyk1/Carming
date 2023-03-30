@@ -1,4 +1,4 @@
-import {Coordinate} from '../types';
+import {Coordinate, Course, Place} from '../types';
 
 const calcRating = (sum: number, count: number) => {
   return Math.round((sum / count) * 10) / 10;
@@ -38,15 +38,24 @@ const calcDist = (meter: number): number => {
 };
 
 const pathToCoordinates = (path: any[]): Coordinate[] => {
-  path.map((coordinate: any[]): Coordinate => {
+  return path.map((coordinate: any[]): Coordinate => {
     return {longitude: coordinate[0], latitude: coordinate[1]};
   });
 };
+
 const placesToCoordinates = (places: Place[]): Coordinate[] => {
-  places.map<Coordinate>(place => {
+  return places.map<Coordinate>(place => {
     return {latitude: place.lat, longitude: place.lon};
   });
 };
+
+function isPlace(arg: any): arg is Place {
+  return (arg.lon !== undefined && arg.lat !== undefined);
+}
+
+function isCourse(arg: any): arg is Course {
+  return (arg.places !== undefined);
+}
 
 export {
   calcRating,
@@ -55,4 +64,5 @@ export {
   calcDist,
   pathToCoordinates,
   placesToCoordinates,
+  isPlace,
 };
