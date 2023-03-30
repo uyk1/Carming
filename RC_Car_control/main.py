@@ -47,7 +47,7 @@ class main():
 	    drive_start = redis_client.get('drive_start')
             if drive_start == '1':
                 tts.synthesize_text("안전벨트를 매주세요! 출발하겠습니다~")
-
+            
             destination = redis_client.get('destination')
             if destination == '1':
                 tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
