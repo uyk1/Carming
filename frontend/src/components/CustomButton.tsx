@@ -31,6 +31,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     <TouchableOpacity
       style={[styles.button, buttonStyle]}
       onPress={handlePress}
+      activeOpacity={0.7}
       disabled={disabled}>
       <Text style={[styles.text, textStyle]}> {text} </Text>
     </TouchableOpacity>
@@ -40,11 +41,15 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     backgroundColor: 'black',
-    padding: 16,
-    margin: 10,
-    borderRadius: 8,
+    borderRadius: 3,
+    alignItems: 'center',
+    elevation: 4,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   text: {
+    fontFamily: 'SeoulNamsanM',
     color: 'white',
     fontSize: 24,
   },

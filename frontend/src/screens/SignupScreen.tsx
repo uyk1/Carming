@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     marginBottom: '20%',
   },
   signUpText: {
+    fontFamily:"SeoulNamsanM",
     color: 'white',
     fontSize: 12,
   },
