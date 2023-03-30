@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import rospy
 from morai_msgs.msg import CtrlCmd, CollisionData, EgoVehicleStatus, EventInfo
@@ -62,8 +62,6 @@ class s_drive():
             else:
                 self.send_ctrl_cmd(0, 10)
                 self.rate.sleep()
-                
-            self.send_gear_cmd(Gear.D.value)
             
             
 
@@ -114,5 +112,4 @@ if __name__ == '__main__':
         s_d = s_drive()
     except rospy.ROSInterruptException:
         pass
-
 
