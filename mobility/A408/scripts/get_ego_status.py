@@ -37,7 +37,6 @@ class get_Ego_Status:
                 print("Ego_data was just written to Redis_storage")
 
                 ## 데이터 저장하기
-                redis_client.set('Ego_name', self.name)
                 redis_client.set('current_acceleration', self.current_acceleration)
                 redis_client.set('current_brake', self.current_brake)
                 redis_client.set('current_position_x', self.current_position_x)
