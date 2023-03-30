@@ -27,4 +27,14 @@ const calcCoordinates = (coordinates: Coordinate[]) => {
   return {maxLat, midLat, minLat, maxLon, midLon, minLon, latDelta, lonDelta};
 };
 
-export {calcRating, calcCoordinates};
+const calcTime = (millisec: number): {hour: number; minute: number} => {
+  const hour = Math.floor(millisec / 3600000);
+  const minute = Math.floor((millisec % 3600000) / 60000);
+  return {hour, minute};
+};
+
+const calcDist = (meter: number): number => {
+  return Math.round(meter / 100) / 10;
+};
+
+export {calcRating, calcCoordinates, calcTime, calcDist};
