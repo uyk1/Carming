@@ -6,6 +6,8 @@ import com.carming.backend.member.domain.valid.AuthenticationInfo;
 import com.carming.backend.member.dto.request.AuthNumbersDto;
 import com.carming.backend.member.dto.request.PhoneNumberDto;
 import com.carming.backend.member.exception.InvalidAuthRequest;
+import com.carming.backend.member.exception.MemberAlreadySigned;
+import com.carming.backend.member.repository.MemberRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +28,15 @@ public class AuthNumbersService {
 
     private final StringRedisTemplate redisTemplate;
 
+    private final MemberRepository memberRepository;
+
     @Transactional
     public String saveAuthNumbers(PhoneNumberDto request) {
         String phoneNumber = request.getPhoneNumber();
+        if (memberRepository.findByPhone(request.getPhoneNumber()).isPresent()) {
+            throw new MemberAlreadySigned();
+        }
+
         String authNumbers = AuthNumberFactory.createValidNumbers().getAuthNumbers();
         String authenticationInfo = JsonMapper.toJson(new AuthenticationInfo(authNumbers, false));
 
