@@ -37,4 +37,22 @@ const calcDist = (meter: number): number => {
   return Math.round(meter / 100) / 10;
 };
 
-export {calcRating, calcCoordinates, calcTime, calcDist};
+const pathToCoordinates = (path: any[]): Coordinate[] => {
+  path.map((coordinate: any[]): Coordinate => {
+    return {longitude: coordinate[0], latitude: coordinate[1]};
+  });
+};
+const placesToCoordinates = (places: Place[]): Coordinate[] => {
+  places.map<Coordinate>(place => {
+    return {latitude: place.lat, longitude: place.lon};
+  });
+};
+
+export {
+  calcRating,
+  calcCoordinates,
+  calcTime,
+  calcDist,
+  pathToCoordinates,
+  placesToCoordinates,
+};

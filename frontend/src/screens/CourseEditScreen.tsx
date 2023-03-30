@@ -1,12 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import {
-  Dimensions,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {useSelector} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {IconButton, useTheme} from 'react-native-paper';
 import LinearGradient from 'react-native-linear-gradient';
@@ -16,19 +10,12 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {Coordinate, Place} from '../types';
 import {RootState} from '../redux/store';
 import DraggableFlatList from 'react-native-draggable-flatlist';
-import {
-  CourseEditListItem,
-  CustomButton,
-  CustomMapView,
-  MapMarker,
-  MapPolyline,
-} from '../components';
+import {CourseEditListItem, CustomButton, CustomMapView} from '../components';
 import {CompositeScreenProps} from '@react-navigation/native';
 import {L3_TotalJourneyStackParamList} from '../navigations/L3_TotalJourneyStackNavigator';
 import {ReactNativeModal as Modal} from 'react-native-modal';
-import MapView from 'react-native-maps';
-import {calcCoordinates, calcDist, calcTime} from '../utils';
-import axios from 'axios';
+import {calcTime, pathToCoordinates, placesToCoordinates} from '../utils';
+import {callNaverDirectionApi} from '../apis/mapApi';
 
 export type CourseEditScreenProps = CompositeScreenProps<
   NativeStackScreenProps<L4_CourseCreateStackParamList, 'CourseEdit'>,
@@ -42,23 +29,17 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
   route,
 }) => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const placeCart = useSelector((state: RootState) => state.place.placeCart);
   const courseCart = useSelector((state: RootState) => state.course.courseCart);
 
   const [coursePlaces, setCoursePlaces] = useState<Place[]>([]);
   const [routeModalVisible, setRouteModalVisible] = useState<boolean>(false);
   const [placeCoordinates, setPlaceCoordinates] = useState<Coordinate[]>([]);
-  const [coordinateInfo, setCoordinateInfo] = useState<any>({});
   const [routeCoordinates, setRouteCoordinates] = useState<Coordinate[]>([]);
   const [routeInfo, setRouteInfo] = useState<any>({});
 
   useEffect(() => {
-    const coordinateList = coursePlaces.map<Coordinate>(place => {
-      return {latitude: place.lat, longitude: place.lon};
-    });
-    setPlaceCoordinates(coordinateList);
-    setCoordinateInfo(calcCoordinates(coordinateList));
+    setPlaceCoordinates(placesToCoordinates(coursePlaces));
   }, [coursePlaces]);
 
   useEffect(() => {
@@ -67,24 +48,8 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
       : setCoursePlaces([...courseCart]);
   }, [placeCart, courseCart, route]);
 
-  const callNaverApi = () => {
-    const start = `${placeCoordinates[0].longitude},${placeCoordinates[0].latitude}`;
-    const end = `${placeCoordinates[placeCoordinates.length - 1].longitude},${
-      placeCoordinates[placeCoordinates.length - 1].latitude
-    }`;
-    const waypoints = placeCoordinates
-      .slice(1, placeCoordinates.length - 2)
-      .reduce((prev, curr) => prev + `${curr.longitude},${curr.latitude}`, '');
-    axios
-      .get(
-        `https://naveropenapi.apigw.ntruss.com/map-direction-15/v1/driving?start=${start}&goal=${end}&waypoints=${waypoints}`,
-        {
-          headers: {
-            'X-NCP-APIGW-API-KEY-ID': '9zcu207bzs',
-            'X-NCP-APIGW-API-KEY': 'Sa1cNjNkp70zrMBtjxannzf1rcI94Wh905saO9LI',
-          },
-        },
-      )
+  const calcRoute = async () => {
+    await callNaverDirectionApi(placeCoordinates)
       .then(res => {
         const {summary, path} = res.data.route.traoptimal[0];
         setRouteCoordinates(pathToCoordinates(path));
@@ -92,11 +57,6 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
       })
       .catch(err => console.log('error :', err));
   };
-
-  const pathToCoordinates = (path: any[]): Coordinate[] =>
-    path.map((coordinate: any[]): Coordinate => {
-      return {longitude: coordinate[0], latitude: coordinate[1]};
-    });
 
   return (
     <GradientBackground colors={['#70558e7a', '#df94c283', '#ffbdc1b0']}>
@@ -131,7 +91,7 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
           <CustomButton
             text={'경로 계산하기'}
             onPress={async () => {
-              await callNaverApi();
+              await calcRoute();
               setRouteModalVisible(true);
             }}
             buttonStyle={{
