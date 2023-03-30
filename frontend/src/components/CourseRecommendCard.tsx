@@ -1,6 +1,7 @@
 import React from 'react';
 import {View} from 'react-native';
 import styled from 'styled-components';
+import { RecommendCardDesc } from '.';
 import {Course} from '../types';
 import CustomMapView from './CustomMapView';
 
@@ -10,7 +11,7 @@ interface CourseRecommendCardProps {
   onPress?: () => void;
 }
 
-const CourseRecommendCard: React.FC<CourseRecommendCardProps> = ({item}) => {
+const CourseRecommendCard: React.FC<CourseRecommendCardProps> = ({item, index}) => {
   const {course, isActive} = item;
   return (
     <CardContainer pointerEvents="none">
@@ -19,6 +20,7 @@ const CourseRecommendCard: React.FC<CourseRecommendCardProps> = ({item}) => {
       ) : (
         <View style={{flex: 1, backgroundColor: 'black'}}></View>
       )}
+      <RecommendCardDesc item={item.course} index={index} />
     </CardContainer>
   );
 };
