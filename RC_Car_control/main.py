@@ -9,6 +9,8 @@ from DC_motor import DC_MOTOR
 from servo_motor import SERVO_MOTOR
 import redis
 import re
+import tts
+
 
 class main():
     def __init__(self):
@@ -41,8 +43,21 @@ class main():
             ## destination = redis_client.get('destination')
             current_gear = redis_client.get('current_gear')
             print('current_gear : ', current_gear)
+	    
+	    drive_start = redis_client.get('drive_start')
+            if drive_start == '1':
+                tts.synthesize_text("안전벨트를 매주세요! 출발하겠습니다~")
 
+            destination = redis_client.get('destination')
+            if destination == '1':
+                tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
+                # 1분뒤에 문열림
+                time.sleep(60)
+                openclose()
+                
+                
             time.sleep(0.1)
+            
             
             self.dc_motor.drive(speed)  # DC_MOTOR 객체의 drive 함수 호출
             
