@@ -43,14 +43,14 @@ public class AuthNumbersService {
         if (!StringUtils.hasText(authenticationInfo)) {
             throw new InvalidAuthRequest();
         }
-        saveAuthenticationInfo(phoneNumber, authenticationInfo, 30000L);
+        saveAuthenticationInfo(phoneNumber, authenticationInfo, 3L);
         return authNumbers;
     }
 
 
     public String validAuthNumbers(AuthNumbersDto request) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        String json = operations.get(request.getPhoneNumber());
+        String json = operations.get(request.getPhoneNumber()); //잘못 입력할 수도 있으니, getAndDelete 가 아닌 get
         AuthenticationInfo authentication = JsonMapper.toClass(json, AuthenticationInfo.class);
 
         String requestAuthNumbers = request.getAuthNumber();
