@@ -42,6 +42,7 @@ class get_Ego_Status:
                 redis_client.set('current_position_x', self.current_position_x)
                 redis_client.set('current_position_y', self.current_position_y)
                 redis_client.set('current_velocity', self.current_velocity_x)
+		redis_client.set('wheel_angle', self.wheel_angle)
 
             else:
                 print("waiting for Ego data...")
