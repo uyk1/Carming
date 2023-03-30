@@ -1,7 +1,7 @@
 import {useRef} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {Avatar, IconButton, Tooltip, useTheme} from 'react-native-paper';
+import {ActivityIndicator, Avatar, IconButton, Tooltip, useTheme} from 'react-native-paper';
 import Carousel from 'react-native-snap-carousel-v4';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -17,6 +17,7 @@ import {
   deletePlaceFromPlaceCartById,
   selectCategory,
 } from '../redux/slices/placeSlice';
+import { useGetPlacesQuery } from '../apis/placeApi';
 
 interface PlacesRecommendScreenScreenProps {}
 
@@ -27,9 +28,11 @@ const PlacesRecommendScreen: React.FC<
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
 
-  const {placeList, placeCart, placeTagList, checkedTagList} = useSelector(
+
+  const {placeCart, placeTagList, checkedTagList, selectedCategory} = useSelector(
     (state: RootState) => state.place,
-  );
+    );
+  const { data: places, error, isLoading, isError, isSuccess } = useGetPlacesQuery({regions: ['마포구'], category: selectedCategory, size: 10});
 
   const tagPressed = (tag: Tag) => {
     checkedTagList.includes(tag)
@@ -38,13 +41,37 @@ const PlacesRecommendScreen: React.FC<
   };
 
   const placeAddBtnPressed = () => {
-    const place: Place = placeList[carouselRef.current._activeItem];
-    dispatch(addPlaceToPlaceCart(place));
+    if(places){
+      const place: Place = places[carouselRef.current._activeItem];
+      dispatch(addPlaceToPlaceCart(place))
+    };
   };
 
   const placeCancelBtnPressed = (placeId: number) => {
     dispatch(deletePlaceFromPlaceCartById(placeId));
   };
+
+  const carouselSection = () => {
+    console.log("get places data ::",places);
+    console.log("get places error ::", error);
+    if(isLoading) return <CenterView><ActivityIndicator size={'large'} animating={true} color={theme.colors.onPrimary}/></CenterView>
+    if(isError) return <CenterView><Text style={{fontSize: 40}}>😭</Text></CenterView>
+    if(isSuccess) return (
+      <Carousel
+        style={{flex: 1}}
+        layout={'default'}
+        vertical={false}
+        layoutCardOffset={9}
+        ref={carouselRef}
+        data={places}
+        renderItem={PlaceRecommendCard}
+        sliderWidth={screenWidth}
+        itemWidth={screenWidth - 80}
+        inactiveSlideShift={0}
+        useScrollView={true}
+      />
+    )
+  }
 
   return (
     <>
@@ -87,19 +114,7 @@ const PlacesRecommendScreen: React.FC<
         })}
       </StyledView>
 
-      <Carousel
-        style={{flex: 1}}
-        layout={'default'}
-        vertical={false}
-        layoutCardOffset={9}
-        ref={carouselRef}
-        data={placeList}
-        renderItem={PlaceRecommendCard}
-        sliderWidth={screenWidth}
-        itemWidth={screenWidth - 80}
-        inactiveSlideShift={0}
-        useScrollView={true}
-      />
+      {carouselSection()}
 
       <StyledView style={{justifyContent: 'center'}}>
         <IconButton
@@ -140,6 +155,12 @@ const StyledView = styled(View)`
   padding-left: 20px;
   padding-right: 20px;
 `;
+
+const CenterView = styled(View)`
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+`
 
 const styles = StyleSheet.create({
   dropdown2BtnStyle: {
