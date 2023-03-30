@@ -1,13 +1,16 @@
 import React, {useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
 import {Formik} from 'formik';
-import {View, Text, TextInput, Button} from 'react-native';
+import {View, Text, TextInput, Button, Alert} from 'react-native';
 import styled from 'styled-components';
 import * as Yup from 'yup';
 import CommonIcon from './CommonIcon';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomButton from './CustomButton';
 import VerificationModal from './VerificationModal';
+import {useVerifyStartMutation} from '../apis/memberRegistApi';
+import {useSelector} from 'react-redux';
+import {RootState} from '../redux/store';
 
 export type RegistFormValues = {
   phone: string;
@@ -96,24 +99,58 @@ const RegistSchema = Yup.object().shape({
     .max(3, 'CVV/CVC는 3자리여야 합니다.'),
   cardExp: Yup.string()
     // .required('필수 항목입니다.')
-    .matches(/^[0-12]{2}\/[23-99]{2}$/, 'MM/YY 형식으로 입력해주세요.'),
+    .matches(/^[0-1][0-9]\/[23-99]{2}$/, 'MM/YY 형식으로 입력해주세요.'),
 });
 
 export type RegistFormProps = {
   onSubmit: (values: RegistFormValues) => void;
-  isLoading: boolean;
+  isSignupLoading: boolean;
 };
 
-const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isLoading}) => {
-  const handleSubmit = (values: RegistFormValues) => {
-    onSubmit(values);
-  };
-
+const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
   const [isVerificationModalVisible, setIsVerificationModalVisible] =
     useState(false);
 
-  const handleVerificationButtonPress = () => {
-    setIsVerificationModalVisible(true);
+  const [VerificationModalPropsPhone, setVerificationModalPropsPhone] =
+    useState('');
+
+  const isVerified = useSelector((state: RootState) => state.auth.isVerified); //전화번호가 인증된 상태인지 확인
+
+  const [verifyStart, {isLoading}] = useVerifyStartMutation();
+
+  const handleSubmit = async (values: RegistFormValues) => {
+    if (!isVerified) Alert.alert('전화번호를 인증해주세요');
+    else {
+      await RegistSchema.validate(values, {abortEarly: false})
+        .then(() => onSubmit(values))
+        .catch(error => {
+          const errorList = {};
+          if (error.inner) {
+            error.inner.forEach(err => {
+              errorList[err.path] = err.message;
+            });
+          } // 검증 오류 메시지를 문자열로 변환
+          // const errorString = Object.entries(errorList)
+          //   .map(([key, value]) => `${key}: ${value}`)
+          //   .join('\n');
+          Alert.alert('회원가입 양식을 다시 확인해주세요.');
+          console.log(errorList);
+        });
+    }
+  };
+
+  const handleVerificationButtonPress = (phone: string) => {
+    const data = {phoneNumber: phone};
+    verifyStart(data)
+      .unwrap()
+      .then(response => {
+        console.log(response);
+        setIsVerificationModalVisible(true);
+      })
+      .catch(error => {
+        console.log(JSON.stringify(error));
+        Alert.alert('유효한 전화번호가 아닙니다.');
+      });
   };
 
   const handleVerificationModalClose = () => {
@@ -157,7 +194,12 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isLoading}) => {
                       padding: 7,
                       borderRadius: 3,
                     }}
-                    onPress={handleVerificationButtonPress}
+                    onPress={() => {
+                      // VerificationModal 컴포넌트에 필요한 값을 전달
+                      setVerificationModalPropsPhone(values.phone);
+                      handleVerificationButtonPress(values.phone);
+                    }}
+                    disabled={isLoading || isVerified}
                   />
                 </View>
               </InputView>
@@ -456,7 +498,7 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isLoading}) => {
                 title="회원가입"
                 color={'#FFBDC1'}
                 onPress={handleSubmit}
-                disabled={isLoading}
+                disabled={isSignupLoading}
               />
             </View>
           </View>
@@ -466,6 +508,7 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isLoading}) => {
       <VerificationModal
         isVisible={isVerificationModalVisible}
         onClose={handleVerificationModalClose}
+        phone={VerificationModalPropsPhone}
       />
     </RegistFormView>
   );

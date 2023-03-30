@@ -15,7 +15,9 @@ import MemberRegistForm, {
   RegistFormValues,
 } from '../components/MemberRegistForm';
 import {L2_LandingStackParamList} from '../navigations/L2_LandingStackNavigator';
+import {verifyInitialize} from '../redux/slices/authSlice';
 import {RegistRequestPayload} from '../types/RegistRequestPayload';
+import {useDispatch} from 'react-redux';
 
 type SignupScreenNavigationProp = NavigationProp<
   L2_LandingStackParamList,
@@ -25,6 +27,7 @@ type SignupScreenNavigationProp = NavigationProp<
 const SignupScreen = () => {
   const navigation = useNavigation<SignupScreenNavigationProp>();
   const [signup, {isLoading}] = useSignupMutation();
+  const dispatch = useDispatch();
 
   const handleSubmit = (data: RegistFormValues) => {
     const newMember: RegistRequestPayload = {
@@ -49,11 +52,13 @@ const SignupScreen = () => {
       .unwrap()
       .then(response => {
         console.log(response);
+        dispatch(verifyInitialize());
         Alert.alert('회원가입이 완료되었습니다.');
+        navigation.navigate('Login');
       })
       .catch(error => {
         console.log(JSON.stringify(error));
-        Alert.alert(`회원가입에 실패했습니다. ${JSON.stringify(error)}`);
+        Alert.alert('회원가입에 실패했습니다.');
       });
     // Handle form submission logic here
   };
@@ -76,7 +81,10 @@ const SignupScreen = () => {
                 style={{height: 30, width: 114, resizeMode: 'contain'}}
               />
             </View>
-            <MemberRegistForm onSubmit={handleSubmit} isLoading={isLoading} />
+            <MemberRegistForm
+              onSubmit={handleSubmit}
+              isSignupLoading={isLoading}
+            />
           </View>
           <View
             style={{
@@ -88,7 +96,9 @@ const SignupScreen = () => {
             <Text style={styles.signUpText}>이미 가입된 회원이신가요? </Text>
             <Text
               style={[styles.signUpText, {fontSize: 16}]}
-              onPress={() => navigation.navigate('Login')}>
+              onPress={() => {
+                navigation.navigate('Login');
+              }}>
               로그인
             </Text>
           </View>
