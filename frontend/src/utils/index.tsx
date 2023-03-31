@@ -50,11 +50,11 @@ const placesToCoordinates = (places: Place[]): Coordinate[] => {
 };
 
 function isPlace(arg: any): arg is Place {
-  return (arg.lon !== undefined && arg.lat !== undefined);
+  return arg.lon !== undefined && arg.lat !== undefined;
 }
 
 function isCourse(arg: any): arg is Course {
-  return (arg.places !== undefined);
+  return arg.places !== undefined;
 }
 
 export {
@@ -65,4 +65,5 @@ export {
   pathToCoordinates,
   placesToCoordinates,
   isPlace,
+  isCourse,
 };

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import {Coordinate} from '../types';
-import {NAVER_MAPS_API_ID, NAVER_MAPS_API_KEY} from '@env'
+import {NAVER_MAPS_API_ID, NAVER_MAPS_API_KEY} from '@env';
 
 const callNaverDirectionApi = async (coordinates: Coordinate[]) => {
   const start = `${coordinates[0].longitude},${coordinates[0].latitude}`;

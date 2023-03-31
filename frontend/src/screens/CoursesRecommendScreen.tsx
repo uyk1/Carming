@@ -1,6 +1,12 @@
 import styled from 'styled-components/native';
 import TagChip from '../components/TagChip';
-import {ActivityIndicator, Avatar, IconButton, Tooltip, useTheme} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Avatar,
+  IconButton,
+  Tooltip,
+  useTheme,
+} from 'react-native-paper';
 import {useEffect, useRef, useState} from 'react';
 import Carousel from 'react-native-snap-carousel-v4';
 import CourseRecommendCard from '../components/CourseRecommendCard';
@@ -14,7 +20,7 @@ import {
   deletePlaceFromCourseCartById,
   setCourseToCourseCart,
 } from '../redux/slices/courseSlice';
-import { useGetCoursesQuery } from '../apis/courseApi';
+import {useGetCoursesQuery} from '../apis/courseApi';
 
 interface CoursesRecommendScreenProps {}
 
@@ -26,7 +32,13 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   const {courseCart, courseTagList, checkedTagList} = useSelector(
     (state: RootState) => state.course,
   );
-  const {data: courses, error, isLoading, isError, isSuccess} = useGetCoursesQuery({regions: ['마포구'], size: 10});
+  const {
+    data: courses,
+    error,
+    isLoading,
+    isError,
+    isSuccess,
+  } = useGetCoursesQuery({regions: ['마포구'], size: 10});
   const [carouselData, setCarouselData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -41,10 +53,10 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   };
 
   const courseAddBtnPressed = () => {
-    if(courses){
+    if (courses) {
       const course: Course = courses[carouselRef.current._activeItem];
-      dispatch(setCourseToCourseCart(course))
-    };
+      dispatch(setCourseToCourseCart(course));
+    }
   };
 
   const canclePlaceBtnPressed = (placeId: number) => {
@@ -52,37 +64,54 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   };
 
   const makeCarouselData = (index: number) => {
-    if(courses){
-      const tmpList: any[] = courses.map((course, idx) => ({course: course, isActive: idx === index}));
+    if (courses) {
+      const tmpList: any[] = courses.map((course, idx) => ({
+        course: course,
+        isActive: idx === index,
+      }));
       setCarouselData(tmpList);
     }
   };
 
-
   const carouselSection = () => {
-    console.log("get courses data ::",courses);
-    console.log("get courses error ::", error);
-    if(isLoading) return <CenterView><ActivityIndicator size={'large'} animating={true} color={theme.colors.onPrimary}/></CenterView>
-    if(isError) return <CenterView><Text style={{fontSize: 40}}>😭</Text></CenterView>
-    if(isSuccess) return (
-      <Carousel
-        style={{flex: 1}}
-        layout={'default'}
-        vertical={false}
-        layoutCardOffset={9}
-        ref={carouselRef}
-        data={carouselData}
-        renderItem={CourseRecommendCard}
-        sliderWidth={screenWidth}
-        itemWidth={screenWidth - 80}
-        inactiveSlideShift={0}
-        useScrollView={true}
-        onScrollIndexChanged={index => {
-          makeCarouselData(index);
-        }}
-      />
-    )
-  }
+    console.log('get courses data ::', courses);
+    console.log('get courses error ::', error);
+    if (isLoading)
+      return (
+        <CenterView>
+          <ActivityIndicator
+            size={'large'}
+            animating={true}
+            color={theme.colors.onPrimary}
+          />
+        </CenterView>
+      );
+    if (isError)
+      return (
+        <CenterView>
+          <Text style={{fontSize: 40}}>😭</Text>
+        </CenterView>
+      );
+    if (isSuccess)
+      return (
+        <Carousel
+          style={{flex: 1}}
+          layout={'default'}
+          vertical={false}
+          layoutCardOffset={9}
+          ref={carouselRef}
+          data={carouselData}
+          renderItem={CourseRecommendCard}
+          sliderWidth={screenWidth}
+          itemWidth={screenWidth - 80}
+          inactiveSlideShift={0}
+          useScrollView={true}
+          onScrollIndexChanged={index => {
+            makeCarouselData(index);
+          }}
+        />
+      );
+  };
 
   return (
     <>
@@ -101,9 +130,7 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
         })}
       </StyledView>
 
-
       {carouselSection()}
-
 
       <StyledView style={{justifyContent: 'center'}}>
         <IconButton
@@ -114,7 +141,6 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
           onPress={() => courseAddBtnPressed()}
         />
       </StyledView>
-
 
       <StyledView style={{height: 70}}>
         {courseCart.map(place => {
@@ -151,5 +177,5 @@ const CenterView = styled(View)`
   align-items: center;
   justify-content: center;
   flex: 1;
-`
+`;
 export default CoursesRecommendScreen;

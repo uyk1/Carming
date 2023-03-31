@@ -37,7 +37,11 @@ const CourseEditListItem: React.FC<RenderItemParams<Place>> = ({
         </StyledView>
         <StyledView style={{width: 140, justifyContent: 'space-between'}}>
           <StyledView>
-            <RatingStar iconSize={12} iconStyle={{margin: -8}} rating={rating} />
+            <RatingStar
+              iconSize={12}
+              iconStyle={{margin: -8}}
+              rating={rating}
+            />
             <RatingText style={{paddingHorizontal: 3}}>{rating}</RatingText>
             <RatingText style={{fontSize: 8, marginTop: 4, marginRight: 10}}>
               ({item.ratingCount})

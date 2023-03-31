@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {View} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useDispatch} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {IconButton, useTheme, SegmentedButtons} from 'react-native-paper';
@@ -11,7 +11,6 @@ import CoursesRecommendScreen from './CoursesRecommendScreen';
 import {setPlaceList, setPlaceTagList} from '../redux/slices/placeSlice';
 import {setCourseList, setCourseTagList} from '../redux/slices/courseSlice';
 import {Tag, Place, Category, Course} from '../types';
-import {NavigationProp, useNavigation} from '@react-navigation/native';
 import {L4_CourseCreateStackParamList} from '../navigations/L4_CourseCreateStackNavigator';
 import {CustomButton} from '../components';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -21,10 +20,7 @@ export type RecommendScreenProps = NativeStackScreenProps<
   'Recommend'
 >;
 
-const RecommendScreen: React.FC<RecommendScreenProps> = ({
-  navigation,
-  route,
-}) => {
+const RecommendScreen: React.FC<RecommendScreenProps> = ({navigation}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
 
@@ -94,16 +90,10 @@ const RecommendScreen: React.FC<RecommendScreenProps> = ({
               text={'선택 완료'}
               onPress={() => navigation.navigate('CourseEdit', {recommendType})}
               buttonStyle={{
-                width: 200,
-                padding: 14,
-                borderRadius: 30,
+                ...styles.buttonStyle,
                 backgroundColor: theme.colors.surfaceVariant,
               }}
-              textStyle={{
-                fontWeight: 'bold',
-                fontSize: 16,
-                textAlign: 'center',
-              }}
+              textStyle={styles.buttonText}
             />
           </StyledView>
         </SafeAreaView>
@@ -111,6 +101,19 @@ const RecommendScreen: React.FC<RecommendScreenProps> = ({
     </AlertNotificationRoot>
   );
 };
+
+const styles = StyleSheet.create({
+  buttonStyle: {
+    width: 200,
+    padding: 14,
+    borderRadius: 30,
+  },
+  buttonText: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
+  },
+});
 
 const StyledView = styled(View)`
   align-items: center;

@@ -1,9 +1,7 @@
 import React from 'react';
-import {ImageBackground, Text, View} from 'react-native';
+import {ImageBackground, View} from 'react-native';
 import styled from 'styled-components';
 import {Place} from '../types';
-import RatingStar from './RatingStar';
-import {calcRating} from '../utils';
 import RecommendCardDesc from './RecommendCardDesc';
 
 interface PlaceRecommendCardProps {
@@ -19,7 +17,7 @@ const PlaceRecommendCard: React.FC<PlaceRecommendCardProps> = ({
   return (
     <CardContainer>
       <ImageBackGround source={{uri: item.image}}>
-        <RecommendCardDesc item={item} index={index}/>
+        <RecommendCardDesc item={item} index={index} />
       </ImageBackGround>
     </CardContainer>
   );
@@ -31,12 +29,10 @@ const CardContainer = styled(View)`
   overflow: hidden;
 `;
 
-
 const ImageBackGround = styled(ImageBackground)`
   flex: 1;
   flex-direction: column-reverse;
   align-items: center;
 `;
-
 
 export default PlaceRecommendCard;
