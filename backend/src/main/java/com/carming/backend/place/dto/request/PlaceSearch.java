@@ -20,4 +20,10 @@ public class PlaceSearch {
     private String category;
 
     private Long size = DEFAULT_SIZE;
+
+    public PlaceSearch(List<String> regions, String category, Long size) {
+        this.regions = regions;
+        this.category = category;
+        this.size = size == null ? DEFAULT_SIZE : size;
+    }
 }

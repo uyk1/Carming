@@ -17,4 +17,8 @@ public class CourseSearch {
 
     private Long size = DEFAULT_SIZE;
 
+    public CourseSearch(List<String> regions, Long size) {
+        this.regions = regions;
+        this.size = size == null ? DEFAULT_SIZE : size;
+    }
 }
