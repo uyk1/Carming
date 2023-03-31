@@ -40,8 +40,5 @@ def synthesize_text(text):
         print('Audio content written to file "output.mp3"')
 
 
-
-if __name__ == '__main__':
-    synthesize_text("카밍카입니다 ")
     playsound("output.mp3")
 
