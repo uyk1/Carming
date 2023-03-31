@@ -19,7 +19,11 @@ const CourseRecommendCard: React.FC<CourseRecommendCardProps> = ({
   return (
     <CardContainer pointerEvents="none">
       {isActive ? (
-        <CustomMapView viewStyle={{flex: 1}} course={course} />
+        <CustomMapView
+          viewStyle={{flex: 1}}
+          places={course.places}
+          useIndex={true}
+        />
       ) : (
         <View style={{flex: 1, backgroundColor: 'black'}}></View>
       )}
