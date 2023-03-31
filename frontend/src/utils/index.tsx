@@ -1,3 +1,4 @@
+import {iconPlace} from '../components/MapMarker';
 import {Coordinate, Course, Place} from '../types';
 
 const calcRating = (sum: number, count: number) => {
@@ -43,14 +44,16 @@ const pathToCoordinates = (path: any[]): Coordinate[] => {
   });
 };
 
-const placesToCoordinates = (places: Place[]): Coordinate[] => {
+const placesToCoordinates = (places: Place[] | iconPlace[]): Coordinate[] => {
   return places.map<Coordinate>(place => {
     return {latitude: place.lat, longitude: place.lon};
   });
 };
 
 function isPlace(arg: any): arg is Place {
-  return arg.lon !== undefined && arg.lat !== undefined;
+  return (
+    arg.lon !== undefined && arg.lat !== undefined && arg.image !== undefined
+  );
 }
 
 function isCourse(arg: any): arg is Course {
