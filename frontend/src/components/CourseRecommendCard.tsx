@@ -1,11 +1,8 @@
 import React from 'react';
 import {View} from 'react-native';
 import styled from 'styled-components';
-import {Coordinate, Course} from '../types';
-import MapView from 'react-native-maps';
-import {calcCoordinates} from '../utils';
-import MapMarker from './MapMarker';
-import MapPolyline from './MapPolyline';
+import {Course} from '../types';
+import CustomMapView from './CustomMapView';
 
 interface CourseRecommendCardProps {
   item: {course: Course; isActive: boolean};
@@ -15,26 +12,10 @@ interface CourseRecommendCardProps {
 
 const CourseRecommendCard: React.FC<CourseRecommendCardProps> = ({item}) => {
   const {course, isActive} = item;
-  const coordinates = course.places.map<Coordinate>(place => {
-    return {latitude: place.lat, longitude: place.lon};
-  });
-  const {midLat, midLon, latDelta, lonDelta} = calcCoordinates(coordinates);
   return (
     <CardContainer pointerEvents="none">
       {isActive ? (
-        <MapView
-          style={{flex: 1}}
-          initialRegion={{
-            latitude: midLat + 0.2 * latDelta,
-            longitude: midLon,
-            latitudeDelta: latDelta,
-            longitudeDelta: lonDelta,
-          }}>
-          <MapPolyline coordinates={[...coordinates]} />
-          {course.places.map((place, index) => (
-            <MapMarker key={place.id} place={place} index={index} />
-          ))}
-        </MapView>
+        <CustomMapView viewStyle={{flex: 1}} course={course} />
       ) : (
         <View style={{flex: 1, backgroundColor: 'black'}}></View>
       )}

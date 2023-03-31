@@ -1,8 +1,10 @@
 package com.carming.backend.place.service;
 
 import com.carming.backend.place.domain.Place;
+import com.carming.backend.place.domain.PlaceTag;
 import com.carming.backend.place.dto.request.PlaceSearch;
 import com.carming.backend.place.dto.response.PlaceResponseDto;
+import com.carming.backend.place.dto.response.PopularPlaceResponseDto;
 import com.carming.backend.place.repository.PlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 @Service
 public class PlaceService {
 
+    private final Long DEFAULT_POPULAR_SIZE = 20L;
+
     private final PlaceRepository placeRepository;
 
     public List<PlaceResponseDto> getPlaces(PlaceSearch search) {
@@ -23,5 +27,16 @@ public class PlaceService {
         return places.stream()
                 .map(PlaceResponseDto::from)
                 .collect(Collectors.toList());
+    }
+
+    public List<PopularPlaceResponseDto> getPopularPlaces() {
+        return placeRepository.getPopular(DEFAULT_POPULAR_SIZE);
+    }
+
+    public void getPopularPlaceDetail(Long placeId) {
+        List<PlaceTag> placeTag = placeRepository.getPlaceTag(placeId);
+
+        System.out.println(placeTag);
+
     }
 }

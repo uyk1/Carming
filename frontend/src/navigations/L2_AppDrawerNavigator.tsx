@@ -20,6 +20,9 @@ function L2_AppDrawerNavigator() {
       <Drawer.Screen name="Main" component={L3_MainDrawerNavigator} />
       <Drawer.Screen
         name="TotalJourney"
+        options={{
+          swipeEnabled: false,
+        }}
         component={L3_TotalJourneyStackNavigator}
       />
     </Drawer.Navigator>

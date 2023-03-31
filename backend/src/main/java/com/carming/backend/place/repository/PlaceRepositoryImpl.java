@@ -3,7 +3,9 @@ package com.carming.backend.place.repository;
 import com.carming.backend.course.dto.response.CoursePlaceResponse;
 import com.carming.backend.place.domain.Place;
 import com.carming.backend.place.domain.PlaceCategory;
+import com.carming.backend.place.domain.PlaceTag;
 import com.carming.backend.place.dto.request.PlaceSearch;
+import com.carming.backend.place.dto.response.PopularPlaceResponseDto;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -42,15 +44,28 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
                 .fetch();
     }
 
-    public void getPlaceTag(Long id) {
-        queryFactory
-                .select(placeTag.count())
+    @Override
+    public List<PopularPlaceResponseDto> getPopular(Long size) {
+        return queryFactory.select(Projections.fields(PopularPlaceResponseDto.class,
+                        place.id, place.image, place.name, place.address,
+                        place.region, place.ratingSum, place.ratingCount))
+                .from(place)
+                .orderBy(place.ratingSum.desc())
+                .limit(size)
+                .fetch();
+    }
+
+    @Override
+    public List<PlaceTag> getPlaceTag(Long id) {
+        List<PlaceTag> fetch = queryFactory
+                .select(placeTag)
                 .from(placeTag)
                 .join(placeTag.tag, tag).fetchJoin()
                 .join(placeTag.place, place).fetchJoin()
                 .groupBy(placeTag.tag)
                 .where(placeTag.place.id.eq(id))
                 .fetch();
+        return fetch;
     }
 
     private BooleanExpression regionEq(List<String> regions) {

@@ -6,8 +6,8 @@ import com.carming.backend.member.domain.valid.AuthenticationInfo;
 import com.carming.backend.member.dto.request.AuthNumbersDto;
 import com.carming.backend.member.dto.request.PhoneNumberDto;
 import com.carming.backend.member.exception.InvalidAuthRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.carming.backend.member.exception.MemberAlreadySigned;
+import com.carming.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,23 +26,29 @@ public class AuthNumbersService {
 
     private final StringRedisTemplate redisTemplate;
 
+    private final MemberRepository memberRepository;
+
     @Transactional
     public String saveAuthNumbers(PhoneNumberDto request) {
-        String phoneNumber = request.getPhoneNumber();
+        String phoneNumber = request.getPhone();
+        if (memberRepository.findByPhone(request.getPhone()).isPresent()) {
+            throw new MemberAlreadySigned();
+        }
+
         String authNumbers = AuthNumberFactory.createValidNumbers().getAuthNumbers();
         String authenticationInfo = JsonMapper.toJson(new AuthenticationInfo(authNumbers, false));
 
         if (!StringUtils.hasText(authenticationInfo)) {
             throw new InvalidAuthRequest();
         }
-        saveAuthenticationInfo(phoneNumber, authenticationInfo, 30000L);
+        saveAuthenticationInfo(phoneNumber, authenticationInfo, 3L);
         return authNumbers;
     }
 
 
     public String validAuthNumbers(AuthNumbersDto request) {
         ValueOperations<String, String> operations = redisTemplate.opsForValue();
-        String json = operations.get(request.getPhoneNumber());
+        String json = operations.get(request.getPhone()); //잘못 입력할 수도 있으니, getAndDelete 가 아닌 get
         AuthenticationInfo authentication = JsonMapper.toClass(json, AuthenticationInfo.class);
 
         String requestAuthNumbers = request.getAuthNumber();
@@ -52,7 +58,7 @@ public class AuthNumbersService {
         }
 
         String passAuthentication = JsonMapper.toJson(new AuthenticationInfo(requestAuthNumbers, true));
-        saveAuthenticationInfo(request.getPhoneNumber(), passAuthentication, 60L);
+        saveAuthenticationInfo(request.getPhone(), passAuthentication, 60L);
         return requestAuthNumbers;
     }
 

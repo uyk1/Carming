@@ -8,7 +8,6 @@ import SelectDropdown from 'react-native-select-dropdown';
 import styled from 'styled-components/native';
 import {Place, Category, Tag} from '../types';
 import PlaceRecommendCard from '../components/PlaceRecommendCard';
-import CustomButton from '../components/CustomButton';
 import TagChip from '../components/TagChip';
 import {RootState} from '../redux/store';
 import {
@@ -19,9 +18,11 @@ import {
   selectCategory,
 } from '../redux/slices/placeSlice';
 
-const {width: screenWidth} = Dimensions.get('window');
+interface PlacesRecommendScreenScreenProps {}
 
-const PlacesRecommendScreen = () => {
+const PlacesRecommendScreen: React.FC<
+  PlacesRecommendScreenScreenProps
+> = ({}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
@@ -127,21 +128,11 @@ const PlacesRecommendScreen = () => {
           );
         })}
       </StyledView>
-      <StyledView style={{justifyContent: 'center'}}>
-        <CustomButton
-          text={'선택 완료'}
-          buttonStyle={{
-            width: 200,
-            padding: 14,
-            borderRadius: 30,
-            backgroundColor: theme.colors.surfaceVariant,
-          }}
-          textStyle={{fontWeight: 'bold', fontSize: 16, textAlign: 'center'}}
-        />
-      </StyledView>
     </>
   );
 };
+
+const {width: screenWidth} = Dimensions.get('window');
 
 const StyledView = styled(View)`
   align-items: center;

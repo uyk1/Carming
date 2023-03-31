@@ -1,6 +1,7 @@
 package com.carming.backend.member.service;
 
 import com.carming.backend.common.JsonMapper;
+import com.carming.backend.exception.InvalidRequest;
 import com.carming.backend.member.domain.Card;
 import com.carming.backend.member.domain.Member;
 import com.carming.backend.member.domain.valid.AuthenticationInfo;
@@ -10,13 +11,14 @@ import com.carming.backend.member.repository.CardRepository;
 import com.carming.backend.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class MemberService {
 
@@ -24,11 +26,15 @@ public class MemberService {
 
     private final CardRepository cardRepository;
 
-    private final RedisTemplate redisTemplate;
+    private final StringRedisTemplate redisTemplate;
 
 
     @Transactional
     public Long saveMember(MemberCreateDto request) {
+        if (memberRepository.findNickname(request.getNickname()).isPresent()) {
+            throw new InvalidRequest("nickname", "이미 등록된 닉네임입니다.");
+        }
+
         Card card = request.getCard().toEntity();
         cardRepository.save(card);
 

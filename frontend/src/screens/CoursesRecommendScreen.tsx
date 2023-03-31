@@ -6,7 +6,6 @@ import Carousel from 'react-native-snap-carousel-v4';
 import CourseRecommendCard from '../components/CourseRecommendCard';
 import {Dimensions, View} from 'react-native';
 import {Course, Tag} from '../types';
-import CustomButton from '../components/CustomButton';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
 import {
@@ -16,9 +15,9 @@ import {
   setCourseToCourseCart,
 } from '../redux/slices/courseSlice';
 
-const {width: screenWidth} = Dimensions.get('window');
+interface CoursesRecommendScreenProps {}
 
-const CoursesRecommendScreen = () => {
+const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
@@ -30,6 +29,7 @@ const CoursesRecommendScreen = () => {
 
   useEffect(() => {
     makeCarouselData(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const tagPressed = (tag: Tag) => {
@@ -51,7 +51,6 @@ const CoursesRecommendScreen = () => {
     const tmpList: any[] = courseList.map((course, idx) => {
       return {course: course, isActive: idx === index};
     });
-    console.log('tmpList : ', tmpList);
     setCarouselData(tmpList);
   };
 
@@ -85,7 +84,6 @@ const CoursesRecommendScreen = () => {
         inactiveSlideShift={0}
         useScrollView={true}
         onScrollIndexChanged={index => {
-          console.log('carouselRef', carouselRef.current._activeItem, index);
           makeCarouselData(index);
         }}
       />
@@ -116,21 +114,11 @@ const CoursesRecommendScreen = () => {
           );
         })}
       </StyledView>
-      <StyledView style={{justifyContent: 'center'}}>
-        <CustomButton
-          text={'선택 완료'}
-          buttonStyle={{
-            width: 200,
-            padding: 14,
-            borderRadius: 30,
-            backgroundColor: theme.colors.surfaceVariant,
-          }}
-          textStyle={{fontWeight: 'bold', fontSize: 16, textAlign: 'center'}}
-        />
-      </StyledView>
     </>
   );
 };
+
+const {width: screenWidth} = Dimensions.get('window');
 
 const StyledView = styled(View)`
   align-items: center;

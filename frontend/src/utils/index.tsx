@@ -27,4 +27,32 @@ const calcCoordinates = (coordinates: Coordinate[]) => {
   return {maxLat, midLat, minLat, maxLon, midLon, minLon, latDelta, lonDelta};
 };
 
-export {calcRating, calcCoordinates};
+const calcTime = (millisec: number): {hour: number; minute: number} => {
+  const hour = Math.floor(millisec / 3600000);
+  const minute = Math.floor((millisec % 3600000) / 60000);
+  return {hour, minute};
+};
+
+const calcDist = (meter: number): number => {
+  return Math.round(meter / 100) / 10;
+};
+
+const pathToCoordinates = (path: any[]): Coordinate[] => {
+  path.map((coordinate: any[]): Coordinate => {
+    return {longitude: coordinate[0], latitude: coordinate[1]};
+  });
+};
+const placesToCoordinates = (places: Place[]): Coordinate[] => {
+  places.map<Coordinate>(place => {
+    return {latitude: place.lat, longitude: place.lon};
+  });
+};
+
+export {
+  calcRating,
+  calcCoordinates,
+  calcTime,
+  calcDist,
+  pathToCoordinates,
+  placesToCoordinates,
+};
