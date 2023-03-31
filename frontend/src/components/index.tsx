@@ -9,6 +9,8 @@ import MapPolyline from './MapPolyline';
 import MapMarker from './MapMarker';
 import CustomMapView from './CustomMapView';
 import RecommendCardDesc from './RecommendCardDesc';
+import CarCallInfoCard from './CarCallInfoCard';
+import CarMoveInfoCard from './CarMoveInfoCard';
 
 export {
   CourseRecommendCard,
@@ -22,4 +24,6 @@ export {
   MapMarker,
   CustomMapView,
   RecommendCardDesc,
+  CarCallInfoCard,
+  CarMoveInfoCard,
 };
