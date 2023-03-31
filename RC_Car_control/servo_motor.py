@@ -21,9 +21,17 @@ class SERVO_MOTOR:
             print('SERVO MOTOR ERROR :', e)
     
     ## 조향 함수
-    def steering(self, dutycycle):        
+    def steering(self, direction):        
         try:
-            self.pwm.ChangeDutyCycle(dutycycle)
+            if direction == -1:  ## left
+                self.pwm.ChangeDutyCycle(5.5)
+
+            elif direction == 0:  ## center
+                self.pwm.ChangeDutyCycle(7.75)
+
+            elif direction == 1:  ## right
+                self.pwm.ChangeDutyCycle(9)
+
             time.sleep(0.3)
         
         except:
