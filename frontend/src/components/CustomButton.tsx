@@ -10,6 +10,7 @@ interface CustomButtonProps {
   text: string;
   buttonStyle?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean;
   onPress?: () => void;
 }
 
@@ -17,6 +18,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   text,
   buttonStyle,
   textStyle,
+  disabled,
   onPress,
 }) => {
   const handlePress = () => {
@@ -28,6 +30,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   return (
     <TouchableOpacity
       style={[styles.button, buttonStyle]}
+      disabled={disabled}
       onPress={handlePress}>
       <Text style={[styles.text, textStyle]}> {text} </Text>
     </TouchableOpacity>
