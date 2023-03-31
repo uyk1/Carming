@@ -39,7 +39,7 @@ const PlacesRecommendScreen: React.FC<
   const {
     data: places,
     error,
-    isLoading,
+    isFetching,
     isError,
     isSuccess,
   } = useGetPlacesQuery({
@@ -68,23 +68,19 @@ const PlacesRecommendScreen: React.FC<
   const carouselSection = () => {
     console.log('get places data ::', places);
     console.log('get places error ::', error);
-    if (isLoading)
+    if (isFetching) {
       return (
-        <CenterView>
-          <ActivityIndicator
-            size={'large'}
-            animating={true}
-            color={theme.colors.onPrimary}
-          />
-        </CenterView>
+        <ActivityIndicator
+          size={'large'}
+          animating={true}
+          color={theme.colors.onPrimary}
+        />
       );
-    if (isError)
-      return (
-        <CenterView>
-          <Text style={{fontSize: 40}}>😭</Text>
-        </CenterView>
-      );
-    if (isSuccess)
+    }
+    if (isError || places?.length === 0) {
+      return <Text style={{fontSize: 40}}>😭</Text>;
+    }
+    if (isSuccess) {
       return (
         <Carousel
           style={{flex: 1}}
@@ -100,6 +96,7 @@ const PlacesRecommendScreen: React.FC<
           useScrollView={true}
         />
       );
+    }
   };
 
   return (
@@ -143,7 +140,7 @@ const PlacesRecommendScreen: React.FC<
         })}
       </StyledView>
 
-      {carouselSection()}
+      <CenterView>{carouselSection()}</CenterView>
 
       <StyledView style={{justifyContent: 'center'}}>
         <IconButton

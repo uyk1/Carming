@@ -115,6 +115,7 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
               width: screenWidth * 0.8,
               height: screenWidth * 0.8,
             }}
+            useIndex={true}
             routeCoordinates={routeCoordinates}
           />
           <ModalInfoText>
@@ -135,7 +136,10 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
           <View style={{flexDirection: 'row'}}>
             <CustomButton
               text={'여정 시작하기'}
-              onPress={async () => {}}
+              onPress={async () => {
+                navigation.navigate('Journey');
+                setRouteModalVisible(false);
+              }}
               buttonStyle={{
                 ...styles.modalButton,
                 backgroundColor: theme.colors.surfaceVariant,

@@ -35,10 +35,10 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   const {
     data: courses,
     error,
-    isLoading,
+    isFetching,
     isError,
     isSuccess,
-  } = useGetCoursesQuery({regions: ['마포구'], size: 10});
+  } = useGetCoursesQuery({regions: ['은평구'], size: 10});
   const [carouselData, setCarouselData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -76,23 +76,19 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   const carouselSection = () => {
     console.log('get courses data ::', courses);
     console.log('get courses error ::', error);
-    if (isLoading)
+    if (isFetching) {
       return (
-        <CenterView>
-          <ActivityIndicator
-            size={'large'}
-            animating={true}
-            color={theme.colors.onPrimary}
-          />
-        </CenterView>
+        <ActivityIndicator
+          size={'large'}
+          animating={true}
+          color={theme.colors.onPrimary}
+        />
       );
-    if (isError)
-      return (
-        <CenterView>
-          <Text style={{fontSize: 40}}>😭</Text>
-        </CenterView>
-      );
-    if (isSuccess)
+    }
+    if (isError) {
+      return <Text style={{fontSize: 40}}>😭</Text>;
+    }
+    if (isSuccess) {
       return (
         <Carousel
           style={{flex: 1}}
@@ -111,6 +107,7 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
           }}
         />
       );
+    }
   };
 
   return (
@@ -130,7 +127,7 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
         })}
       </StyledView>
 
-      {carouselSection()}
+      <CenterView>{carouselSection()}</CenterView>
 
       <StyledView style={{justifyContent: 'center'}}>
         <IconButton
