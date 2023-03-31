@@ -37,7 +37,9 @@ public class PlaceController {
     }
 
     @GetMapping("/popular/{id}")
-    public void getPopularPlaceDetail(@PathVariable("id") Long placeId) {
-        placeService.getPopularPlaceDetail(placeId);
+    public List<PlaceTagsBox> getPopularPlaceDetail(@PathVariable("id") Long placeId) {
+        List<PlaceTagsBox> popularPlaceDetail = placeService.getPopularPlaceDetail(placeId);
+        return popularPlaceDetail;
+
     }
 }

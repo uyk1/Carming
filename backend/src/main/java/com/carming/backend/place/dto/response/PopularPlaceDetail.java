@@ -1,13 +1,11 @@
 package com.carming.backend.place.dto.response;
 
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-public class PopularPlaceResponseDto {
+public class PopularPlaceDetail {
 
-    private Long id;
+    private String id;
 
     private String name;
 
@@ -20,4 +18,7 @@ public class PopularPlaceResponseDto {
     private Integer ratingSum;
 
     private Integer ratingCount;
+
+    private PlaceTagsBox tags;
+
 }
