@@ -8,7 +8,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -28,11 +27,13 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .exceptionHandling().authenticationEntryPoint(new AuthEntryPoint())
         .and()
+//                .authorizeRequests()
+//                        .antMatchers("/api/member/**", "/api/auth/**", "/api/tags").permitAll()
+//                        .anyRequest().authenticated();
                 .authorizeRequests()
-                        .antMatchers("/api/member/**", "/api/auth/**").permitAll()
-                        .anyRequest().authenticated();
+                .anyRequest().permitAll();
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

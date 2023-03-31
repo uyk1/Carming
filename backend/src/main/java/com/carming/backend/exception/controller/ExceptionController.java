@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionController {
 
+    //Custom.class
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> customException(CustomException e) {
         int statusCode = e.getStatusCode();
