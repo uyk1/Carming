@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
-import {Formik} from 'formik';
+import {Formik, FormikProps} from 'formik';
 import {View, Text, TextInput, Button, Alert, StyleSheet} from 'react-native';
 import styled from 'styled-components';
 import * as Yup from 'yup';
@@ -102,12 +102,15 @@ const RegistSchema = Yup.object().shape({
     .matches(/^[0-1][0-9]\/[23-99]{2}$/, 'MM/YY 형식으로 입력해주세요.'),
 });
 
-export type RegistFormProps = {
+interface MemberRegistFormProps {
   onSubmit: (values: RegistFormValues) => void;
   isSignupLoading: boolean;
-};
+}
 
-const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
+const RegistForm: React.FC<MemberRegistFormProps> = ({
+  onSubmit,
+  isSignupLoading,
+}: MemberRegistFormProps) => {
   const [isVerificationModalVisible, setIsVerificationModalVisible] =
     useState(false);
 
@@ -140,9 +143,9 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
   };
 
   const handleVerificationButtonPress = (phone: string) => {
-    if(phone === '') Alert.alert('전화번호를 입력해주세요.');
+    if (phone === '') Alert.alert('전화번호를 입력해주세요.');
     else {
-      const data = {phoneNumber: phone};
+      const data = {phone: phone};
       verifyStart(data)
         .unwrap()
         .then(response => {
@@ -190,12 +193,16 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
                     style={{color: '#747273', fontFamily: 'SeoulNamsanM'}}
                   />
                   <CustomButton
-                    text={isVerified? "인증 완료":"인증하기"}
-                    textStyle={{color: 'white', fontSize: 12, fontFamily: 'SeoulNamsanM'}}
+                    text={isVerified ? '인증 완료' : '인증하기'}
+                    textStyle={{
+                      color: 'white',
+                      fontSize: 12,
+                      fontFamily: 'SeoulNamsanM',
+                    }}
                     buttonStyle={{
                       backgroundColor: '#FFBDC1',
                       paddingHorizontal: 10,
-                      marginVertical: 10
+                      marginVertical: 10,
                     }}
                     onPress={() => {
                       // VerificationModal 컴포넌트에 필요한 값을 전달
@@ -259,7 +266,7 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
                 />
                 <TextInput
                   value={values.password}
-                  placeholder="비밀번호"
+                  placeholder="비밀번호             "
                   placeholderTextColor="grey"
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
@@ -280,7 +287,7 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
                 />
                 <TextInput
                   value={values.passwordConfirm}
-                  placeholder="비밀번호 확인"
+                  placeholder="비밀번호 확인        "
                   placeholderTextColor="grey"
                   onChangeText={handleChange('passwordConfirm')}
                   onBlur={handleBlur('passwordConfirm')}
@@ -302,13 +309,16 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
                 size={20}
                 color="#747273"
               />
-              <RegistFormText style={{fontSize: 14, marginLeft: 10, marginRight: 5}}>성별</RegistFormText>
+              <RegistFormText
+                style={{fontSize: 14, marginLeft: 10, marginRight: 5}}>
+                성별
+              </RegistFormText>
               <View
                 style={{
                   width: '50%',
                   marginTop: 2,
                   marginBottom: 5,
-                  borderRadius: 10
+                  borderRadius: 10,
                 }}>
                 <Picker
                   selectedValue={values.gender}
@@ -499,14 +509,18 @@ const RegistForm: React.FC<RegistFormProps> = ({onSubmit, isSignupLoading}) => {
 
             <View style={{marginTop: '5%'}}>
               <CustomButton
-                    text="회원가입"
-                    textStyle={{color: 'white', fontSize: 14, fontFamily: 'SeoulNamsanM'}}
-                    buttonStyle={{
-                      backgroundColor: '#FFBDC1',
-                      paddingVertical: 10,
-                    }}
-                    onPress={handleSubmit}
-                    disabled={isSignupLoading}
+                text="회원가입"
+                textStyle={{
+                  color: 'white',
+                  fontSize: 14,
+                  fontFamily: 'SeoulNamsanM',
+                }}
+                buttonStyle={{
+                  backgroundColor: '#FFBDC1',
+                  paddingVertical: 10,
+                }}
+                onPress={handleSubmit}
+                disabled={isSignupLoading}
               />
             </View>
           </View>
@@ -529,7 +543,7 @@ const RegistFormView = styled(View)`
 `;
 
 const RegistFormText = styled(Text)`
-  fontFamily: 'SeoulNamsanM';
+  font-family: 'SeoulNamsanM';
   font-size: 12px;
   color: grey;
 `;
@@ -539,7 +553,7 @@ const RegistErrorMessage = styled(Text)`
   font-size: 10px;
   margin-left: 27px;
   margin-bottom: 3px;
-  fontFamily: 'SeoulNamsanM';
+  font-family: 'SeoulNamsanM';
 `;
 
 const CardRegistErrorMessage = styled(Text)`
@@ -547,7 +561,7 @@ const CardRegistErrorMessage = styled(Text)`
   font-size: 10px;
   margin-left: 52px;
   margin-bottom: 3px;
-  fontFamily: 'SeoulNamsanM';
+  font-family: 'SeoulNamsanM';
 `;
 
 const InputView = styled(View)`

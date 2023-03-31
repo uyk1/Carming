@@ -29,7 +29,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 
   return (
     <TouchableOpacity
-      style={[styles.button, buttonStyle]}
+      style={[styles.button, disabled && styles.disabled, buttonStyle]}
       onPress={handlePress}
       activeOpacity={0.7}
       disabled={disabled}>
@@ -52,6 +52,10 @@ const styles = StyleSheet.create({
     fontFamily: 'SeoulNamsanM',
     color: 'white',
     fontSize: 24,
+  },
+  disabled: {
+    opacity: 0.6, // 투명도를 줄여서 비활성화된 것처럼 보이게 함
+    // 다른 스타일도 추가할 수 있음
   },
 });
 export default CustomButton;

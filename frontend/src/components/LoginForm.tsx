@@ -72,14 +72,14 @@ const LoginForm = () => {
         style={styles.loginFormText}
       />
       <CustomButton
-            text="로그인"
-            textStyle={{color: 'white', fontSize: 14, fontFamily: 'SeoulNamsanM'}}
-            buttonStyle={{
-             backgroundColor: '#8398D1',
-             paddingVertical: 10,
-            }}
-            onPress={handleLogin}
-            disabled={isLoading}
+        text="로그인"
+        textStyle={{color: 'white', fontSize: 14, fontFamily: 'SeoulNamsanM'}}
+        buttonStyle={{
+          backgroundColor: '#8398D1',
+          paddingVertical: 10,
+        }}
+        onPress={handleLogin}
+        disabled={isLoading}
       />
       {errorText && (
         <Text style={[styles.loginFormText, {marginTop: '2%'}]}>

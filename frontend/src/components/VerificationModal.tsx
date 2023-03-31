@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import {useVerifyMutation} from '../apis/memberRegistApi';
 import {useDispatch} from 'react-redux';
-import {verifyInitialize, verifySuccess} from '../redux/slices/authSlice';
+import {verifySuccess} from '../redux/slices/authSlice';
 
 export interface VerificationModalProps {
   isVisible: boolean;
@@ -31,7 +31,7 @@ const VerificationModal: React.FC<VerificationModalProps> = ({
   };
 
   const handleVerificationCodeSubmit = () => {
-    const data = {phoneNumber: phone, authNumber: verificationCode};
+    const data = {phone: phone, authNumber: verificationCode};
     // handle verification code submit logic here
     verify(data)
       .unwrap()

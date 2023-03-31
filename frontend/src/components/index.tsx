@@ -4,6 +4,7 @@ import PlaceRecommendCard from './PlaceRecommendCard';
 import RatingStar from './RatingStar';
 import TagChip from './TagChip';
 import MapDirection from './MapDirection';
+import {MainHeaderTitleLogo} from './MainHeaderTitleLogo';
 
 export {
   CourseRecommendCard,
@@ -12,4 +13,5 @@ export {
   RatingStar,
   TagChip,
   MapDirection,
+  MainHeaderTitleLogo,
 };
