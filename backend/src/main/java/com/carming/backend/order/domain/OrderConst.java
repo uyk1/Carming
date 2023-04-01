@@ -9,4 +9,6 @@ public interface OrderConst {
     String CURRENT_POSITION = "current_position";
 
     String PATHS = "global_path";
+
+    String GET_OFF = "get_off";
 }
