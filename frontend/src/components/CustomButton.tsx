@@ -10,28 +10,29 @@ interface CustomButtonProps {
   text: string;
   buttonStyle?: ViewStyle;
   textStyle?: TextStyle;
-  disabled?: boolean;
   onPress?: () => void;
+  disabled?: boolean;
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
   text,
   buttonStyle,
   textStyle,
-  disabled,
   onPress,
+  disabled = false,
 }) => {
   const handlePress = () => {
-    if (onPress) {
+    if (onPress && !disabled) {
       onPress();
     }
   };
 
   return (
     <TouchableOpacity
-      style={[styles.button, buttonStyle]}
-      disabled={disabled}
-      onPress={handlePress}>
+      style={[styles.button, disabled && styles.disabled, buttonStyle]}
+      onPress={handlePress}
+      activeOpacity={0.7}
+      disabled={disabled}>
       <Text style={[styles.text, textStyle]}> {text} </Text>
     </TouchableOpacity>
   );
@@ -40,13 +41,21 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     backgroundColor: 'black',
-    padding: 16,
-    margin: 10,
-    borderRadius: 8,
+    borderRadius: 3,
+    alignItems: 'center',
+    elevation: 4,
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
   },
   text: {
+    fontFamily: 'SeoulNamsanM',
     color: 'white',
     fontSize: 24,
+  },
+  disabled: {
+    opacity: 0.6, // 투명도를 줄여서 비활성화된 것처럼 보이게 함
+    // 다른 스타일도 추가할 수 있음
   },
 });
 export default CustomButton;

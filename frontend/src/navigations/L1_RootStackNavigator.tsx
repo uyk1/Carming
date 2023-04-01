@@ -11,8 +11,15 @@ function RootStackNavigator() {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="LandingStack" component={L2_LandingStackNavigator} />
-      <Stack.Screen name="AppDrawer" component={L2_AppDrawerNavigator} />
+      {isLoggedIn ? (
+        <Stack.Screen name="AppDrawer" component={L2_AppDrawerNavigator} />
+      ) : (
+        // <Stack.Screen name="AppDrawer" component={L2_AppDrawerNavigator} />
+        <Stack.Screen
+          name="LandingStack"
+          component={L2_LandingStackNavigator}
+        />
+      )}
     </Stack.Navigator>
   );
 }
