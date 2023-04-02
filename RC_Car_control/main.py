@@ -25,7 +25,7 @@ class main():
         redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0, password='carming123')
         
         door_flag = 0
-
+	start_flag = 0
         while True:
             ## 속도 b'1.4650933742523193' 형태로 출력
             current_velocity = redis_client.get('current_velocity')
@@ -58,11 +58,13 @@ class main():
             ## 정지 b'1.0' 형태로 출력
             current_brake = redis_client.get('current_brake')
             ## destination = redis_client.get('destination')
-            drive_start = redis_client.get('drive_start')
+            get_in = redis_client.get('get_in')
             is_destination = redis_client.get('is_destination')
             
-            if drive_start == '1':
-                tts.synthesize_text("안전벨트를 매주세요! 출발하겠습니다~")
+            ## 탑승 완료
+            if get_in == '1' and start_flag == 0:
+                tts.synthesize_text("안전벨트를 매주세요!... 출발하겠습니다~")
+                start_flag = 1
                 ## 주행 시작하면서 문열림 flag 초기화
                 door_flag = 0
             
