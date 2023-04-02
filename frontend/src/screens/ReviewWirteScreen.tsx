@@ -1,7 +1,11 @@
-import {Text} from 'react-native';
+import {SafeAreaView, Text} from 'react-native';
 
 const ReviewWirteScreen = () => {
-  return <Text>ReviewWirteScreen</Text>;
+  return (
+    <SafeAreaView>
+      <Text>ReviewWirteScreen</Text>
+    </SafeAreaView>
+  );
 };
 
 export default ReviewWirteScreen;
