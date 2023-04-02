@@ -1,8 +1,9 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {Place} from '../../types';
+import {iconPlace} from '../../components/MapMarker';
 
 type SliceState = {
-  placeList: Place[];
+  placeList: (Place | iconPlace)[];
   currentIdx: number;
 };
 
@@ -14,7 +15,10 @@ const journeySlice = createSlice({
   } as SliceState,
   reducers: {
     // Place List
-    setJourneyPlaceList: (state, action: PayloadAction<Place[]>) => {
+    setJourneyPlaceList: (
+      state,
+      action: PayloadAction<(Place | iconPlace)[]>,
+    ) => {
       const newPlaceList = action.payload;
       state.placeList = [...newPlaceList];
     },
