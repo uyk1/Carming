@@ -89,6 +89,8 @@ class pure_pursuit :
         self.pid = pidControl()
         self.adaptive_cruise_control = AdaptiveCruiseControl(velocity_gain = 0.5, distance_gain = 1, time_gap = 0.8, vehicle_length = 2.7)
         self.vel_planning = velocityPlanning(self.target_velocity/3.6, 0.15)
+        ## 주행 시작 관련
+        start = 0
 
         while True:
             if self.is_global_path == True:
@@ -102,7 +104,7 @@ class pure_pursuit :
         while not rospy.is_shutdown():
 
             if self.is_path == True and self.is_odom == True and self.is_status == True:
-
+                
                 # global_obj,local_obj
                 result = self.calc_vaild_obj([self.current_postion.x,self.current_postion.y,self.vehicle_yaw],self.object_data)
                 
@@ -140,13 +142,14 @@ class pure_pursuit :
 
                 elif self.last == 1:
                     if cnt == 0:
-                        self.ctrl_cmd_msg.accel = 20
-                    elif cnt == 1:
-                        self.ctrl_cmd_msg.steering = -20.0
-                    
-                    elif cnt == 2:
+                        self.ctrl_cmd_msg.accel = 30
+                    elif cnt <= 29:
                         self.ctrl_cmd_msg.accel = 10
-                    elif cnt >= 3:
+                    elif cnt <= 39:
+                        self.ctrl_cmd_msg.steering = -30.0
+                    elif cnt <= 69:
+                        self.ctrl_cmd_msg.accel = 10
+                    elif cnt >= 70:
                         self.send_gear_cmd(Gear.P.value)
                         redis_client.set('current_gear', 1) ## 주차? 중립?
                         redis_client.set('is_destination', 1) ## 목적지 도달
@@ -157,7 +160,6 @@ class pure_pursuit :
                 #TODO: (10) 제어입력 메세지 Publish
                 self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
                 
-            
             cnt+=1
             rate.sleep()
 
