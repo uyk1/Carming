@@ -133,6 +133,10 @@ const filterTagsByCategory = (
     .filter(tag => tag.category === category);
 };
 
+const filterRealPlace = (places: (Place | iconPlace)[]): Place[] => {
+  return places.filter<Place>((place: any): place is Place => isPlace(place));
+};
+
 export {
   calcRating,
   calcCoordinates,
@@ -150,4 +154,5 @@ export {
   placeToCoordinate,
   placeToIconPlace,
   filterTagsByCategory,
+  filterRealPlace,
 };
