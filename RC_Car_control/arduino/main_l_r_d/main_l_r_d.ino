@@ -10,6 +10,7 @@ Adafruit_NeoPixel pixel_right(LED_COUNT, LED_PIN_RIGHT, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   Serial.begin(9600); // 시리얼 통신 시작
+  pixel_right.begin();
 }
 
 void loop() {
@@ -18,7 +19,7 @@ void loop() {
     Serial.print("Received number: ");
     Serial.println(num);
 
-    if (num == '1') { // 1 = 정상주행 = 불꺼짐
+    if (num == 1) { // 1 = 정상주행 = 불꺼짐
       pixel_left.begin();
       //pixel_left.end();
       pixel_right.begin();
@@ -28,14 +29,14 @@ void loop() {
       pixel_right.show();
     }
 
-    else if (num == '2') { // 2 = 좌회전
+    else if (num == 2) { // 2 = 좌회전
       pixel_left.begin();
       pixel_left.setPixelColor(0, pixel_left.Color(255, 255, 0));
       pixel_left.show();
       delay(500);
     }
     
-    else if (num == '3') { // 3 = 우회전
+    else if (num == 3) { // 3 = 우회전
       pixel_right.begin();
       pixel_right.setPixelColor(0, pixel_right.Color(255, 255, 0));
       pixel_right.show();
@@ -43,4 +44,3 @@ void loop() {
     }
   }
 }
-
