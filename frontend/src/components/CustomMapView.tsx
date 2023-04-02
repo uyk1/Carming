@@ -6,7 +6,7 @@ import MapPolyline from './MapPolyline';
 import {ViewStyle} from 'react-native/types';
 
 interface CustomMapViewProps {
-  places: Place[] | iconPlace[];
+  places: (Place | iconPlace)[];
   viewStyle?: ViewStyle;
   routeCoordinates?: Coordinate[];
   latitudeOffset?: number;
@@ -21,9 +21,7 @@ const CustomMapView: React.FC<CustomMapViewProps> = ({
   useIndex,
 }) => {
   const coordinates = placesToCoordinates(places);
-  console.log(coordinates);
   const {midLat, midLon, latDelta, lonDelta} = calcCoordinates(coordinates);
-  console.log(midLat, midLon, latDelta, lonDelta);
 
   const mapMarker = (place: Place | iconPlace, index: number) => {
     if (isPlace(place)) {
