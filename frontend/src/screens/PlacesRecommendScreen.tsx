@@ -1,5 +1,5 @@
-import {useRef} from 'react';
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {useEffect, useRef} from 'react';
+import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {
   ActivityIndicator,
@@ -22,8 +22,12 @@ import {
   deleteCheckedTag,
   deletePlaceFromPlaceCartById,
   selectCategory,
+  setPlaceTagList,
 } from '../redux/slices/placeSlice';
 import {useGetPlacesQuery} from '../apis/placeApi';
+import {useGetTagsQuery} from '../apis/tagApi';
+import {setTagList} from '../redux/slices/tagSlice';
+import {filterTagsByCategory} from '../utils';
 
 interface PlacesRecommendScreenScreenProps {}
 
@@ -36,9 +40,10 @@ const PlacesRecommendScreen: React.FC<
 
   const {placeCart, placeTagList, checkedTagList, selectedCategory} =
     useSelector((state: RootState) => state.place);
+  const tags = useSelector((state: RootState) => state.tag);
+
   const {
     data: places,
-    error,
     isFetching,
     isError,
     isSuccess,
@@ -47,6 +52,10 @@ const PlacesRecommendScreen: React.FC<
     category: selectedCategory,
     size: 10,
   });
+
+  useEffect(() => {
+    dispatch(setPlaceTagList(filterTagsByCategory(tags, selectedCategory)));
+  }, [selectedCategory, tags]);
 
   const tagPressed = (tag: Tag) => {
     checkedTagList.includes(tag)
@@ -66,8 +75,6 @@ const PlacesRecommendScreen: React.FC<
   };
 
   const carouselSection = () => {
-    console.log('get places data ::', places);
-    console.log('get places error ::', error);
     if (isFetching) {
       return (
         <ActivityIndicator
@@ -126,18 +133,23 @@ const PlacesRecommendScreen: React.FC<
             rowTextStyle={styles.dropdown2RowTxtStyle}
           />
         </View>
-        {placeTagList.map(tag => {
-          return (
-            <TagChip
-              key={tag.id}
-              style={{marginLeft: 5}}
-              text={tag.name}
-              selected={checkedTagList.includes(tag)}
-              selectedBackgroundColor={theme.colors.secondary}
-              onPress={() => tagPressed(tag)}
-            />
-          );
-        })}
+        <ScrollView
+          style={styles.tagScrollViewStyle}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}>
+          {placeTagList.map(tag => {
+            return (
+              <TagChip
+                key={tag.id}
+                style={{marginLeft: 5}}
+                text={tag.name}
+                selected={checkedTagList.includes(tag)}
+                selectedBackgroundColor={theme.colors.secondary}
+                onPress={() => tagPressed(tag)}
+              />
+            );
+          })}
+        </ScrollView>
       </StyledView>
 
       <CenterView>{carouselSection()}</CenterView>
@@ -212,6 +224,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  tagScrollViewStyle: {
+    flexDirection: 'row',
   },
 });
 
