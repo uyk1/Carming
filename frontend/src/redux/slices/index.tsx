@@ -3,5 +3,13 @@ import courseSlice from './courseSlice';
 import tagSlice from './tagSlice';
 import authSlice from './authSlice';
 import journeySlice from './journeySlice';
+import reviewSlice from './reviewSlice';
 
-export {placeSlice, courseSlice, tagSlice, authSlice, journeySlice};
+export {
+  placeSlice,
+  courseSlice,
+  tagSlice,
+  authSlice,
+  journeySlice,
+  reviewSlice,
+};
