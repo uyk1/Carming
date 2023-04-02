@@ -12,6 +12,8 @@ import CustomMapView from './CustomMapView';
 import RecommendCardDesc from './RecommendCardDesc';
 import CarCallInfoCard from './CarCallInfoCard';
 import CarMoveInfoCard from './CarMoveInfoCard';
+import ReviewCourseItem from './ReviewCourseItem';
+import ReviewPlaceItem from './ReviewPlaceItem';
 
 export {
   CourseRecommendCard,
@@ -28,4 +30,6 @@ export {
   RecommendCardDesc,
   CarCallInfoCard,
   CarMoveInfoCard,
+  ReviewCourseItem,
+  ReviewPlaceItem,
 };
