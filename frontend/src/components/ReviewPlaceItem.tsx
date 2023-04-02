@@ -1,13 +1,14 @@
 import {Image, ScrollView, Text, View} from 'react-native';
-import {Category, Place, Tag} from '../types';
+import {Category, Place, PlaceReviewRequest, Tag} from '../types';
 import styled from 'styled-components';
 import {AirbnbRating, Rating} from 'react-native-ratings';
 import {useTheme} from 'react-native-paper';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
 import {filterTagsByCategory} from '../utils';
 import {TagChip} from '.';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import {updatePlaceReview} from '../redux/slices/reviewSlice';
 
 interface ReviewPlaceItemProps {
   place: Place;
@@ -16,12 +17,23 @@ interface ReviewPlaceItemProps {
 
 const ReviewPlaceItem: React.FC<ReviewPlaceItemProps> = ({place, index}) => {
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const {placeReviews} = useSelector((state: RootState) => state.review);
   const tags = useSelector((state: RootState) =>
     filterTagsByCategory(state.tag, place.category ?? Category.음식점),
   );
 
   const [rating, setRating] = useState<number>(0);
   const [checkedTagList, setCheckedTagList] = useState<Tag[]>([]);
+
+  useEffect(() => {
+    const newPlaceReview: PlaceReviewRequest = {
+      placeId: place.id,
+      placeRating: rating,
+      placeTags: checkedTagList.map(tag => tag.id),
+    };
+    dispatch(updatePlaceReview(newPlaceReview));
+  }, [rating, checkedTagList]);
 
   const ratingCompleted = (rating: number): void => {
     setRating(rating);
@@ -54,7 +66,10 @@ const ReviewPlaceItem: React.FC<ReviewPlaceItemProps> = ({place, index}) => {
             size={13}
           />
         </RatingContainer>
-        <TagScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+        <ScrollView
+          style={{flex: 1}}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}>
           {tags.map(tag => {
             return (
               <TagChip
@@ -67,7 +82,7 @@ const ReviewPlaceItem: React.FC<ReviewPlaceItemProps> = ({place, index}) => {
               />
             );
           })}
-        </TagScrollView>
+        </ScrollView>
       </PlaceInfoContainer>
     </ReviewPlaceContainer>
   );
@@ -82,6 +97,7 @@ const PlaceInfoContainer = styled(View)`
   flex-direction: column;
   justify-content: center;
   padding-top: 5px;
+  flex: 1;
 `;
 
 const RatingContainer = styled(View)`
@@ -108,10 +124,6 @@ const PlaceImage = styled(Image)`
 const RatingText = styled(Text)`
   font-size: 13px;
   margin: 10px 5px 10px 0px;
-`;
-
-const TagScrollView = styled(ScrollView)`
-  flex-direction: row;
 `;
 
 export default ReviewPlaceItem;
