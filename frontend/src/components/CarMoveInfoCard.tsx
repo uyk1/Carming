@@ -2,11 +2,12 @@ import {Text, View, Image} from 'react-native';
 import {useTheme} from 'react-native-paper';
 import styled from 'styled-components';
 import {Place} from '../types';
-import {calcRating} from '../utils';
+import {calcRating, isPlace} from '../utils';
 import RatingStar from './RatingStar';
+import {iconPlace} from './MapMarker';
 
 interface CarMoveInfoCardProps {
-  place: Place;
+  place: Place | iconPlace;
   index: number;
   infoText: string;
 }
@@ -17,43 +18,50 @@ const CarMoveInfoCard: React.FC<CarMoveInfoCardProps> = ({
   infoText,
 }) => {
   const theme = useTheme();
-  const rating = calcRating(place.ratingSum, place.ratingCount);
-  return (
-    <CardContainer>
-      <PlaceContainer>
-        <PlaceImage source={{uri: place.image}} />
-        <PlaceInfoContainer>
-          <PlaceTitleText>
-            #{index + 1} {place.name}
-          </PlaceTitleText>
-          <RatingContainer>
-            <RatingStar
-              iconSize={18}
-              iconStyle={{margin: -8}}
-              rating={rating}
-            />
-            <RatingText
-              style={{paddingHorizontal: 3, color: theme.colors.secondary}}>
-              {rating}
-            </RatingText>
-            <RatingText
-              style={{
-                fontSize: 10,
-                marginTop: 6,
-                marginRight: 10,
-                color: theme.colors.secondary,
-              }}>
-              ({place.ratingCount})
-            </RatingText>
-          </RatingContainer>
-          <TagText style={{color: theme.colors.secondary}}>
-            #맛있는 #분위기있는
-          </TagText>
-        </PlaceInfoContainer>
-      </PlaceContainer>
-      <InfoText style={{color: useTheme().colors.primary}}>{infoText}</InfoText>
-    </CardContainer>
-  );
+
+  if (isPlace(place)) {
+    const rating = calcRating(place.ratingSum, place.ratingCount);
+    return (
+      <CardContainer>
+        <PlaceContainer>
+          <PlaceImage source={{uri: place.image}} />
+          <PlaceInfoContainer>
+            <PlaceTitleText>
+              #{index} {place.name}
+            </PlaceTitleText>
+            <RatingContainer>
+              <RatingStar
+                iconSize={18}
+                iconStyle={{margin: -8}}
+                rating={rating}
+              />
+              <RatingText
+                style={{paddingHorizontal: 3, color: theme.colors.secondary}}>
+                {rating}
+              </RatingText>
+              <RatingText
+                style={{
+                  fontSize: 10,
+                  marginTop: 6,
+                  marginRight: 10,
+                  color: theme.colors.secondary,
+                }}>
+                ({place.ratingCount})
+              </RatingText>
+            </RatingContainer>
+            <TagText style={{color: theme.colors.secondary}}>
+              #맛있는 #분위기있는
+            </TagText>
+          </PlaceInfoContainer>
+        </PlaceContainer>
+        <InfoText style={{color: useTheme().colors.primary}}>
+          {infoText}
+        </InfoText>
+      </CardContainer>
+    );
+  } else {
+    return <></>;
+  }
 };
 
 const CardContainer = styled(View)`
