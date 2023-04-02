@@ -5,16 +5,22 @@ import styled from 'styled-components';
 interface CarCallInfoCardProps {
   statusText: string;
   infoText: string;
+  imageActive?: boolean;
 }
 
 const CarCallInfoCard: React.FC<CarCallInfoCardProps> = ({
   statusText,
   infoText,
+  imageActive = true,
 }) => {
   return (
     <CardContainerView>
       <CarmingCarImage
-        source={require('../assets/images/carming_loading.gif')}
+        source={
+          imageActive
+            ? require('../assets/images/carming_loading.gif')
+            : require('../assets/images/carming_loading-2.png')
+        }
       />
       <StatusText>{statusText}</StatusText>
       <InfoText style={{color: useTheme().colors.primary}}>{infoText}</InfoText>
