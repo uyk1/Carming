@@ -28,7 +28,7 @@ def get_data():
       #current_velocity = redis_client.get('current_velocity')
       current_velocity = 100
       # current_brake = redis_client.get('current_brake')
-      # destination = redis_client.get('destination')
+      # destination = redis_client.get('is_destination')
       # current_acceleration = redis_client.get('current_acceleration')
       # current_position_x = redis_client.get('current_position_x')
       # current_position_y = redis_client.get('current_position_y')

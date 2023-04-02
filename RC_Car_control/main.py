@@ -21,6 +21,9 @@ class main():
     ## redis에서 데이터 확인
     def run(self):
         redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0, password='carming123')
+        
+        door_flag = 0
+        
         while True:
             ## 속도 b'1.4650933742523193' 형태로 출력
             current_velocity = redis_client.get('current_velocity')
@@ -41,16 +44,19 @@ class main():
             ## 정지 b'1.0' 형태로 출력
             current_brake = redis_client.get('current_brake')
             ## destination = redis_client.get('destination')
-            current_gear = redis_client.get('current_gear')
-            print('current_gear : ', current_gear)
 	    
 	    drive_start = redis_client.get('drive_start')
+	    is_destination = redis_client.get('is_destination')
+	    
             if drive_start == '1':
                 tts.synthesize_text("안전벨트를 매주세요! 출발하겠습니다~")
+                ## 주행 시작하면서 문열림 flag 초기화
+                door_flag = 0
             
-            destination = redis_client.get('destination')
-            if destination == '1':
+            ## 문열림 한 번만 하기 위해서 flag 사용
+            if is_destination == '1' and door_flag = 0:
                 tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
+                door_flag = 1
                 # 1분뒤에 문열림
                 time.sleep(60)
                 openclose()

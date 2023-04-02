@@ -31,7 +31,7 @@ def openclose():
     def set_duty_cycle(duty_cycle):
         pwm.ChangeDutyCycle(duty_cycle)
 
-    try:
+    try:	
         # 0도에서 95도로 3초간 문 열림
         tts.synthesize_text("문이 열립니다~ 즐거운 시간 보내세요~")
         for angle in range(0, 96, 1):
@@ -44,7 +44,6 @@ def openclose():
         get_off = redis_client.get('get_off')
         if getoff == '1':
             tts.synthesize_text("문이 닫힙니다~")
-
             # 95도에서 0도로 3초간 문 닫힘
             for angle in range(96, 0, -1):
                 # 각도를 duty cycle로 변환하여 PWM 출력, 일정한 속도로 동작
