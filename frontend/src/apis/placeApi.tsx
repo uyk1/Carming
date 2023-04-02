@@ -10,7 +10,7 @@ export interface PlaceSearch {
 
 export const placeApi = createApi({
   reducerPath: 'placeApi',
-  baseQuery: fetchBaseQuery({baseUrl: REST_API_URL + '/place'}),
+  baseQuery: fetchBaseQuery({baseUrl: REST_API_URL + '/places'}),
   tagTypes: ['Places'],
   endpoints: builder => ({
     getPlaces: builder.query<Place[], PlaceSearch>({

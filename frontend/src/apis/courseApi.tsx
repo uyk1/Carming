@@ -9,7 +9,7 @@ export interface CourseSearch {
 
 export const courseApi = createApi({
   reducerPath: 'courseApi',
-  baseQuery: fetchBaseQuery({baseUrl: REST_API_URL + '/course'}),
+  baseQuery: fetchBaseQuery({baseUrl: REST_API_URL + '/courses'}),
   tagTypes: ['Courses'],
   endpoints: builder => ({
     getCourses: builder.query<Course[], CourseSearch>({
