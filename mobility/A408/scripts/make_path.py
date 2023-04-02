@@ -7,7 +7,7 @@ import sys
 import os
 import copy
 import numpy as np
-import json
+import json ## 문자열을 dictionary로 변환할 때 사용
 
 from math import cos, sin, sqrt, pow, atan2, pi
 from geometry_msgs.msg import Point32, PoseStamped, PoseWithCovarianceStamped
@@ -27,9 +27,6 @@ sys.path.append(current_path)
 
 from lib.mgeo.class_defs import *
 
-# mgeo_dijkstra_path_1 은 Mgeo 데이터를 이용하여 시작 Node 와 목적지 Node 를 지정하여 Dijkstra 알고리즘을 적용하는 예제 입니다.
-# 사용자가 직접 지정한 시작 Node 와 목적지 Node 사이 최단 경로 계산하여 global Path(전역경로) 를 생성 합니다.
-# 시작 Node 와 목적지 Node 는 Rviz 의 goal pose / initial pose 두 기능을 이용하여 정의합니다.
 
 # 노드 실행 순서
 # 0. 필수 학습 지식
@@ -51,13 +48,12 @@ class dijkstra_path_pub:
     def __init__(self):
         rospy.init_node('dijkstra_path_pub', anonymous=True)
 
-        self.global_path_pub = rospy.Publisher('/global_path', Path, queue_size=1)
-
-        rospy.Subscriber('/move_base_simple/goal', PoseStamped, self.goal_callback)
-        rospy.Subscriber('/initialpose', PoseWithCovarianceStamped, self.init_callback)
         self.gps_sub = rospy.Subscriber("/gps", GPSMessage, self.navsat_callback)
+        self.global_path_pub = rospy.Publisher('/global_path', Path, queue_size=1)
+        self.proj_UTM = Proj(proj='utm', zone=52, ellps='WGS84', preserve_units=False)
 
-        # TODO: (1) Mgeo data 읽어온 후 데이터 확인
+
+        ## Mgeo data 읽어온 후 데이터 확인
         load_path = os.path.normpath(os.path.join(current_path, 'lib/mgeo_data/R_KR_PG_K-City'))
         mgeo_planner_map = MGeo.create_instance_from_json(load_path)
 
@@ -72,6 +68,21 @@ class dijkstra_path_pub:
         self.is_goal_pose = False
         self.is_init_pose = False
 
+        ## 탑승자의 위치 정보 가져오기
+        call_coordinate = redis_client.get('call_coordinate')
+        call_coordinate = eval(call_coordinate)
+        self.init_state(call_coordinate)
+        print(call_coordinate)
+        
+        ## ---------------------
+
+        ## redis에서 목적지 정보 가져오기
+        destination_coordinate = redis_client.get('destination_coordinate')
+        destination_coordinate = json.loads(destination_coordinate)
+        self.goal_state(destination_coordinate)
+
+
+        
         while True:
             if self.is_goal_pose == True and self.is_init_pose == True:
                 break
@@ -82,9 +93,10 @@ class dijkstra_path_pub:
         self.global_path_msg = Path()
         self.global_path_msg.header.frame_id = '/map'
 
-        ## 좌표 변환
         self.lat = 0
         self.lon = 0
+        self.x = 0
+        self.y = 0
         self.get_global_path=[]
 
         self.global_path_msg = self.calc_dijkstra_path_node(self.start_node, self.end_node)
@@ -106,12 +118,11 @@ class dijkstra_path_pub:
             self.global_path_pub.publish(self.global_path_msg)
             rate.sleep()
 
-        ## redis에 위도, 경도 저장
+        ## redis에 생성된 경로에 대한 위도, 경도 저장
         redis_client.set('global_path', str(self.get_global_path))
 
 
     def navsat_callback(self, gps_msg):
-
         self.lat = gps_msg.latitude
         self.lon = gps_msg.longitude
         self.e_o = gps_msg.eastOffset
@@ -119,14 +130,15 @@ class dijkstra_path_pub:
 
         self.is_gps=True
 
+    ## 탑승 위치에서 가까운 노드 확인
+    def init_state(self, start_gps):
 
-    def init_callback(self, msg):
-        # TODO: (2) 시작 Node 와 종료 Node 정의
-        # 시작 Node 는 Rviz 기능을 이용해 지정한 위치에서 가장 가까이 있는 Node 로 한다.
+        xy_zone = self.proj_UTM(start_gps['lon'], start_gps['lat'])
 
+        #xy_zone = self.proj_UTM(126.7734230193396, 37.23963047324451)
 
-        x = msg.pose.pose.position.x
-        y = msg.pose.pose.position.y
+        x = xy_zone[0]-self.e_o
+        y = xy_zone[1]-self.n_o
 
 
         min_dis = float('inf')
@@ -146,13 +158,14 @@ class dijkstra_path_pub:
         self.is_init_pose = True
 
 
-    
-    def goal_callback(self, msg):
-        # TODO: (2) 시작 Node 와 종료 Node 정의
-        # 종료 Node 는 Rviz 기능을 이용해 지정한 위치에서 가장 가까이 있는 Node 로 한다.
+    ## 목적지에서 가까운 노드 확인
+    def goal_state(self, end_gps):
+        
+        xy_zone = self.proj_UTM(end_gps['lon'], end_gps['lat'])
+        # xy_zone = self.proj_UTM(126.77451868834234, 37.241549847536525)
 
-        x = msg.pose.position.x
-        y = msg.pose.position.y
+        x = xy_zone[0]-self.e_o
+        y = xy_zone[1]-self.n_o
 
         min_dis = float('inf')
         node_id = -1
@@ -196,11 +209,11 @@ class dijkstra_path_pub:
                         ## 변환된 utm좌표를 gps로 변환
                         ## 좌표 변환
                         self.proj_UTM = Proj(proj='utm', zone=52, ellps='WGS84', preserve_units=False)
-                        self.lon, self.lat = self.proj_UTM(utm_x, utm_y, inverse=True)               
+                        lon, lat = self.proj_UTM(utm_x, utm_y, inverse=True)               
     
                         dic = {}
-                        dic['lat'] = self.lat
-                        dic['lon'] = self.lon
+                        dic['lat'] = lat
+                        dic['lon'] = lon
 
                         ## 리스트에 딕셔너리 추가
                         self.get_global_path.append(dic)
