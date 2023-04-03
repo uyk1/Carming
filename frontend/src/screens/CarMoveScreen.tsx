@@ -61,7 +61,7 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
   const {data: currentCarCoordinate} = useGetCurrentCarPositionQuery(
     undefined,
     {
-      pollingInterval: 1000,
+      pollingInterval: navigation.isFocused() ? 1000 : undefined,
     },
   );
   const {data: globalPath} = useGetGlobalPathQuery();
@@ -73,7 +73,7 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
   );
   const {data: isDestination, isFetching: isDestinationFetching} =
     useCheckIsDestinationQuery(undefined, {
-      pollingInterval: 1000,
+      pollingInterval: navigation.isFocused() ? 1000 : undefined,
     });
   const {data: driveStartStatus, isFetching: driveStartStatusFetching} =
     useCheckDriveStartStatusQuery();
@@ -117,7 +117,7 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
   };
 
   const journeyEndBtnPressed = () => {
-    navigation.navigate('JourneyEnd', {screen: 'Review'});
+    navigation.replace('JourneyEnd', {screen: 'Review'});
   };
 
   const makeInfoText = (): string => {
