@@ -1,6 +1,6 @@
 import {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {IconButton, useTheme, SegmentedButtons} from 'react-native-paper';
 import {AlertNotificationRoot} from 'react-native-alert-notification';
@@ -13,10 +13,13 @@ import {CustomButton} from '../components';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useGetTagsQuery} from '../apis/tagApi';
 import {setTagList} from '../redux/slices/tagSlice';
+import {CompositeScreenProps} from '@react-navigation/native';
+import {DrawerScreenProps} from '@react-navigation/drawer';
+import {L2_AppDrawerParamList} from '../navigations/L2_AppDrawerNavigator';
 
-export type RecommendScreenProps = NativeStackScreenProps<
-  L4_CourseCreateStackParamList,
-  'Recommend'
+export type RecommendScreenProps = CompositeScreenProps<
+  NativeStackScreenProps<L4_CourseCreateStackParamList, 'Recommend'>,
+  DrawerScreenProps<L2_AppDrawerParamList>
 >;
 
 const RecommendScreen: React.FC<RecommendScreenProps> = ({navigation}) => {
@@ -24,6 +27,16 @@ const RecommendScreen: React.FC<RecommendScreenProps> = ({navigation}) => {
   const dispatch = useDispatch();
 
   const [recommendType, setRecommendType] = useState<string>('0');
+  const {data: tagLists} = useGetTagsQuery();
+
+  useEffect(() => {
+    if (tagLists !== undefined) dispatch(setTagList(tagLists));
+  }, [tagLists]);
+
+  const homeBtnPressed = () => {
+    navigation.navigate('Main');
+  };
+
   const recommendTypeChangeButtons = [
     {
       value: '0',
@@ -52,11 +65,6 @@ const RecommendScreen: React.FC<RecommendScreenProps> = ({navigation}) => {
       },
     },
   ];
-  const {data: tagLists} = useGetTagsQuery();
-
-  useEffect(() => {
-    if (tagLists !== undefined) dispatch(setTagList(tagLists));
-  }, [tagLists]);
 
   return (
     <AlertNotificationRoot theme={'light'}>
@@ -72,9 +80,7 @@ const RecommendScreen: React.FC<RecommendScreenProps> = ({navigation}) => {
             <IconButton
               icon="home"
               size={30}
-              onPress={() => {
-                console.log('hello');
-              }}
+              onPress={() => homeBtnPressed()}
             />
           </StyledView>
           {recommendType === '0' ? (
