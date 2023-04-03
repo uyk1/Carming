@@ -32,11 +32,11 @@ public class Card {
 
     //todo change enum card
     @Column(name = "card_company_name")
-    private String companyName;
+    private CardCompany companyName;
 
     @Builder
     public Card(String number, String cvv, String expiredDate,
-                String password, String companyName) {
+                String password, CardCompany companyName) {
         this.number = number;
         this.cvv = cvv;
         this.expiredDate = expiredDate;
