@@ -12,6 +12,11 @@ import {Course} from '../types';
 import {calcRating} from '../utils';
 import styled from 'styled-components';
 import RatingStar from './RatingStar';
+import {useDispatch} from 'react-redux';
+import {
+  addPlaceListToPreCart,
+  addSelectedCourse,
+} from '../redux/slices/mainSlice';
 
 interface PopularCourseItemProps {
   course: Course;
@@ -32,10 +37,10 @@ const PopularCourseItem: React.FC<PopularCourseItemProps> = ({
   onPress,
   disabled = false,
 }) => {
+  const dispatch = useDispatch();
   const handlePress = () => {
-    if (onPress && !disabled) {
-      onPress();
-    }
+    if (onPress && !disabled) onPress();
+    dispatch(addSelectedCourse(course));
   };
 
   const colors = {

@@ -25,15 +25,6 @@ const HomeScreen = () => {
   const {token, memberInfo} = useSelector((state: RootState) => state.auth);
   const preCart = useSelector((state: RootState) => state.main.preCart);
 
-  //코스 모달
-  const [isCourseModalVisible, setIsCourseModalVisible] = useState(false);
-  const handleCourseModalClose = () => {
-    setIsCourseModalVisible(false);
-  };
-  const selectedCourse = useSelector(
-    (state: RootState) => state.main.selectedCourse,
-  );
-
   //로그아웃
   const handleLogout = () => {
     dispatch(logout());

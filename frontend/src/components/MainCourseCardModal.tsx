@@ -7,6 +7,8 @@ import {
   TextInput,
   Alert,
   ImageBackground,
+  ScrollView,
+  StyleSheet,
 } from 'react-native';
 import {useVerifyMutation} from '../apis/memberRegistApi';
 import {useDispatch, useSelector} from 'react-redux';
@@ -18,33 +20,37 @@ import {calcRating} from '../utils';
 import SIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import {addPlaceToPlaceCart} from '../redux/slices/placeSlice';
-import {addPlaceToPreCart} from '../redux/slices/mainSlice';
+import {
+  addPlaceListToPreCart,
+  addPlaceToPreCart,
+} from '../redux/slices/mainSlice';
 import {RootState} from '../redux/store';
+import CustomMapView from './CustomMapView';
+import CustomButton from './CustomButton';
 
-export interface MainPlaceCardModalProps {
+export interface MainCourseCardModalProps {
   isVisible: boolean;
   onClose: () => void;
-  place: Place;
+  course: Course;
 }
 
-const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
+const MainCourseCardModal: React.FC<MainCourseCardModalProps> = ({
   isVisible,
   onClose,
-  place,
+  course,
 }) => {
   const dispatch = useDispatch();
 
-  const rating = calcRating(place.ratingSum, place.ratingCount);
+  const rating = calcRating(course.ratingSum, course.ratingCount);
 
   const preCart = useSelector((state: RootState) => state.main.preCart);
-  const isIncluded = preCart.includes(place);
 
   const handleCancel = () => {
     onClose();
   };
 
   const handleAddPress = () => {
-    dispatch(addPlaceToPreCart(place));
+    dispatch(addPlaceListToPreCart(course.places));
   };
 
   return (
@@ -57,18 +63,28 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
         <ModalContainer>
           <ContentsContainer>
             <ImgView>
-              <PlaceImg source={{uri: place.image}} />
+              <CustomMapView
+                viewStyle={{flex: 1}}
+                places={course.places}
+                useIndex={true}
+              />
             </ImgView>
-            <ContentView style={{justifyContent: 'space-between'}}>
+            <ContentView
+              style={{
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginTop: '3%',
+                marginBottom: '8%',
+              }}>
               <CustomText
                 style={{
-                  fontFamily: 'SeoulNamsanEB',
-                  fontSize: 18,
-                  marginTop: '1%',
+                  fontFamily: 'SeoulNamsanM',
+                  fontSize: 14,
+                  marginVertical: '1%',
                 }}>
-                {place.name}
+                {course.name}
               </CustomText>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
                 <RatingStar
                   rating={rating}
                   containerStyle={{marginRight: 8}}
@@ -76,31 +92,25 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
                   inactiveColor="grey"
                 />
                 <RatingText>
-                  {rating} ({place.ratingCount})
+                  {rating} ({course.ratingCount})
                 </RatingText>
               </View>
             </ContentView>
             <ContentView>
-              <SIcon
-                name={'location-pin'}
-                style={{fontSize: 14, marginRight: 5}}
-              />
-              <CustomText>{place.region}</CustomText>
+              <ScrollView
+                horizontal
+                nestedScrollEnabled={true}
+                showsHorizontalScrollIndicator={false}
+                style={styles.textContainer}>
+                {course.places.map((place, index) => (
+                  <Text key={index} style={[styles.text]}>
+                    {place.name + ' - '}
+                  </Text>
+                ))}
+              </ScrollView>
             </ContentView>
             <ContentView>
-              <MIcon name={'call'} style={{fontSize: 14, marginRight: 5}} />
-              <CustomText>{place.tel}</CustomText>
-            </ContentView>
-            <ContentView>
-              {place.keyword?.map((keyword, index) => {
-                return (
-                  <CustomText
-                    key={index}
-                    style={{fontFamily: 'SeoulNamsanEB', fontSize: 14}}>
-                    #{keyword}
-                  </CustomText>
-                );
-              })}
+              <CustomText></CustomText>
             </ContentView>
           </ContentsContainer>
           <View
@@ -117,18 +127,11 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
                 padding: 7,
                 borderRadius: 5,
                 alignItems: 'center',
-                opacity: isIncluded ? 0.5 : 1, // disabled 상태일 때 투명도 설정
-              }}
-              disabled={isIncluded}>
-              {isIncluded ? (
-                <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
-                  담은 장소
-                </Text>
-              ) : (
-                <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
-                  미리 담기
-                </Text>
-              )}
+                // opacity: isIncluded ? 0.5 : 1, // disabled 상태일 때 투명도 설정
+              }}>
+              <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
+                지금 출발
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleCancel}
@@ -176,7 +179,7 @@ const ContentView = styled(View)`
 `;
 
 const ImgView = styled(View)`
-  height: 75%;
+  height: 55%;
   width: 100%;
   border-radius: 3px;
   overflow: hidden;
@@ -194,4 +197,16 @@ const RatingText = styled(Text)`
   color: black;
   font-size: 13px;
 `;
-export default MainPlaceCardModal;
+
+const styles = StyleSheet.create({
+  textContainer: {
+    flexDirection: 'row',
+    alignContent: 'center',
+  },
+  text: {
+    fontFamily: 'SeoulNamsanM',
+    color: 'black',
+    fontSize: 20,
+  },
+});
+export default MainCourseCardModal;
