@@ -30,7 +30,7 @@ public class Card {
     @Column(name = "card_password")
     private String password;
 
-    //todo change enum card
+    @Enumerated(EnumType.STRING)
     @Column(name = "card_company_name")
     private CardCompany companyName;
 
