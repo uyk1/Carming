@@ -1,9 +1,8 @@
 import {useState, useEffect} from 'react';
 import {View, StyleSheet} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {IconButton, useTheme, SegmentedButtons} from 'react-native-paper';
-import {AlertNotificationRoot} from 'react-native-alert-notification';
 import LinearGradient from 'react-native-linear-gradient';
 import styled from 'styled-components/native';
 import PlacesRecommendScreen from './PlacesRecommendScreen';
@@ -67,41 +66,35 @@ const RecommendScreen: React.FC<RecommendScreenProps> = ({navigation}) => {
   ];
 
   return (
-    <AlertNotificationRoot theme={'light'}>
-      <GradientBackground colors={['#70558e7a', '#df94c283', '#ffbdc1b0']}>
-        <SafeAreaView style={{flex: 1}}>
-          <StyledView style={{justifyContent: 'space-between'}}>
-            <SegmentedButtons
-              style={{width: 200}}
-              value={recommendType}
-              onValueChange={setRecommendType}
-              buttons={recommendTypeChangeButtons}
-            />
-            <IconButton
-              icon="home"
-              size={30}
-              onPress={() => homeBtnPressed()}
-            />
-          </StyledView>
-          {recommendType === '0' ? (
-            <PlacesRecommendScreen />
-          ) : (
-            <CoursesRecommendScreen />
-          )}
-          <StyledView style={{justifyContent: 'center'}}>
-            <CustomButton
-              text={'선택 완료'}
-              onPress={() => navigation.navigate('CourseEdit', {recommendType})}
-              buttonStyle={{
-                ...styles.buttonStyle,
-                backgroundColor: theme.colors.surfaceVariant,
-              }}
-              textStyle={styles.buttonText}
-            />
-          </StyledView>
-        </SafeAreaView>
-      </GradientBackground>
-    </AlertNotificationRoot>
+    <GradientBackground colors={['#70558e7a', '#df94c283', '#ffbdc1b0']}>
+      <SafeAreaView style={{flex: 1}}>
+        <StyledView style={{justifyContent: 'space-between'}}>
+          <SegmentedButtons
+            style={{width: 200}}
+            value={recommendType}
+            onValueChange={setRecommendType}
+            buttons={recommendTypeChangeButtons}
+          />
+          <IconButton icon="home" size={30} onPress={() => homeBtnPressed()} />
+        </StyledView>
+        {recommendType === '0' ? (
+          <PlacesRecommendScreen />
+        ) : (
+          <CoursesRecommendScreen />
+        )}
+        <StyledView style={{justifyContent: 'center'}}>
+          <CustomButton
+            text={'선택 완료'}
+            onPress={() => navigation.navigate('CourseEdit', {recommendType})}
+            buttonStyle={{
+              ...styles.buttonStyle,
+              backgroundColor: theme.colors.surfaceVariant,
+            }}
+            textStyle={styles.buttonText}
+          />
+        </StyledView>
+      </SafeAreaView>
+    </GradientBackground>
   );
 };
 
