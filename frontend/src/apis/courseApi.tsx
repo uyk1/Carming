@@ -19,7 +19,26 @@ export const courseApi = createApi({
       }),
       providesTags: ['Courses'],
     }),
+    checkCourseExist: builder.query<boolean, number[]>({
+      query: placeIds => ({
+        url: '/new',
+        params: placeIds,
+      }),
+    }),
+
+    registCourse: builder.mutation<number, Course>({
+      query: course => ({
+        url: '',
+        method: 'POST',
+        body: course,
+      }),
+      invalidatesTags: ['Courses'],
+    }),
   }),
 });
 
-export const {useGetCoursesQuery} = courseApi;
+export const {
+  useGetCoursesQuery,
+  useCheckCourseExistQuery,
+  useRegistCourseMutation,
+} = courseApi;
