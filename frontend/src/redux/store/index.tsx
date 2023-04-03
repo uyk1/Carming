@@ -5,7 +5,13 @@ import {
 } from '@reduxjs/toolkit';
 import {persistReducer, persistStore} from 'redux-persist';
 import persistConfig from './persistConfig';
-import {placeSlice, courseSlice, tagSlice, authSlice} from '../slices';
+import {
+  placeSlice,
+  courseSlice,
+  tagSlice,
+  authSlice,
+  mainSlice,
+} from '../slices';
 import {memberRegistApi} from './../../apis/memberRegistApi';
 
 const rootReducer = combineReducers({
@@ -13,6 +19,7 @@ const rootReducer = combineReducers({
   course: courseSlice.reducer,
   tag: tagSlice.reducer,
   auth: authSlice.reducer,
+  main: mainSlice.reducer,
   [memberRegistApi.reducerPath]: memberRegistApi.reducer,
 });
 

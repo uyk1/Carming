@@ -4,6 +4,8 @@ import {Category} from './Category';
 import {Member} from './Member';
 import {Course} from './Course';
 import {Coordinate} from './Coordinate';
+import {SeoulDistrict} from './SeoulDistrict';
+import {RegionObject} from './RegionObject';
 
-export type {Tag, Place, Member, Course, Coordinate};
-export {Category};
+export type {Tag, Place, Member, Course, Coordinate, RegionObject};
+export {Category, SeoulDistrict};
