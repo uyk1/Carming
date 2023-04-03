@@ -14,6 +14,8 @@ import CarCallInfoCard from './CarCallInfoCard';
 import CarMoveInfoCard from './CarMoveInfoCard';
 import ReviewCourseItem from './ReviewCourseItem';
 import ReviewPlaceItem from './ReviewPlaceItem';
+import PlacePreCart from './PlacePreCart';
+import MainPlaceCardModal from './MainPlaceCardModal';
 
 export {
   CourseRecommendCard,
@@ -32,4 +34,6 @@ export {
   CarMoveInfoCard,
   ReviewCourseItem,
   ReviewPlaceItem,
+  PlacePreCart,
+  MainPlaceCardModal,
 };
