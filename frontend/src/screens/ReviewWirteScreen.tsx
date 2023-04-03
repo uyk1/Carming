@@ -39,18 +39,17 @@ const ReviewWirteScreen = () => {
   }, [tagLists]);
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <StyledSafeAreaView>
       <ScreenContainer>
         <TitleText style={{color: theme.colors.surfaceVariant}}>
           리뷰 작성하기
         </TitleText>
-        {/* {placeList.map((place, index) => (
-          <ReviewPlaceItem place={place} index={index + 1} />
-        ))} */}
-        <ReviewPlaceItem place={dummyPlace} index={1} />
+        {placeList.map((place, index) => (
+          <ReviewPlaceItem key={place.id} place={place} index={index + 1} />
+        ))}
         <ReviewCourseItem isFirstTime={false} />
         <CustomButton
-          text={'여정 시작하기'}
+          text={'완료'}
           onPress={() => {}}
           buttonStyle={{
             ...styles.button,
@@ -59,7 +58,7 @@ const ReviewWirteScreen = () => {
           textStyle={styles.buttonText}
         />
       </ScreenContainer>
-    </SafeAreaView>
+    </StyledSafeAreaView>
   );
 };
 
@@ -124,6 +123,7 @@ const dummyCourse: Course = {
 const styles = StyleSheet.create({
   button: {
     width: 200,
+    height: 50,
     padding: 14,
     borderRadius: 30,
     marginTop: 40,
@@ -135,11 +135,16 @@ const styles = StyleSheet.create({
   },
 });
 
+const StyledSafeAreaView = styled(SafeAreaView)`
+  flex: 1;
+  background-color: white;
+`;
+
 const ScreenContainer = styled(View)`
   flex: 1;
   flex-direction: column;
   align-items: center;
-  margin: 30px;
+  padding: 20px;
 `;
 
 const TitleText = styled(Text)`

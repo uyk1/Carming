@@ -210,12 +210,17 @@ const styles = StyleSheet.create({
   button: {
     width: 200,
     padding: 14,
+    height: 50,
+    marginTop: 20,
     borderRadius: 30,
   },
   modalButton: {
     width: 150,
     padding: 14,
+    height: 50,
+    marginTop: 30,
     borderRadius: 30,
+    margin: 5,
   },
   buttonText: {
     fontWeight: 'bold',

@@ -56,6 +56,8 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
   const [currentCarPlace, setCurrentCarPlace] = useState<iconPlace>(
     placeToIconPlace('taxi', placeList[currentIdx - 1]),
   );
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+
   const {data: currentCarCoordinate} = useGetCurrentCarPositionQuery(
     undefined,
     {
@@ -81,6 +83,10 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
   const [setIsDestination] = useSetIsDestinationMutation();
 
   useEffect(() => {
+    setIsFetching(driveStartStatusFetching || driveStartStatusLoading);
+  }, [driveStartStatusFetching, driveStartStatusLoading]);
+
+  useEffect(() => {
     setStartPlace(placeToIconPlace('map-marker', placeList[currentIdx - 1]));
     setEndPlace(placeList[currentIdx]);
   }, [currentIdx]);
@@ -96,9 +102,9 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
 
   useEffect(() => {
     if (isDestination !== undefined) {
-      setButtonAbled(isDestination);
+      setButtonAbled(isDestination && !isFetching);
     }
-  }, [isDestination]);
+  }, [isDestination, isFetching]);
 
   const getOffBtnPressed = () => {
     setDriveStartStatus(0);
@@ -181,7 +187,7 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
   };
 
   const journeyInfoCard = () => {
-    if (driveStartStatusFetching || driveStartStatusLoading) {
+    if (isFetching) {
       return (
         <ActivityIndicator
           size={'large'}
@@ -222,7 +228,7 @@ const CarMoveScreen: React.FC<CarMoveScreenProps> = ({navigation, route}) => {
         useIndex={false}
         routeCoordinates={globalPath}
       />
-      {journeyInfoCard()}
+      <InfoCardContainer>{journeyInfoCard()}</InfoCardContainer>
       <ButtonContainer>{journeyButton()}</ButtonContainer>
     </StyledSafeAreaView>
   );
@@ -232,6 +238,7 @@ const styles = StyleSheet.create({
   buttonStyle: {
     width: 200,
     padding: 14,
+    height: 50,
     borderRadius: 30,
   },
   buttonText: {
@@ -243,6 +250,10 @@ const styles = StyleSheet.create({
 
 const StyledSafeAreaView = styled(SafeAreaView)`
   flex: 1;
+  justify-content: center;
+`;
+const InfoCardContainer = styled(View)`
+  height: 250px;
   justify-content: center;
 `;
 
