@@ -1,6 +1,5 @@
 package com.carming.backend.place.repository;
 
-import com.carming.backend.course.dto.response.CoursePlaceResponse;
 import com.carming.backend.place.domain.Place;
 import com.carming.backend.place.dto.request.PlaceSearch;
 import com.carming.backend.place.dto.response.popular.PopularPlaceDetailDto;
@@ -18,5 +17,7 @@ public interface PlaceRepositoryCustom {
 
     PopularPlaceDetailDto findPopularPlaceDetail(Long id);
 
-    List<String> findPlaceNames(List<Long> placeKeys);
+    List<String> findPlaceNamesById(List<Long> placeKeys);
+
+    List<String> findRegionsById(List<Long> placeKeys);
 }

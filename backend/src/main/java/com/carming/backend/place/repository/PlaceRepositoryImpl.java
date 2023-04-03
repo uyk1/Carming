@@ -1,6 +1,5 @@
 package com.carming.backend.place.repository;
 
-import com.carming.backend.course.dto.response.CoursePlaceResponse;
 import com.carming.backend.place.domain.Place;
 import com.carming.backend.place.domain.PlaceCategory;
 import com.carming.backend.place.dto.request.PlaceSearch;
@@ -79,9 +78,18 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
     }
 
     @Override
-    public List<String> findPlaceNames(List<Long> placeKeys) {
+    public List<String> findPlaceNamesById(List<Long> placeKeys) {
         return queryFactory
                 .select(place.name)
+                .from(place)
+                .where(place.id.in(placeKeys))
+                .fetch();
+    }
+
+    @Override
+    public List<String> findRegionsById(List<Long> placeKeys) {
+        return queryFactory
+                .select(place.region)
                 .from(place)
                 .where(place.id.in(placeKeys))
                 .fetch();
