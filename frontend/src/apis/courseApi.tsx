@@ -7,6 +7,11 @@ export interface CourseSearch {
   size: number;
 }
 
+interface CheckCourseResponse {
+  courseId: number;
+  newCourse: boolean;
+}
+
 export const courseApi = createApi({
   reducerPath: 'courseApi',
   baseQuery: fetchBaseQuery({baseUrl: REST_API_URL + '/courses'}),
@@ -19,10 +24,10 @@ export const courseApi = createApi({
       }),
       providesTags: ['Courses'],
     }),
-    checkCourseExist: builder.query<boolean, number[]>({
-      query: placeIds => ({
+    checkCourseExist: builder.query<CheckCourseResponse, number[]>({
+      query: placeKeys => ({
         url: '/new',
-        params: placeIds,
+        params: {placeKeys},
       }),
     }),
 

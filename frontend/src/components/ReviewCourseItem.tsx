@@ -7,7 +7,7 @@ import styled from 'styled-components';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
 import {TagChip} from '.';
-import {setCourseReview, setCourseTitle} from '../redux/slices/reviewSlice';
+import {setCourseReview} from '../redux/slices/reviewSlice';
 
 interface ReviewCourseItemProps {
   isFirstTime: boolean;
@@ -19,13 +19,12 @@ const ReviewCourseItem: React.FC<ReviewCourseItemProps> = ({
   const theme = useTheme();
   const dispatch = useDispatch();
   const courseTags = useSelector((state: RootState) => state.tag.courseTags);
-  const {courseReview, courseTitle} = useSelector(
-    (state: RootState) => state.review,
-  );
+  const {courseReview} = useSelector((state: RootState) => state.review);
 
   const [rating, setRating] = useState<number>(0);
   const [checkedTagList, setCheckedTagList] = useState<Tag[]>([]);
   const [reviewText, setReviewText] = useState<string>('');
+  const [courseTitle, setCourseTitle] = useState<string>('');
 
   useEffect(() => {
     const newCourseReview: CourseReviewRequest = {
@@ -33,6 +32,7 @@ const ReviewCourseItem: React.FC<ReviewCourseItemProps> = ({
       courseRating: rating,
       courseTags: checkedTagList.map(tag => tag.id),
       content: reviewText,
+      name: courseTitle,
     };
     dispatch(setCourseReview(newCourseReview));
   }, [rating, checkedTagList, reviewText]);
@@ -57,12 +57,14 @@ const ReviewCourseItem: React.FC<ReviewCourseItemProps> = ({
       </CourseReviewTitle>
       {isFirstTime ? (
         <ReviewTitleInput
-          placeholder={'코스 이름 ex) 중계동 중국집 부수기, 한강 한량 체험기'}
+          placeholder={
+            '코스 이름 짓기  ex) 중계동 중국집 부수기, 한강 한량 체험기'
+          }
           placeholderTextColor={theme.colors.surfaceDisabled}
           activeUnderlineColor={theme.colors.primary}
           dense={true}
           value={courseTitle}
-          onChangeText={text => dispatch(setCourseTitle(text))}
+          onChangeText={text => setCourseTitle(text)}
         />
       ) : null}
       <AirbnbRating

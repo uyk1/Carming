@@ -12,7 +12,8 @@ const reviewSlice = createSlice({
   initialState: {
     placeReviews: [],
     courseReview: {
-      courseId: 0,
+      courseId: undefined,
+      name: undefined,
       courseTags: [],
       courseRating: 0,
       content: '',
