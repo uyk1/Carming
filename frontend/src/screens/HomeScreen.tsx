@@ -24,14 +24,14 @@ const HomeScreen = () => {
         <HomeContainer>
           <MainText
             style={{
-              fontSize: 16,
+              fontSize: 19,
               color: '#7173C9',
               marginBottom: '1%',
             }}>
             오늘의 여정 목적지는 어디인가요?
           </MainText>
           <MainText
-            style={{fontSize: 10, color: '#DF94C2', marginBottom: '2%'}}>
+            style={{fontSize: 13, color: '#DF94C2', marginBottom: '2%'}}>
             - 지역을 선택해주세요 -
           </MainText>
           <MainMap />
@@ -55,7 +55,7 @@ const HomeContainer = styled(View)`
   align-items: center;
   justify-content: center;
   background-color: white;
-  padding-top: 7%;
+  padding-top: 10%;
   padding-bottom: 10%;
 `;
 
