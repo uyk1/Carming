@@ -52,4 +52,10 @@ public class CourseController {
     public ResponseEntity<CourseResponseDto> findPopularDetail(@PathVariable Long courseId) {
         return ResponseEntity.ok(courseService.findPopularDetail(courseId));
     }
+
+    @GetMapping("/new")
+    public ResponseEntity<Boolean> isNewCourse(@RequestBody List<Long> placeKeys) {
+        return ResponseEntity.ok(courseService.isNewCourse(placeKeys));
+    }
+
 }

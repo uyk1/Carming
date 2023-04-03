@@ -29,9 +29,19 @@ public class CourseService {
 
     private final PlaceRepository placeRepository;
 
-    public void findCourseByPlaces(String places) {
-        courseRepository.findCourseByPlaces(places)
-                .orElseThrow(CourseNotFound::new);
+    public boolean isNewCourse(List<Long> placeKeys) {
+        return courseRepository.findCourseByPlaces(convertLongToString(placeKeys)).isEmpty();
+    }
+
+    @Transactional
+    public Long saveCourse(ReviewRequestDto request) {
+        List<Long> placeKeys = request.getPlaceReviews().stream()
+                .map(placeReview -> placeReview.getPlaceId())
+                .collect(Collectors.toList());
+        List<String> regions = placeRepository.findRegionsById(placeKeys);
+
+        Course savedCourse = courseRepository.save(request.toCourseEntity(regions));
+        return savedCourse.getId();
     }
 
     public List<CourseResponseDto> findCourses(CourseSearch search) {
