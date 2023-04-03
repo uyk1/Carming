@@ -74,23 +74,26 @@ const ReviewCourseItem: React.FC<ReviewCourseItemProps> = ({
         onFinishRating={ratingCompleted}
         size={18}
       />
-      <ScrollView
-        style={{maxHeight: 30}}
-        horizontal={true}
-        showsHorizontalScrollIndicator={false}>
-        {courseTags.map(tag => {
-          return (
-            <TagChip
-              key={tag.id}
-              style={{marginLeft: 5}}
-              text={tag.name}
-              selected={checkedTagList.includes(tag)}
-              selectedBackgroundColor={theme.colors.secondary}
-              onPress={() => tagPressed(tag)}
-            />
-          );
-        })}
-      </ScrollView>
+
+      <View style={{maxHeight: 30, borderRadius: 15, overflow: 'hidden'}}>
+        <ScrollView
+          style={{}}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}>
+          {courseTags.map(tag => {
+            return (
+              <TagChip
+                key={tag.id}
+                style={{marginLeft: 5}}
+                text={tag.name}
+                selected={checkedTagList.includes(tag)}
+                selectedBackgroundColor={theme.colors.secondary}
+                onPress={() => tagPressed(tag)}
+              />
+            );
+          })}
+        </ScrollView>
+      </View>
       <ReviewTextInput
         mode={'outlined'}
         value={reviewText}
@@ -104,7 +107,6 @@ const ReviewCourseItem: React.FC<ReviewCourseItemProps> = ({
     </ReviewCourseContainer>
   );
 };
-
 const ReviewCourseContainer = styled(View)`
   flex-direction: column;
   margin-top: 50px;

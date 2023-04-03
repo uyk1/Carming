@@ -66,23 +66,25 @@ const ReviewPlaceItem: React.FC<ReviewPlaceItemProps> = ({place, index}) => {
             size={13}
           />
         </RatingContainer>
-        <ScrollView
-          style={{flex: 1}}
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}>
-          {tags.map(tag => {
-            return (
-              <TagChip
-                key={tag.id}
-                style={{marginLeft: 5}}
-                text={tag.name}
-                selected={checkedTagList.includes(tag)}
-                selectedBackgroundColor={theme.colors.secondary}
-                onPress={() => tagPressed(tag)}
-              />
-            );
-          })}
-        </ScrollView>
+        <View style={{flex: 1, borderRadius: 15, overflow: 'hidden'}}>
+          <ScrollView
+            style={{flex: 1, paddingTop: 1}}
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}>
+            {tags.map(tag => {
+              return (
+                <TagChip
+                  key={tag.id}
+                  style={{marginLeft: 5}}
+                  text={tag.name}
+                  selected={checkedTagList.includes(tag)}
+                  selectedBackgroundColor={theme.colors.secondary}
+                  onPress={() => tagPressed(tag)}
+                />
+              );
+            })}
+          </ScrollView>
+        </View>
       </PlaceInfoContainer>
     </ReviewPlaceContainer>
   );
@@ -91,6 +93,7 @@ const ReviewPlaceItem: React.FC<ReviewPlaceItemProps> = ({place, index}) => {
 const ReviewPlaceContainer = styled(View)`
   flex-direction: row;
   align-items: center;
+  margin-bottom: 20px;
 `;
 
 const PlaceInfoContainer = styled(View)`
