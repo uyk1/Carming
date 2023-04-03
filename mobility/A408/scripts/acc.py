@@ -89,22 +89,34 @@ class pure_pursuit :
         self.pid = pidControl()
         self.adaptive_cruise_control = AdaptiveCruiseControl(velocity_gain = 0.5, distance_gain = 1, time_gap = 0.8, vehicle_length = 2.7)
         self.vel_planning = velocityPlanning(self.target_velocity/3.6, 0.15)
-        ## 주행 시작 관련
-        start = 0
+        
+        ## 주행 종료 관련
+        end_drive = 0
 
+        ## 승차 확인이 안되면 정차
+        self.send_gear_cmd(Gear.P.value)
+        ## 승차 확인을 해야 주행 시작
+        self.get_in = ''
         while True:
+            self.get_in = redis_client.get('get_in')
+            if self.get_in == b'1':
+                ## 승차하면 주행 시작
+                self.send_gear_cmd(Gear.D.value)
+                break
+        
+        while True: 
+            ## 글로벌 패스 받아온 경우 반복문 나가기
             if self.is_global_path == True:
                 self.velocity_list = self.vel_planning.curvedBaseVelocity(self.global_path, 50)
                 break
-            else:
-                rospy.loginfo('Waiting global path data')
+            # else:
+            #     rospy.loginfo('Waiting global path data')
 
         rate = rospy.Rate(30) # 30hz
         cnt = 0
         while not rospy.is_shutdown():
 
             if self.is_path == True and self.is_odom == True and self.is_status == True:
-                
                 # global_obj,local_obj
                 result = self.calc_vaild_obj([self.current_postion.x,self.current_postion.y,self.vehicle_yaw],self.object_data)
                 
@@ -140,19 +152,19 @@ class pure_pursuit :
                     self.ctrl_cmd_msg.brake = 0.0
                     redis_client.set('current_gear', 4) ## 주행
 
-                elif self.last == 1:
-                    if cnt == 0:
-                        self.ctrl_cmd_msg.accel = 30
-                    elif cnt <= 29:
-                        self.ctrl_cmd_msg.accel = 10
-                    elif cnt <= 39:
-                        self.ctrl_cmd_msg.steering = -30.0
-                    elif cnt <= 69:
-                        self.ctrl_cmd_msg.accel = 10
-                    elif cnt >= 70:
-                        self.send_gear_cmd(Gear.P.value)
-                        redis_client.set('current_gear', 1) ## 주차? 중립?
-                        redis_client.set('is_destination', 1) ## 목적지 도달
+                # elif self.last == 1:
+                #     if cnt == 0:
+                #         self.ctrl_cmd_msg.accel = 30
+                #     elif cnt <= 29:
+                #         self.ctrl_cmd_msg.accel = 10
+                #     elif cnt <= 39:
+                #         self.ctrl_cmd_msg.steering = -30.0
+                #     elif cnt <= 90:
+                #         self.ctrl_cmd_msg.accel = 10
+                #     elif cnt >= 100:
+                #         self.send_gear_cmd(Gear.P.value)
+                #         redis_client.set('current_gear', 1) ## 주차? 중립?
+                #         redis_client.set('is_destination', 1) ## 목적지 도달
                 else:
                     self.ctrl_cmd_msg.accel = 0.0
                     self.ctrl_cmd_msg.brake = -output
@@ -170,10 +182,10 @@ class pure_pursuit :
         self.e_o = gps_msg.eastOffset
         self.n_o = gps_msg.northOffset
 
+        ## 실시간 주행 좌표 redis에 전송
         current_position = {}
         current_position['lat'] = self.lat
         current_position['lon'] = self.lon
-        ## 실시간 주행 좌표 redis에 전송
         redis_client.set('current_position', str(current_position))
 
     ## 기어 변경 이벤트 메시지 세팅 함수
@@ -215,7 +227,7 @@ class pure_pursuit :
 
     def get_current_waypoint(self,ego_status,global_path):
         min_dist = float('inf')        
-        currnet_waypoint = -1     
+        currnet_waypoint = 0     
 
         ego_pose_x = ego_status[0]
         ego_pose_y = ego_status[1]
@@ -321,9 +333,9 @@ class pure_pursuit :
                 
             
             global_path_point = [path_point.x,path_point.y,1]
-            print(global_path_point)
-            print(dis_x, " ", dis_y)
-            print(num)
+            # print(global_path_point)
+            # print(dis_x, " ", dis_y)
+            # print(num)
             local_path_point = det_trans_matrix.dot(global_path_point)    
 
             if local_path_point[0]>0 :
@@ -332,6 +344,7 @@ class pure_pursuit :
                     self.forward_point = path_point
                     self.is_look_forward_point = True
                     break
+                
             
         ## 도착지에 도착한 경우 주행 종료
         if flag == 0:
@@ -502,7 +515,7 @@ class AdaptiveCruiseControl:
             vel_rel = (Obstacle[2] - ego_vel)
             acceleration = vel_rel * v_gain - x_errgain * (dis_safe - dis_rel)    
 
-            out_vel = ego_vel + acceleration           
+            out_vel = ego_vel + acceleration          
 
         return out_vel * 3.6
 
