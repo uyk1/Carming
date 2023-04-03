@@ -6,6 +6,11 @@ import {Course} from './Course';
 import {Coordinate} from './Coordinate';
 import {SeoulDistrict} from './SeoulDistrict';
 import {RegionObject} from './RegionObject';
+import {
+  PlaceReviewRequest,
+  CourseReviewRequest,
+  ReviewRequest,
+} from './ReviewRequest';
 
-export type {Tag, Place, Member, Course, Coordinate, RegionObject};
+export type {Tag, Place, Member, Course, Coordinate, RegionObject, PlaceReviewRequest, CourseReviewRequest, ReviewRequest};
 export {Category, SeoulDistrict};
