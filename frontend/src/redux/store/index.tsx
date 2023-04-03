@@ -12,6 +12,7 @@ import {
   authSlice,
   journeySlice,
   reviewSlice,
+  mainSlice,
 } from '../slices';
 import {
   memberRegistApi,
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   course: courseSlice.reducer,
   tag: tagSlice.reducer,
   auth: authSlice.reducer,
+  main: mainSlice.reducer,
   journey: journeySlice.reducer,
   review: reviewSlice.reducer,
   [memberRegistApi.reducerPath]: memberRegistApi.reducer,
