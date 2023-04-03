@@ -25,7 +25,7 @@ public class Place {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "place_category")
-    private Placeory category;
+    private PlaceCategory category;
 
     @Column(name = "place_lon")
     private Double lon;
