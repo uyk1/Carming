@@ -29,6 +29,7 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
                 .selectFrom(place)
                 .where(regionEq(search.getRegions()), categoryEq(search.getCategory()))
                 .orderBy(place.ratingSum.desc())
+                .offset(search.getOffset())
                 .limit(search.getSize())
                 .fetch();
     }
@@ -103,6 +104,7 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
     public List<String> findRegionsById(List<Long> placeKeys) {
         return queryFactory
                 .select(place.region)
+                .distinct()
                 .from(place)
                 .where(place.id.in(placeKeys))
                 .fetch();

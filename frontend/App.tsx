@@ -31,11 +31,12 @@ const theme = {
 };
 
 function App(): JSX.Element {
+
   const [isLoaded, setIsLoaded] = useState(false);
 
   setTimeout(() => {
     setIsLoaded(true);
-  }, 100);
+  }, 1500);
 
   return (
     <Provider store={store}>

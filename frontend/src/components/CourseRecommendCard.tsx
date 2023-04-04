@@ -1,11 +1,12 @@
 import React from 'react';
-import {ImageBackground, Text, View} from 'react-native';
+import {View} from 'react-native';
 import styled from 'styled-components';
-import {Place} from '../types';
-import MapView from 'react-native-maps';
+import {RecommendCardDesc} from '.';
+import {Course} from '../types';
+import CustomMapView from './CustomMapView';
 
 interface CourseRecommendCardProps {
-  item: Place;
+  item: {course: Course; isActive: boolean};
   index: number;
   onPress?: () => void;
 }
@@ -14,18 +15,19 @@ const CourseRecommendCard: React.FC<CourseRecommendCardProps> = ({
   item,
   index,
 }) => {
-  const rating = Math.round((item.ratingSum / item.ratingCnt) * 10) / 10;
+  const {course, isActive} = item;
   return (
     <CardContainer pointerEvents="none">
-      <MapView
-        style={{flex: 1}}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-      />
+      {isActive ? (
+        <CustomMapView
+          viewStyle={{flex: 1}}
+          places={course.places}
+          useIndex={true}
+        />
+      ) : (
+        <View style={{flex: 1, backgroundColor: 'black'}}></View>
+      )}
+      <RecommendCardDesc item={item.course} index={index} />
     </CardContainer>
   );
 };

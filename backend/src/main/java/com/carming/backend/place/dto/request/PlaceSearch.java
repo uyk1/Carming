@@ -19,10 +19,16 @@ public class PlaceSearch {
 
     private Long size = DEFAULT_SIZE;
 
+    private Integer page;
+
     public PlaceSearch(List<String> regions, String category, Long tagId, Long size) {
         this.regions = regions;
         this.category = category;
         this.tagId = tagId;
         this.size = size == null ? DEFAULT_SIZE : size;
+    }
+
+    public long getOffset() {
+        return (this.page-1) * this.size;
     }
 }

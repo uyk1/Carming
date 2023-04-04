@@ -48,4 +48,14 @@ public class OrderService {
         String[] strings = JsonMapper.toClass(json, String[].class);
         return strings;
     }
+
+    public String getValueByKey(String key) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        return operations.get(key);
+    }
+
+    public void setValueByKey(String key, String value) {
+        ValueOperations<String, String> operations = redisTemplate.opsForValue();
+        operations.set(key, value);
+    }
 }

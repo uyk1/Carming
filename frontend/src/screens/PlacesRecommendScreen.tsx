@@ -1,51 +1,108 @@
-import {useEffect, useRef, useState} from 'react';
-import {Dimensions, StyleSheet, View} from 'react-native';
+import {useEffect, useRef} from 'react';
+import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {Avatar, IconButton, Tooltip, useTheme} from 'react-native-paper';
+import {
+  ActivityIndicator,
+  Avatar,
+  IconButton,
+  Tooltip,
+  useTheme,
+} from 'react-native-paper';
 import Carousel from 'react-native-snap-carousel-v4';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SelectDropdown from 'react-native-select-dropdown';
 import styled from 'styled-components/native';
-import {Place, Category} from '../types';
+import {Place, Category, Tag} from '../types';
 import PlaceRecommendCard from '../components/PlaceRecommendCard';
-import CustomButton from '../components/CustomButton';
 import TagChip from '../components/TagChip';
 import {RootState} from '../redux/store';
 import {
+  addCheckedTag,
   addPlaceToPlaceCart,
+  deleteCheckedTag,
   deletePlaceFromPlaceCartById,
   selectCategory,
+  setPlaceTagList,
 } from '../redux/slices/placeSlice';
+import {useGetPlacesQuery} from '../apis/placeApi';
+import {filterTagsByCategory} from '../utils';
 
-const {width: screenWidth} = Dimensions.get('window');
+interface PlacesRecommendScreenScreenProps {}
 
-const PlacesRecommendScreen = () => {
+const PlacesRecommendScreen: React.FC<
+  PlacesRecommendScreenScreenProps
+> = ({}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
 
-  const {placeList, placeCart, category} = useSelector(
-    (state: RootState) => state.place,
-  );
-  const {tagList} = useSelector((state: RootState) => state.tag);
+  const {regionList} = useSelector((state: RootState) => state.main);
+  const {placeCart, placeTagList, checkedTagList, selectedCategory} =
+    useSelector((state: RootState) => state.place);
+  const tags = useSelector((state: RootState) => state.tag);
 
-  const [checkedTagIdList, setCheckedTagIdList] = useState<number[]>([]);
+  const {
+    data: places,
+    isFetching,
+    isError,
+    isSuccess,
+  } = useGetPlacesQuery({
+    regions: regionList,
+    category: selectedCategory,
+    size: 10,
+  });
 
-  const tagPressed = (tagId: number) => {
-    checkedTagIdList.includes(tagId)
-      ? checkedTagIdList.splice(checkedTagIdList.indexOf(tagId), 1)
-      : checkedTagIdList.push(tagId);
-    setCheckedTagIdList([...checkedTagIdList]);
+  useEffect(() => {
+    dispatch(setPlaceTagList(filterTagsByCategory(tags, selectedCategory)));
+  }, [selectedCategory, tags]);
+
+  const tagPressed = (tag: Tag) => {
+    checkedTagList.includes(tag)
+      ? dispatch(deleteCheckedTag(tag))
+      : dispatch(addCheckedTag(tag));
   };
 
   const placeAddBtnPressed = () => {
-    const place: Place =
-      carouselRef.current.props.data[carouselRef.current._activeItem];
-    dispatch(addPlaceToPlaceCart(place));
+    if (places) {
+      const place: Place = places[carouselRef.current._activeItem];
+      dispatch(addPlaceToPlaceCart(place));
+    }
   };
 
-  const cancelPlaceCartItemById = (placeId: number) => {
+  const placeCancelBtnPressed = (placeId: number) => {
     dispatch(deletePlaceFromPlaceCartById(placeId));
+  };
+
+  const carouselSection = () => {
+    if (isFetching) {
+      return (
+        <ActivityIndicator
+          size={'large'}
+          animating={true}
+          color={theme.colors.onPrimary}
+        />
+      );
+    }
+    if (isError || places?.length === 0) {
+      return <Text style={{fontSize: 40}}>😭</Text>;
+    }
+    if (isSuccess) {
+      return (
+        <Carousel
+          style={{flex: 1}}
+          layout={'default'}
+          vertical={false}
+          layoutCardOffset={9}
+          ref={carouselRef}
+          data={places}
+          renderItem={PlaceRecommendCard}
+          sliderWidth={screenWidth}
+          itemWidth={screenWidth - 80}
+          inactiveSlideShift={0}
+          useScrollView={true}
+        />
+      );
+    }
   };
 
   return (
@@ -75,33 +132,26 @@ const PlacesRecommendScreen = () => {
             rowTextStyle={styles.dropdown2RowTxtStyle}
           />
         </View>
-        {tagList.map(tag => {
-          return (
-            <TagChip
-              key={tag.id}
-              style={{marginLeft: 5}}
-              text={tag.name}
-              selected={checkedTagIdList.includes(tag.id)}
-              selectedBackgroundColor={theme.colors.secondary}
-              onPress={() => tagPressed(tag.id)}
-            />
-          );
-        })}
+        <ScrollView
+          style={styles.tagScrollViewStyle}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}>
+          {placeTagList.map(tag => {
+            return (
+              <TagChip
+                key={tag.id}
+                style={{marginLeft: 5}}
+                text={tag.name}
+                selected={checkedTagList.includes(tag)}
+                selectedBackgroundColor={theme.colors.secondary}
+                onPress={() => tagPressed(tag)}
+              />
+            );
+          })}
+        </ScrollView>
       </StyledView>
 
-      <Carousel
-        style={{flex: 1}}
-        layout={'default'}
-        vertical={false}
-        layoutCardOffset={9}
-        ref={carouselRef}
-        data={placeList}
-        renderItem={PlaceRecommendCard}
-        sliderWidth={screenWidth}
-        itemWidth={screenWidth - 80}
-        inactiveSlideShift={0}
-        useScrollView={true}
-      />
+      <CenterView>{carouselSection()}</CenterView>
 
       <StyledView style={{justifyContent: 'center'}}>
         <IconButton
@@ -123,34 +173,30 @@ const PlacesRecommendScreen = () => {
                   icon="close-circle"
                   iconColor={theme.colors.background}
                   size={15}
-                  onPress={() => cancelPlaceCartItemById(place.id)}
+                  onPress={() => placeCancelBtnPressed(place.id)}
                 />
               </View>
             </Tooltip>
           );
         })}
       </StyledView>
-      <StyledView style={{justifyContent: 'center'}}>
-        <CustomButton
-          text={'선택 완료'}
-          buttonStyle={{
-            width: 200,
-            padding: 14,
-            borderRadius: 30,
-            backgroundColor: theme.colors.surfaceVariant,
-          }}
-          textStyle={{fontWeight: 900, fontSize: 16, textAlign: 'center'}}
-        />
-      </StyledView>
     </>
   );
 };
+
+const {width: screenWidth} = Dimensions.get('window');
 
 const StyledView = styled(View)`
   align-items: center;
   flex-direction: row;
   padding-left: 20px;
   padding-right: 20px;
+`;
+
+const CenterView = styled(View)`
+  align-items: center;
+  justify-content: center;
+  flex: 1;
 `;
 
 const styles = StyleSheet.create({
@@ -177,6 +223,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     fontSize: 14,
+  },
+  tagScrollViewStyle: {
+    flexDirection: 'row',
   },
 });
 

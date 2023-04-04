@@ -8,6 +8,7 @@ import {
   loginSuccess,
 } from '../redux/slices/authSlice';
 import {RootState} from '../redux/store';
+import CustomButton from './CustomButton';
 
 const LoginForm = () => {
   // LoginForm 컴포넌트 내부
@@ -38,11 +39,11 @@ const LoginForm = () => {
 
     dispatch(loginStart());
     try {
-      const {tokenType, accessToken, nickname, profile} = await loginApi({
+      const result = await loginApi({
         phone,
         password,
       });
-      dispatch(loginSuccess({tokenType, accessToken, nickname, profile}));
+      dispatch(loginSuccess(result));
     } catch (error: any) {
       //any 말고 다른 방법은..?
       const message =
@@ -60,6 +61,7 @@ const LoginForm = () => {
         placeholder="전화번호를 입력하세요"
         placeholderTextColor="lightgray"
         style={styles.loginFormText}
+        keyboardType='numeric'
       />
       <Text style={styles.loginFormText}>비밀번호</Text>
       <TextInput
@@ -70,9 +72,13 @@ const LoginForm = () => {
         placeholderTextColor="lightgray"
         style={styles.loginFormText}
       />
-      <Button
-        title="로그인"
-        color={'#8398D1'}
+      <CustomButton
+        text="로그인"
+        textStyle={{color: 'white', fontSize: 14, fontFamily: 'SeoulNamsanM'}}
+        buttonStyle={{
+          backgroundColor: '#8398D1',
+          paddingVertical: 10,
+        }}
         onPress={handleLogin}
         disabled={isLoading}
       />
