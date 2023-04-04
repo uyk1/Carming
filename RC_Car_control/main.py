@@ -25,7 +25,7 @@ class main():
         redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0, password='carming123')
         
         door_flag = 0
-	start_flag = 0
+        start_flag = 0
         while True:
             ## 속도 b'1.4650933742523193' 형태로 출력
             current_velocity = redis_client.get('current_velocity')
@@ -39,19 +39,16 @@ class main():
             if wheel_angle == b'-36.25':
                 num = 2
                 ser.write(num.to_bytes(1, 'little'))
-                time.sleep(0.1)
                 self.servo_motor.steering(-1)
 
             elif wheel_angle == b'36.25':
                 num = 3
                 ser.write(num.to_bytes(1, 'little'))
-                time.sleep(0.1)
                 self.servo_motor.steering(1)
 
             elif wheel_angle == b'0.0':
                 num = 1
                 ser.write(num.to_bytes(1, 'little'))
-                time.sleep(0.1)
                 self.servo_motor.steering(0)
 
         
@@ -72,13 +69,14 @@ class main():
             if is_destination == '1' and door_flag == 0:
                 tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
                 door_flag = 1
+                num = 4
+                ser.write(num.to_bytes(1, 'little'))
                 # 1분뒤에 문열림
                 time.sleep(60)
                 openclose()
                 
             time.sleep(0.1)
-            
-            
+                        
             self.dc_motor.drive(speed)  # DC_MOTOR 객체의 drive 함수 호출
             
             
