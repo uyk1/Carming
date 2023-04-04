@@ -21,6 +21,7 @@ import {
   addPlaceToPlaceCart,
   deleteCheckedTag,
   deletePlaceFromPlaceCartById,
+  increasePlacePage,
   selectCategory,
   setPlaceTagList,
 } from '../redux/slices/placeSlice';
@@ -35,9 +36,10 @@ const PlacesRecommendScreen: React.FC<
   const theme = useTheme();
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
+  const PAGE_SIZE = 10;
 
   const {regionList} = useSelector((state: RootState) => state.main);
-  const {placeCart, placeTagList, checkedTagList, selectedCategory} =
+  const {placeCart, placeTagList, checkedTagList, selectedCategory, placePage} =
     useSelector((state: RootState) => state.place);
   const tags = useSelector((state: RootState) => state.tag);
 
@@ -49,7 +51,8 @@ const PlacesRecommendScreen: React.FC<
   } = useGetPlacesQuery({
     regions: regionList,
     category: selectedCategory,
-    size: 10,
+    size: PAGE_SIZE,
+    page: placePage,
   });
 
   useEffect(() => {
@@ -63,7 +66,7 @@ const PlacesRecommendScreen: React.FC<
   };
 
   const placeAddBtnPressed = () => {
-    if (places) {
+    if (places && places.length > 0) {
       const place: Place = places[carouselRef.current._activeItem];
       dispatch(addPlaceToPlaceCart(place));
     }
@@ -92,14 +95,24 @@ const PlacesRecommendScreen: React.FC<
           style={{flex: 1}}
           layout={'default'}
           vertical={false}
-          layoutCardOffset={9}
+          layoutCardOffset={3}
           ref={carouselRef}
           data={places}
+          firstItem={Math.max(
+            0,
+            places.length - 5,
+            PAGE_SIZE * (placePage - 1),
+          )}
           renderItem={PlaceRecommendCard}
           sliderWidth={screenWidth}
           itemWidth={screenWidth - 80}
           inactiveSlideShift={0}
           useScrollView={true}
+          onScrollIndexChanged={index => {
+            if (index === places.length - 1) {
+              dispatch(increasePlacePage());
+            }
+          }}
         />
       );
     }

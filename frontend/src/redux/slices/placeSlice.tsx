@@ -7,6 +7,7 @@ type SliceState = {
   placeTagList: Tag[];
   checkedTagList: Tag[];
   selectedCategory: Category;
+  placePage: number;
 };
 
 const placeSlice = createSlice({
@@ -17,6 +18,7 @@ const placeSlice = createSlice({
     placeTagList: [],
     checkedTagList: [],
     selectedCategory: Category.음식점,
+    placePage: 1,
   } as SliceState,
   reducers: {
     // Place List
@@ -71,6 +73,14 @@ const placeSlice = createSlice({
       const newCategory = action.payload;
       state.selectedCategory = newCategory;
     },
+
+    // Page
+    increasePlacePage: state => {
+      state.placePage += 1;
+    },
+    resetPlacePage: state => {
+      state.placePage = 0;
+    },
   },
 });
 
@@ -85,4 +95,6 @@ export const {
   setPlaceTagList,
   addCheckedTag,
   deleteCheckedTag,
+  increasePlacePage,
+  resetPlacePage,
 } = placeSlice.actions;
