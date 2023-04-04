@@ -24,15 +24,17 @@ export const placeApi = createApi({
     }),
     getPopularPlaces: builder.query<Place[], void>({
       query: () => {
+        console.log(REST_API_URL);
         return {
           url: '/popular',
         };
       },
       providesTags: ['PopularPlaces'],
     }),
+    //id의 타입을 number로 지정
     getSelectedPopularPlace: builder.query<
       SelectedPopularPlaceResponse[],
-      number // id의 타입을 number로 지정
+      number
     >({
       query: id => ({
         url: `/popular/${id}`, // id를 URL에 추가

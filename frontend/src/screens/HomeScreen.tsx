@@ -20,7 +20,6 @@ import {PlacePreCart} from '../components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useEffect, useState} from 'react';
 import {useGetPopularPlacesQuery} from '../apis/placeApi';
-import {PopularPlaceResponse} from '../types/MainResponse';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
