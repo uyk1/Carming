@@ -53,18 +53,19 @@ const mainSlice = createSlice({
     addPlaceToPreCart: (state, action: PayloadAction<Place>) => {
       const newPlace = action.payload;
       // 이미 추가된 장소인지 검사
-      // if (!state.preCart.includes(newPlace)) {
-      //   state.preCart.push(newPlace);
-      // }
       state.preCart = state.preCart.filter(place => place.id !== newPlace.id);
       state.preCart = [...state.preCart, newPlace];
     },
     addPlaceListToPreCart: (state, action: PayloadAction<Place[]>) => {
       const newPlaceList = action.payload;
+      const preCartIdList: number[] = [];
+      state.preCart.map(place => {
+        preCartIdList.push(place.id);
+      });
       // 이미 추가되어 있는 장소를 제외하고 삽입
       state.preCart = [
         ...state.preCart,
-        ...newPlaceList.filter(place => !state.preCart.includes(place)),
+        ...newPlaceList.filter(place => !preCartIdList.includes(place.id)),
       ];
     },
     removePlaceFromPreCart: (state, action: PayloadAction<Place>) => {

@@ -18,12 +18,26 @@ import PopularCoursesList from '../components/PopularCoursesList';
 import {Category, Course, Place} from '../types';
 import {PlacePreCart} from '../components';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import {useGetPopularPlacesQuery} from '../apis/placeApi';
+import {PopularPlaceResponse} from '../types/MainResponse';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
-  const {token, memberInfo} = useSelector((state: RootState) => state.auth);
+  const {memberInfo} = useSelector((state: RootState) => state.auth);
   const preCart = useSelector((state: RootState) => state.main.preCart);
+
+  const {data, error, isLoading, isError} = useGetPopularPlacesQuery();
+  const [PopularPlaces, setPopularPlaces] = useState<Place[]>([]);
+  useEffect(() => {
+    if (data) {
+      setPopularPlaces(data);
+      console.log('Popular Places:', data);
+    }
+  }, [data]);
+  if (error) {
+    console.error(error);
+  }
 
   //로그아웃
   const handleLogout = () => {
@@ -65,7 +79,7 @@ const HomeScreen = () => {
             </Container>
           )}
           <Container style={{}}>
-            <PopularPlacesList placeList={places} />
+            <PopularPlacesList placeList={PopularPlaces} />
             {/* <Button title="로그아웃" onPress={handleLogout} color={'grey'} /> */}
           </Container>
           <Container style={{}}>

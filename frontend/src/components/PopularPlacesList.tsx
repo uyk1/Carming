@@ -3,11 +3,12 @@ import {Place} from '../types';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import styled from 'styled-components';
 import PopularPlaceItem from './PopularPlaceItem';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import {RootState} from '../redux/store';
 import MainPlaceCardModal from './MainPlaceCardModal';
 import {initializeSelectedPlace} from '../redux/slices/mainSlice';
+import {useGetSelectedPopularPlaceQuery} from '../apis/placeApi';
 
 interface PopularPlacesListProps {
   placeList?: Place[];
@@ -26,6 +27,33 @@ const PopularPlacesList: React.FC<PopularPlacesListProps> = ({
   const selectedPlace = useSelector(
     (state: RootState) => state.main.selectedPlace,
   );
+
+  // const [selectedPlaceInstance, setSelectedPlaceInstance] = useState<Place[]>(
+  //   [],
+  // );
+  // if (selectedPlace) {
+  //   const {data, error, isLoading, isError} = useGetSelectedPopularPlaceQuery(
+  //     selectedPlace.id,
+  //   );
+  // }
+
+  // useEffect(() => {
+  //   if (selectedPlace) {
+  //     // selectedPlace가 존재하는 경우에만 useGetSelectedPopularPlaceQuery를 호출
+  //     setSelectedPlaceInstance([]);
+  //   }
+  // }, [selectedPlace]);
+
+  // useEffect(() => {
+  //   if (data) {
+  //     setSelectedPlace(data);
+  //     console.log('Selected Place:', data);
+  //   }
+  // }, [data]);
+
+  // if (error) {
+  //   console.error(error);
+  // }
 
   return (
     <>

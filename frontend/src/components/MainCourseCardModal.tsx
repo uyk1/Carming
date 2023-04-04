@@ -10,23 +10,14 @@ import {
   ScrollView,
   StyleSheet,
 } from 'react-native';
-import {useVerifyMutation} from '../apis/memberRegistApi';
 import {useDispatch, useSelector} from 'react-redux';
-import {verifySuccess} from '../redux/slices/authSlice';
 import {Course, Place} from '../types';
 import styled from 'styled-components';
 import RatingStar from './RatingStar';
 import {calcRating} from '../utils';
-import SIcon from 'react-native-vector-icons/SimpleLineIcons';
-import MIcon from 'react-native-vector-icons/MaterialIcons';
-import {addPlaceToPlaceCart} from '../redux/slices/placeSlice';
-import {
-  addPlaceListToPreCart,
-  addPlaceToPreCart,
-} from '../redux/slices/mainSlice';
+import {addPlaceListToPreCart} from '../redux/slices/mainSlice';
 import {RootState} from '../redux/store';
 import CustomMapView from './CustomMapView';
-import CustomButton from './CustomButton';
 
 export interface MainCourseCardModalProps {
   isVisible: boolean;
@@ -44,6 +35,9 @@ const MainCourseCardModal: React.FC<MainCourseCardModalProps> = ({
   const rating = calcRating(course.ratingSum, course.ratingCount);
 
   const preCart = useSelector((state: RootState) => state.main.preCart);
+  const isIncluded = course.places.every(place =>
+    preCart.some(preCartPlace => preCartPlace.id === place.id),
+  );
 
   const handleCancel = () => {
     onClose();
@@ -127,11 +121,18 @@ const MainCourseCardModal: React.FC<MainCourseCardModalProps> = ({
                 padding: 7,
                 borderRadius: 5,
                 alignItems: 'center',
-                // opacity: isIncluded ? 0.5 : 1, // disabled 상태일 때 투명도 설정
-              }}>
-              <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
-                지금 출발
-              </Text>
+                opacity: isIncluded ? 0.5 : 1, // disabled 상태일 때 투명도 설정
+              }}
+              disabled={isIncluded}>
+              {isIncluded ? (
+                <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
+                  담은 코스
+                </Text>
+              ) : (
+                <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
+                  지금 출발
+                </Text>
+              )}
             </TouchableOpacity>
             <TouchableOpacity
               onPress={handleCancel}
