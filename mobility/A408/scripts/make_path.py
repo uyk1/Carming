@@ -50,10 +50,13 @@ class dijkstra_path_pub:
 
         self.gps_sub = rospy.Subscriber("/gps", GPSMessage, self.navsat_callback)
         self.global_path_pub = rospy.Publisher('/global_path', Path, queue_size=1)
+
+        self.is_gps = False
+
+        ## 변환 하고자 하는 좌표계를 선언
         self.proj_UTM = Proj(proj='utm', zone=52, ellps='WGS84', preserve_units=False)
-
-
-        ## Mgeo data 읽어온 후 데이터 확인
+        
+        ## Mgeo data 읽어온 후 데이터 확인  R_KR_PR_Sangam_nobuildings , R_KR_PG_K-City
         load_path = os.path.normpath(os.path.join(current_path, 'lib/mgeo_data/R_KR_PG_K-City'))
         mgeo_planner_map = MGeo.create_instance_from_json(load_path)
 
@@ -67,20 +70,22 @@ class dijkstra_path_pub:
 
         self.is_goal_pose = False
         self.is_init_pose = False
+        flag = 0
 
-        ## 탑승자의 위치 정보 가져오기
-        call_coordinate = redis_client.get('call_coordinate')
-        call_coordinate = eval(call_coordinate)
-        self.init_state(call_coordinate)
-        print(call_coordinate)
-        
+        ## 차량 현재 위치 정보 가져오기
+        if self.is_gps == True and flag == 0:
+            self.init_state([self.lon, self.lat])
+            flag = 1
+            # print([self.lat, self.lon])
+            
         ## ---------------------
 
         ## redis에서 목적지 정보 가져오기
         destination_coordinate = redis_client.get('destination_coordinate')
         destination_coordinate = json.loads(destination_coordinate)
         self.goal_state(destination_coordinate)
-
+        print(destination_coordinate)
+        
 
         
         while True:
@@ -93,8 +98,7 @@ class dijkstra_path_pub:
         self.global_path_msg = Path()
         self.global_path_msg.header.frame_id = '/map'
 
-        self.lat = 0
-        self.lon = 0
+     
         self.x = 0
         self.y = 0
         self.get_global_path=[]
@@ -118,8 +122,8 @@ class dijkstra_path_pub:
             self.global_path_pub.publish(self.global_path_msg)
             rate.sleep()
 
-        ## redis에 생성된 경로에 대한 위도, 경도 저장
-        redis_client.set('global_path', str(self.get_global_path))
+            ## redis에 생성된 경로에 대한 위도, 경도 저장
+            redis_client.set('global_path', str(self.get_global_path))
 
 
     def navsat_callback(self, gps_msg):
@@ -127,16 +131,15 @@ class dijkstra_path_pub:
         self.lon = gps_msg.longitude
         self.e_o = gps_msg.eastOffset
         self.n_o = gps_msg.northOffset
-
+        # print(self.e_o, self.n_o)
+        # print(self.lat, self.lon)
         self.is_gps=True
 
-    ## 탑승 위치에서 가까운 노드 확인
+    ## 차량의 시작 위치에서 근처 노드 찾기
     def init_state(self, start_gps):
 
-        xy_zone = self.proj_UTM(start_gps['lon'], start_gps['lat'])
-
-        #xy_zone = self.proj_UTM(126.7734230193396, 37.23963047324451)
-
+        ## 시작점 변환
+        xy_zone = self.proj_UTM(start_gps[0], start_gps[1])
         x = xy_zone[0]-self.e_o
         y = xy_zone[1]-self.n_o
 
@@ -161,8 +164,10 @@ class dijkstra_path_pub:
     ## 목적지에서 가까운 노드 확인
     def goal_state(self, end_gps):
         
+        print("end gps :: ",end_gps)
         xy_zone = self.proj_UTM(end_gps['lon'], end_gps['lat'])
-        # xy_zone = self.proj_UTM(126.77451868834234, 37.241549847536525)
+        print(end_gps['lon'])
+        # xy_zone = self.proj_UTM(end_gps[1], end_gps[0])
 
         x = xy_zone[0]-self.e_o
         y = xy_zone[1]-self.n_o
