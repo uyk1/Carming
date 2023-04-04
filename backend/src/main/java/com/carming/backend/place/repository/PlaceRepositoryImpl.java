@@ -69,8 +69,8 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
                 .from(placeTag)
                 .join(placeTag.tag, tag)
                 .join(placeTag.place, place)
-                .groupBy(placeTag.tag)
                 .where(placeTag.place.id.eq(id))
+                .groupBy(placeTag.tag)
                 .fetch();
 
         placeDetail.changePlaceTagsBox(tags);
