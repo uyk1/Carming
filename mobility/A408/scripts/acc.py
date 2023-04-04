@@ -162,7 +162,7 @@ class pure_pursuit:
                 if output > 0.0:
                     self.ctrl_cmd_msg.accel = output
                     self.ctrl_cmd_msg.brake = 0.0
-                    redis_client.set('current_gear', 4)  ## 주행
+                    ### redis_client.set('current_gear', 4)  ## 주행
 
                 else:
                     self.ctrl_cmd_msg.accel = 0.0
@@ -172,6 +172,7 @@ class pure_pursuit:
                 self.ctrl_cmd_pub.publish(self.ctrl_cmd_msg)
 
                 if self.end_flag == 1:
+                    redis_client.set('current_velocity', 0)
                     break
 
             rate.sleep()
