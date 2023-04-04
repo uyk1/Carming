@@ -15,11 +15,14 @@ public class PlaceSearch {
 
     private String category;
 
+    private Long tagId;
+
     private Long size = DEFAULT_SIZE;
 
-    public PlaceSearch(List<String> regions, String category, Long size) {
+    public PlaceSearch(List<String> regions, String category, Long tagId, Long size) {
         this.regions = regions;
         this.category = category;
+        this.tagId = tagId;
         this.size = size == null ? DEFAULT_SIZE : size;
     }
 }

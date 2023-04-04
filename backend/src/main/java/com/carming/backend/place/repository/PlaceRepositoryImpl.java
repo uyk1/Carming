@@ -34,6 +34,19 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
     }
 
     @Override
+    public List<Place> findPlacesByTag(PlaceSearch search) {
+        List<Place> test = queryFactory
+                .select(placeTag.place)
+                .from(placeTag)
+                .where(regionTagEq(search.getRegions()), placeTag.tag.id.eq(search.getTagId()))
+                .groupBy(placeTag.place)
+                .orderBy(placeTag.place.count().desc())
+                .limit(search.getSize())
+                .fetch();
+        return test;
+    }
+
+    @Override
     public List<Place> findPlacesByCourse(List<Long> placeKeys) {
         return queryFactory
                 .selectFrom(place)
@@ -103,6 +116,16 @@ public class PlaceRepositoryImpl implements PlaceRepositoryCustom {
             return null;
         }
         return place.region.in(regions);
+    }
+
+    private BooleanExpression regionTagEq(List<String> regions) {
+        if (regions == null) { //지역구 선택이 없을 시
+            return null;
+        }
+        if (regions.isEmpty()) {//빈 리스트일 때
+            return null;
+        }
+        return placeTag.place.region.in(regions);
     }
 
     private BooleanExpression categoryEq(String category) {
