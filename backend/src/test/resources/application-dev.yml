@@ -20,7 +20,7 @@ spring:
   # show-sql: true -> 해당하는 query를 보여줌 (JPA N + 1 문제 확인용) [배포에선 사용 X]
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         show_sql: true
