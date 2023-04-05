@@ -18,10 +18,13 @@ import {
   addCheckedTag,
   deleteCheckedTag,
   deletePlaceFromCourseCartById,
+  increaseCoursePage,
+  resetCoursePage,
   setCourseTagList,
   setCourseToCourseCart,
 } from '../redux/slices/courseSlice';
-import {useGetCoursesQuery} from '../apis/courseApi';
+import {courseApi, useGetCoursesQuery} from '../apis/courseApi';
+import {ALERT_TYPE, Toast} from 'react-native-alert-notification';
 
 interface CoursesRecommendScreenProps {}
 
@@ -29,9 +32,9 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
-  const PAGE_SIZE = 10;
+  const PAGE_SIZE = 4;
 
-  const {courseCart, courseTagList, checkedTagList} = useSelector(
+  const {courseCart, courseTagList, checkedTagList, coursePage} = useSelector(
     (state: RootState) => state.course,
   );
   const {regionList} = useSelector((state: RootState) => state.main);
@@ -42,7 +45,12 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
     isFetching,
     isError,
     isSuccess,
-  } = useGetCoursesQuery({regions: regionList, size: PAGE_SIZE, page: 1});
+  } = useGetCoursesQuery({
+    regions: regionList,
+    size: PAGE_SIZE,
+    page: coursePage,
+    tags: checkedTagList,
+  });
   const [carouselData, setCarouselData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -50,9 +58,28 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   }, [tags]);
 
   useEffect(() => {
+    if (
+      !isFetching &&
+      courses &&
+      courses.length <= (coursePage - 1) * PAGE_SIZE
+    ) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: 'Info',
+        textBody: '더이상 불러올 코스가 없습니다.',
+      });
+    }
+  }, [isFetching]);
+
+  useEffect(() => {
     const activeIdx = carouselRef.current ? carouselRef.current._activeItem : 0;
     makeCarouselData(activeIdx);
   }, [courses]);
+
+  useEffect(() => {
+    dispatch(resetCoursePage());
+    dispatch(courseApi.util.invalidateTags(['Courses']));
+  }, [checkedTagList]);
 
   const tagPressed = (tag: Tag) => {
     checkedTagList.includes(tag)
@@ -104,12 +131,16 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
           ref={carouselRef}
           data={carouselData}
           renderItem={CourseRecommendCard}
+          firstItem={Math.max(0, carouselData.length - 1 - PAGE_SIZE)}
           sliderWidth={screenWidth}
           itemWidth={screenWidth - 80}
           inactiveSlideShift={0}
           useScrollView={true}
           onScrollIndexChanged={index => {
             makeCarouselData(index);
+            if (index === carouselData.length - 1) {
+              dispatch(increaseCoursePage());
+            }
           }}
         />
       );

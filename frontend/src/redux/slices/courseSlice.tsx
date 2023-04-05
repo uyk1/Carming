@@ -62,6 +62,14 @@ const courseSlice = createSlice({
       );
       state.checkedTagList = [...modifiedTagList];
     },
+
+    // Course Page
+    increaseCoursePage: (state, action: PayloadAction<void>) => {
+      state.coursePage += 1;
+    },
+    resetCoursePage: (state, action: PayloadAction<void>) => {
+      state.coursePage = 0;
+    },
   },
 });
 
@@ -75,4 +83,6 @@ export const {
   setCourseTagList,
   addCheckedTag,
   deleteCheckedTag,
+  increaseCoursePage,
+  resetCoursePage,
 } = courseSlice.actions;
