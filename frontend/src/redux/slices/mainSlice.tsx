@@ -1,12 +1,19 @@
 import {PayloadAction, createSlice} from '@reduxjs/toolkit';
-import {Course, Place, RegionObject} from '../../types';
+import {Course, Place, RegionObject, Review} from '../../types';
 import {SeoulDistrict} from '../../types/SeoulDistrict';
+import {
+  SelectedPopularCourseResponse,
+  SelectedPopularPlaceResponse,
+} from '../../types/MainResponse';
 
 type MainState = {
   regionList: SeoulDistrict[];
   preCart: Place[];
   selectedPlace?: Place | null;
+  selectedPopularPlace?: SelectedPopularPlaceResponse | null;
   selectedCourse?: Course | null;
+  selectedPopularCourse?: SelectedPopularCourseResponse | null;
+  selectedPopularCourseReviews: Review[];
 };
 
 const initialState: MainState = {
@@ -15,8 +22,27 @@ const initialState: MainState = {
   //추천 장소 및 코스를 통해 선택된 장소들
   preCart: [],
   //메인 화면에서 추천 컴포넌트들을 클릭해 모달을 띄울 때 선택된 요소
-  selectedPlace: null,
-  selectedCourse: null,
+  selectedPlace: undefined,
+  selectedPopularPlace: {
+    id: 0,
+    name: '',
+    image: '',
+    region: '',
+    address: '',
+    ratingSum: 0,
+    ratingCount: 0,
+    tags: [{tagName: '', tagCount: 0}],
+    tel: '',
+  },
+  selectedCourse: undefined,
+  selectedPopularCourse: {
+    name: '',
+    ratingCount: 0,
+    ratingSum: 0,
+    regions: [],
+    places: [],
+  },
+  selectedPopularCourseReviews: [],
 };
 
 const mainSlice = createSlice({
@@ -29,6 +55,9 @@ const mainSlice = createSlice({
       state.preCart = [];
       state.selectedPlace = null;
       state.selectedCourse = null;
+      state.selectedCourse = null;
+      state.selectedPopularCourse = null;
+      state.selectedPopularCourseReviews = [];
     },
 
     //regionList
@@ -92,6 +121,31 @@ const mainSlice = createSlice({
     initializeSelectedCourse: state => {
       state.selectedCourse = null;
     },
+
+    // Popular Place
+    addSelectedPlaceInstance: (
+      state,
+      action: PayloadAction<SelectedPopularPlaceResponse>,
+    ) => {
+      const newPlace = action.payload;
+      state.selectedPopularPlace = newPlace;
+    },
+
+    // Popular Course
+    addSelectedCoursesInstance: (
+      state,
+      action: PayloadAction<SelectedPopularCourseResponse>,
+    ) => {
+      const newCourse = action.payload;
+      state.selectedPopularCourse = newCourse;
+    },
+    addSelectedCoursesInstanceReviews: (
+      state,
+      action: PayloadAction<Review[]>,
+    ) => {
+      const reviews = action.payload;
+      state.selectedPopularCourseReviews = reviews;
+    },
   },
 });
 
@@ -108,4 +162,7 @@ export const {
   initializeSelectedPlace,
   addSelectedCourse,
   initializeSelectedCourse,
+  addSelectedPlaceInstance,
+  addSelectedCoursesInstance,
+  addSelectedCoursesInstanceReviews,
 } = mainSlice.actions;

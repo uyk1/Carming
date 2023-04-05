@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -47,6 +47,18 @@ const MainCourseCardModal: React.FC<MainCourseCardModalProps> = ({
     dispatch(addPlaceListToPreCart(course.places));
   };
 
+  // 모달을 띄우기 위한 추가적인 정보 불러오기
+  const selectedCourseInstance = useSelector(
+    (state: RootState) => state.main.selectedPopularCourse,
+  );
+  const selectedCourseInstanceReviews = useSelector(
+    (state: RootState) => state.main.selectedPopularCourseReviews,
+  );
+  useEffect(() => {
+    console.log(selectedCourseInstance);
+    console.log(selectedCourseInstanceReviews);
+  }, [selectedCourseInstance, selectedCourseInstanceReviews]);
+
   return (
     <Modal
       animationType="fade"
@@ -65,15 +77,15 @@ const MainCourseCardModal: React.FC<MainCourseCardModalProps> = ({
             </ImgView>
             <ContentView
               style={{
-                alignItems: 'center',
                 justifyContent: 'space-between',
-                marginTop: '3%',
-                marginBottom: '8%',
+                marginTop: '2%',
+                marginBottom: '5%',
+                flexWrap: 'wrap',
               }}>
               <CustomText
                 style={{
-                  fontFamily: 'SeoulNamsanM',
-                  fontSize: 14,
+                  fontFamily: 'SeoulNamsanB',
+                  fontSize: 16,
                   marginVertical: '1%',
                 }}>
                 {course.name}
@@ -90,21 +102,93 @@ const MainCourseCardModal: React.FC<MainCourseCardModalProps> = ({
                 </RatingText>
               </View>
             </ContentView>
-            <ContentView>
+            <ContentView style={{marginBottom: '7%'}}>
               <ScrollView
                 horizontal
                 nestedScrollEnabled={true}
                 showsHorizontalScrollIndicator={false}
                 style={styles.textContainer}>
-                {course.places.map((place, index) => (
-                  <Text key={index} style={[styles.text]}>
-                    {place.name + ' - '}
-                  </Text>
-                ))}
+                {course.places &&
+                  course.places.map((place, index) => (
+                    <View key={index} style={styles.textContainer}>
+                      <Text style={[styles.text]}>{place.name}</Text>
+                      {index !== course.places.length - 1 && (
+                        <Text style={[styles.text]}> - </Text>
+                      )}
+                    </View>
+                  ))}
               </ScrollView>
             </ContentView>
-            <ContentView>
-              <CustomText></CustomText>
+            <ContentView
+              style={{justifyContent: 'center', alignItems: 'flex-start'}}>
+              <ScrollView
+                nestedScrollEnabled={true}
+                showsVerticalScrollIndicator={false}
+                style={(styles.textContainer, {width: '100%', height: '45%'})}>
+                {selectedCourseInstanceReviews &&
+                  selectedCourseInstanceReviews.map((review, index) => (
+                    <View key={index} style={{marginBottom: '4%'}}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          flexWrap: 'wrap',
+                          marginBottom: '2%',
+                        }}>
+                        <View style={{flexDirection: 'row'}}>
+                          <ImageBackground
+                            source={require('../assets/images/login_screen.png')}
+                            style={{
+                              width: 38,
+                              borderRadius: 5,
+                              overflow: 'hidden',
+                              marginRight: '5%',
+                            }}></ImageBackground>
+                          <View>
+                            <CustomText
+                              style={{
+                                fontFamily: 'SeoulNamsanEB',
+                                fontSize: 14,
+                                marginVertical: '1%',
+                              }}>
+                              {review.nickname}
+                            </CustomText>
+                            <CustomText
+                              style={{
+                                fontFamily: 'SeoulNamsanM',
+                                fontSize: 12,
+                                marginVertical: '1%',
+                              }}>
+                              {review.createdTime}
+                            </CustomText>
+                          </View>
+                        </View>
+                        <View
+                          style={{flexDirection: 'row', alignItems: 'center'}}>
+                          <RatingStar
+                            rating={rating}
+                            containerStyle={{marginRight: 8}}
+                            iconStyle={{margin: -8}}
+                            inactiveColor="grey"
+                          />
+                          <RatingText>
+                            {rating} ({course.ratingCount})
+                          </RatingText>
+                        </View>
+                      </View>
+                      <View>
+                        <CustomText
+                          style={{
+                            fontFamily: 'SeoulNamsanB',
+                            fontSize: 16,
+                            marginLeft: '5%',
+                          }}>
+                          {review.content}
+                        </CustomText>
+                      </View>
+                    </View>
+                  ))}
+              </ScrollView>
             </ContentView>
           </ContentsContainer>
           <View
@@ -163,7 +247,7 @@ const BackgroundView = styled(View)`
 
 const ModalContainer = styled(View)`
   background-color: rgba(255, 255, 255, 0.8);
-  height: 70%;
+  height: 75%;
   width: 85%;
   border-radius: 3px;
   padding: 5%;
@@ -207,7 +291,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: 'SeoulNamsanM',
     color: 'black',
-    fontSize: 20,
+    fontSize: 22,
   },
 });
 export default MainCourseCardModal;

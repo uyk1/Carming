@@ -36,9 +36,12 @@ export const placeApi = createApi({
       SelectedPopularPlaceResponse[],
       number
     >({
-      query: id => ({
-        url: `/popular/${id}`, // id를 URL에 추가
-      }),
+      query: id => {
+        console.log(id);
+        return {
+          url: `/popular/${id}`, // id를 URL에 추가
+        };
+      },
       providesTags: (result, error, id) => [
         // 쿼리 결과에 id를 추가해서 Tag 지정
         ...(result?.map(({id: placeId}) => ({

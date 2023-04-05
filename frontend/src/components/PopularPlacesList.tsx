@@ -9,6 +9,7 @@ import {RootState} from '../redux/store';
 import MainPlaceCardModal from './MainPlaceCardModal';
 import {initializeSelectedPlace} from '../redux/slices/mainSlice';
 import {useGetSelectedPopularPlaceQuery} from '../apis/placeApi';
+import {SelectedPopularPlaceResponse} from '../types/MainResponse';
 
 interface PopularPlacesListProps {
   placeList?: Place[];
@@ -21,39 +22,12 @@ const PopularPlacesList: React.FC<PopularPlacesListProps> = ({
   //장소 모달
   const [isPlaceModalVisible, setIsPlaceModalVisible] = useState(false);
   const handlePlaceModalClose = () => {
-    dispatch(initializeSelectedPlace);
+    dispatch(initializeSelectedPlace());
     setIsPlaceModalVisible(false);
   };
   const selectedPlace = useSelector(
     (state: RootState) => state.main.selectedPlace,
   );
-
-  // const [selectedPlaceInstance, setSelectedPlaceInstance] = useState<Place[]>(
-  //   [],
-  // );
-  // if (selectedPlace) {
-  //   const {data, error, isLoading, isError} = useGetSelectedPopularPlaceQuery(
-  //     selectedPlace.id,
-  //   );
-  // }
-
-  // useEffect(() => {
-  //   if (selectedPlace) {
-  //     // selectedPlace가 존재하는 경우에만 useGetSelectedPopularPlaceQuery를 호출
-  //     setSelectedPlaceInstance([]);
-  //   }
-  // }, [selectedPlace]);
-
-  // useEffect(() => {
-  //   if (data) {
-  //     setSelectedPlace(data);
-  //     console.log('Selected Place:', data);
-  //   }
-  // }, [data]);
-
-  // if (error) {
-  //   console.error(error);
-  // }
 
   return (
     <>

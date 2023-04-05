@@ -23,8 +23,17 @@ export type SelectedPopularPlaceResponse = {
   address: string;
   ratingSum: number;
   ratingCount: number;
-  tag: {
+  tags: {
     tagName: string;
     tagCount: number;
   }[];
+  tel: string;
+};
+
+export type SelectedPopularCourseResponse = {
+  name: string;
+  ratingCount: number;
+  ratingSum: number;
+  regions: string[];
+  places: Place[];
 };

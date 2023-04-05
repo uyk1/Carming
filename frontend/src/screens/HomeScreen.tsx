@@ -20,22 +20,44 @@ import {PlacePreCart} from '../components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useEffect, useState} from 'react';
 import {useGetPopularPlacesQuery} from '../apis/placeApi';
+import {useGetCoursesQuery, useGetPopularCoursesQuery} from '../apis/courseApi';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
   const {memberInfo} = useSelector((state: RootState) => state.auth);
   const preCart = useSelector((state: RootState) => state.main.preCart);
 
-  const {data, error, isLoading, isError} = useGetPopularPlacesQuery();
-  const [PopularPlaces, setPopularPlaces] = useState<Place[]>([]);
+  const {
+    data: popularPlacesData,
+    error: popularPlacesError,
+    isLoading: popularPlacesIsLoading,
+    isError: popularPlacesIsError,
+  } = useGetPopularPlacesQuery();
+  const {
+    data: popularCoursesData,
+    error: popularCoursesError,
+    isLoading: popularCoursesIsLoading,
+    isError: popularCoursesIsError,
+  } = useGetPopularCoursesQuery(3);
+
+  const [popularPlaces, setPopularPlaces] = useState<Place[]>([]);
+  const [popularCourses, setPopularCourses] = useState<Course[]>([]);
   useEffect(() => {
-    if (data) {
-      setPopularPlaces(data);
-      console.log('Popular Places:', data);
+    if (popularPlacesData) {
+      setPopularPlaces(popularPlacesData);
+      console.log('Popular Places:', popularPlacesData);
     }
-  }, [data]);
-  if (error) {
-    console.error(error);
+    if (popularCoursesData) {
+      setPopularCourses(popularCoursesData);
+      console.log('Popular Course:', popularCoursesData);
+    }
+  }, [popularPlacesData, popularCoursesData]);
+
+  if (popularPlacesError) {
+    console.error('popularPlacesError: ', popularPlacesError);
+  }
+  if (popularCoursesError) {
+    console.error('popularCoursesError: ', popularCoursesError);
   }
 
   //로그아웃
@@ -78,11 +100,11 @@ const HomeScreen = () => {
             </Container>
           )}
           <Container style={{}}>
-            <PopularPlacesList placeList={PopularPlaces} />
+            <PopularPlacesList placeList={popularPlaces} />
             {/* <Button title="로그아웃" onPress={handleLogout} color={'grey'} /> */}
           </Container>
           <Container style={{}}>
-            <PopularCoursesList courseList={courses} />
+            <PopularCoursesList courseList={popularCourses} />
           </Container>
         </HomeContainer>
       </ScrollView>
