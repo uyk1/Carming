@@ -22,11 +22,13 @@ import {
   deleteCheckedTag,
   deletePlaceFromPlaceCartById,
   increasePlacePage,
+  resetPlacePage,
   selectCategory,
   setPlaceTagList,
 } from '../redux/slices/placeSlice';
-import {useGetPlacesQuery} from '../apis/placeApi';
+import {placeApi, useGetPlacesQuery} from '../apis/placeApi';
 import {filterTagsByCategory} from '../utils';
+import {ALERT_TYPE, Toast} from 'react-native-alert-notification';
 
 interface PlacesRecommendScreenScreenProps {}
 
@@ -53,16 +55,34 @@ const PlacesRecommendScreen: React.FC<
     category: selectedCategory,
     size: PAGE_SIZE,
     page: placePage,
+    tagId: checkedTagList.length > 0 ? checkedTagList[0].id : undefined,
   });
 
   useEffect(() => {
+    if (!isFetching && places && places.length <= (placePage - 1) * PAGE_SIZE) {
+      Toast.show({
+        type: ALERT_TYPE.WARNING,
+        title: 'Info',
+        textBody: '더이상 불러올 장소가 없습니다.',
+      });
+    }
+  }, [places, isFetching]);
+
+  // 카테고리 변경시
+  useEffect(() => {
     dispatch(setPlaceTagList(filterTagsByCategory(tags, selectedCategory)));
+    dispatch(resetPlacePage());
+    dispatch(deleteCheckedTag(checkedTagList[0]));
+    dispatch(placeApi.util.invalidateTags(['Places']));
   }, [selectedCategory, tags]);
 
   const tagPressed = (tag: Tag) => {
-    checkedTagList.includes(tag)
-      ? dispatch(deleteCheckedTag(tag))
-      : dispatch(addCheckedTag(tag));
+    dispatch(resetPlacePage());
+    if (checkedTagList.includes(tag)) {
+      dispatch(deleteCheckedTag(tag));
+    } else {
+      dispatch(addCheckedTag(tag));
+    }
   };
 
   const placeAddBtnPressed = () => {
@@ -98,11 +118,7 @@ const PlacesRecommendScreen: React.FC<
           layoutCardOffset={3}
           ref={carouselRef}
           data={places}
-          firstItem={Math.max(
-            0,
-            places.length - 5,
-            PAGE_SIZE * (placePage - 1),
-          )}
+          firstItem={Math.max(0, places.length - 1 - PAGE_SIZE)}
           renderItem={PlaceRecommendCard}
           sliderWidth={screenWidth}
           itemWidth={screenWidth - 80}

@@ -8,14 +8,12 @@ export interface PlaceSearch {
   category: Category;
   size: number;
   page: number;
+  tagId?: number;
 }
 
 export const placeApi = createApi({
   reducerPath: 'placeApi',
   baseQuery: customFetchBaseQuery({baseUrl: REST_API_URL + '/places'}),
-  // baseQuery: customFetchBaseQuery({
-  //   baseUrl: 'http://10.0.2.2:8080/api' + '/places',
-  // }),
   tagTypes: ['Places'],
   endpoints: builder => ({
     getPlaces: builder.query<Place[], PlaceSearch>({
@@ -24,22 +22,14 @@ export const placeApi = createApi({
         params: filter,
       }),
       serializeQueryArgs: endpointName => {
-        console.log(
-          'serializeQueryArgs endpointName ::: ',
-          endpointName.queryArgs.category,
-        );
-        return endpointName.queryArgs.category;
+        const {category, tagId, regions} = endpointName.queryArgs;
+        const key = `${regions}${category}${tagId}`;
+        return key;
       },
       merge: (currentCache, newItems) => {
         currentCache.push(...newItems);
       },
       forceRefetch: ({currentArg, previousArg}) => {
-        console.log(
-          'forceRefetch currentArg, previousArg, return ::: ',
-          currentArg,
-          previousArg,
-          currentArg?.category !== previousArg?.category,
-        );
         return currentArg?.page !== previousArg?.page;
       },
       providesTags: ['Places'],
