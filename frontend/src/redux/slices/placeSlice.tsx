@@ -57,8 +57,8 @@ const placeSlice = createSlice({
       state.placeTagList = [...newPlaceTagList];
     },
     addCheckedTag: (state, action: PayloadAction<Tag>) => {
-      const newTag = action.payload;
-      state.checkedTagList = [...state.checkedTagList, newTag];
+      const newTagList = [action.payload];
+      state.checkedTagList = newTagList;
     },
     deleteCheckedTag: (state, action: PayloadAction<Tag>) => {
       const deletedTag = action.payload;
@@ -79,7 +79,7 @@ const placeSlice = createSlice({
       state.placePage += 1;
     },
     resetPlacePage: state => {
-      state.placePage = 0;
+      state.placePage = 1;
     },
   },
 });
