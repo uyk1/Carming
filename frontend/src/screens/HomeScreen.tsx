@@ -18,7 +18,9 @@ import PopularCoursesList from '../components/PopularCoursesList';
 import {Category, Course, Place} from '../types';
 import {PlacePreCart} from '../components';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import {useGetTagsQuery} from '../apis/tagApi';
+import {setTagList} from '../redux/slices/tagSlice';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -33,6 +35,12 @@ const HomeScreen = () => {
   const selectedCourse = useSelector(
     (state: RootState) => state.main.selectedCourse,
   );
+
+  //초기 태그 리스트 불러오기
+  const {data: tagLists} = useGetTagsQuery();
+  useEffect(() => {
+    if (tagLists !== undefined) dispatch(setTagList(tagLists));
+  }, [tagLists]);
 
   //로그아웃
   const handleLogout = () => {
