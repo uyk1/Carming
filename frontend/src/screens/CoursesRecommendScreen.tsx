@@ -29,6 +29,7 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const carouselRef = useRef<any>(null);
+  const PAGE_SIZE = 10;
 
   const {courseCart, courseTagList, checkedTagList} = useSelector(
     (state: RootState) => state.course,
@@ -38,11 +39,10 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
 
   const {
     data: courses,
-    error,
     isFetching,
     isError,
     isSuccess,
-  } = useGetCoursesQuery({regions: regionList, size: 10});
+  } = useGetCoursesQuery({regions: regionList, size: PAGE_SIZE, page: 1});
   const [carouselData, setCarouselData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   };
 
   const courseAddBtnPressed = () => {
-    if (courses) {
+    if (courses && courses.length > 0) {
       const course: Course = courses[carouselRef.current._activeItem];
       dispatch(setCourseToCourseCart(course));
     }
@@ -72,7 +72,7 @@ const CoursesRecommendScreen: React.FC<CoursesRecommendScreenProps> = ({}) => {
   };
 
   const makeCarouselData = (index: number) => {
-    if (courses) {
+    if (courses && courses.length > 0) {
       const tmpList: any[] = courses.map((course, idx) => ({
         course: course,
         isActive: idx === index,

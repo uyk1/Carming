@@ -6,6 +6,7 @@ type SliceState = {
   courseCart: Place[];
   courseTagList: Tag[];
   checkedTagList: Tag[];
+  coursePage: number;
 };
 
 const courseSlice = createSlice({
@@ -15,6 +16,7 @@ const courseSlice = createSlice({
     courseCart: [],
     courseTagList: [],
     checkedTagList: [],
+    coursePage: 1,
   } as SliceState,
   reducers: {
     // Course List

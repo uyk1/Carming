@@ -6,6 +6,7 @@ import customFetchBaseQuery from './customFetchBaseQuery';
 export interface CourseSearch {
   regions: string[];
   size: number;
+  page: number;
 }
 
 interface CheckCourseResponse {
@@ -23,6 +24,17 @@ export const courseApi = createApi({
         url: '/',
         params: filter,
       }),
+      serializeQueryArgs: endpointName => {
+        const {regions} = endpointName.queryArgs;
+        const key = `${regions}`;
+        return key;
+      },
+      merge: (currentCache, newItems) => {
+        currentCache.push(...newItems);
+      },
+      forceRefetch: ({currentArg, previousArg}) => {
+        return currentArg?.page !== previousArg?.page;
+      },
       providesTags: ['Courses'],
     }),
     checkCourseExist: builder.query<CheckCourseResponse, number[]>({
