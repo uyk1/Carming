@@ -5,6 +5,8 @@ import {LoginResponsePayload} from '../../types/LoginResponsePayload';
 import {loginApi} from './../../apis/loginApi';
 
 type AuthState = {
+  jwt: string | null;
+  jwtKey: string;
   token: string | null;
   memberInfo: MemberInfo | null;
   isLoading: boolean;
@@ -14,6 +16,9 @@ type AuthState = {
 };
 
 const initialState: AuthState = {
+  jwt: null,
+  jwtKey:
+    'VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHaVlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa',
   token: null,
   memberInfo: null,
   isLoading: false,
@@ -41,9 +46,11 @@ const authSlice = createSlice({
     },
     loginSuccess: (state, action: PayloadAction<LoginResponsePayload>) => {
       const {tokenType, accessToken, nickname, profile} = action.payload;
+      const jwt = accessToken;
       const token = tokenType + accessToken;
       const memberInfo = {nickname, profile};
 
+      state.jwt = jwt;
       state.token = token;
       state.memberInfo = memberInfo;
       state.isLoading = false;

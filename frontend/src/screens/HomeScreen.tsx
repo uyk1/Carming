@@ -1,14 +1,6 @@
-import {
-  View,
-  Text,
-  Button,
-  ImageBackground,
-  Image,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components';
-import {logout} from '../redux/slices/authSlice';
 import {RootState} from '../redux/store';
 import MainMap from './../components/MainMap';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -20,7 +12,7 @@ import {PlacePreCart} from '../components';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useEffect, useState} from 'react';
 import {useGetPopularPlacesQuery} from '../apis/placeApi';
-import {useGetCoursesQuery, useGetPopularCoursesQuery} from '../apis/courseApi';
+import {useGetPopularCoursesQuery} from '../apis/courseApi';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
@@ -83,15 +75,23 @@ const HomeScreen = () => {
               <TitleText>"{memberInfo?.nickname}" 님의 미리 담기</TitleText>
             </TitleView>
             {preCart.length > 0 ? (
-              <PlacePreCart
-                preCart={preCart}
-                iconColor="rgba(0, 0, 0, 0.6)"
-                componentStyle={{
-                  width: '95%',
-                  marginBottom: '3%',
-                  justifyContent: 'flex-start',
-                }}
-              />
+              <View
+                style={{
+                  flex: 1,
+                  width: '85%',
+                  marginTop: '0.5%',
+                  marginBottom: '4%',
+                }}>
+                <PlacePreCart
+                  preCart={preCart}
+                  iconColor="rgba(0, 0, 0, 0.6)"
+                  componentStyle={{
+                    height: '100%',
+                    width: '95%',
+                    justifyContent: 'flex-start',
+                  }}
+                />
+              </View>
             ) : (
               <TitleText
                 style={{
