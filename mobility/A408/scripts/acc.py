@@ -17,6 +17,9 @@ from pyproj import Proj
 import pyproj
 from morai_msgs.srv import MoraiEventCmdSrv
 import redis
+import json
+import os
+import time
 
 redis_client = redis.Redis(host='j8a408.p.ssafy.io', port=6379, db=0, password='carming123')
 
@@ -80,7 +83,7 @@ class pure_pursuit:
         self.min_lfd = 5
         self.max_lfd = 30
         self.lfd_gain = 0.78
-        self.target_velocity = 60
+        self.target_velocity = 30  ## 속도 수정
 
         ## 주행 시작, 종료 관련 기어 제어
         self.last = 0
@@ -99,9 +102,19 @@ class pure_pursuit:
         self.get_in = ''
         self.send_gear_cmd(Gear.P.value)
         while True:
+            ## 여정 시작 확인, 승차 확인
+            self.tour_start = redis_client.get('tour_start')
             self.get_in = redis_client.get('get_in')
+
+            ## 여정이 시작됨을 확인하면 탑승 장소로 이동
+            if self.tour_start == b'1' or self.get_in == b'0':
+                self.send_gear_cmd(Gear.D.value)
+                break
+
+            ## 승차 확인 후에 안내 메세지가 끝났다면 주행 시작
             if self.get_in == b'1':
-                ## 승차하면 주행 시작
+                ## 안내메세지 10초 이후에 출발
+                time.slee(10)
                 self.send_gear_cmd(Gear.D.value)
                 break
 
@@ -116,7 +129,7 @@ class pure_pursuit:
         rate = rospy.Rate(30)  # 30hz
         while not rospy.is_shutdown():
             ## is_destination 초기화
-            redis_client.set('is_destination', 0)
+            #redis_client.set('is_destination', 0)
             if self.is_path == True and self.is_odom == True and self.is_status == True:
                 # global_obj,local_obj
                 result = self.calc_vaild_obj([self.current_postion.x, self.current_postion.y, self.vehicle_yaw],
@@ -173,6 +186,8 @@ class pure_pursuit:
 
                 if self.end_flag == 1:
                     redis_client.set('current_velocity', 0)
+                    os.system("pkill -9 -ef Adaptive_Cruise_Control.launch")
+                    print("ok")
                     break
 
             rate.sleep()
@@ -231,7 +246,6 @@ class pure_pursuit:
     def object_info_callback(self, data):  ## Object information Subscriber
         self.is_object_info = True
         self.object_data = data
-        ## 근처 노드의 idx 값 확인
 
     def get_current_waypoint(self, ego_status, global_path):
         min_dist = float('inf')
@@ -255,11 +269,10 @@ class pure_pursuit:
                 currnet_waypoint = i
 
         path_len = len(global_path.poses)
-        print('path_len', path_len)
-        print('currnet_waypoint', currnet_waypoint)
 
         if path_len - currnet_waypoint <= 1:
             redis_client.set('is_destination', 1)
+            
             self.end_flag = 1
         return currnet_waypoint
 
