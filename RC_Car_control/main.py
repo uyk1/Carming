@@ -73,16 +73,18 @@ class main():
                 
                 get_in = redis_client.get('get_in')
                 is_destination = redis_client.get('is_destination')
+                #print('get_in : ', get_in)
+                #print('is_destination : ', is_destination)
                 
                 ## 탑승 완료
-                if get_in == '1' and start_flag == 0:
+                if get_in == b'1' and start_flag == 0:
                     tts.synthesize_text("안전벨트를 매주세요!... 출발하겠습니다~")
                     start_flag = 1
                     ## 주행 시작하면서 문열림 flag 초기화
                     door_flag = 0
                 
                 ## 문열림 한 번만 하기 위해서 flag 사용
-                if is_destination == '1' and door_flag == 0:
+                if is_destination == b'1' and door_flag == 0:
                     tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
                     door_flag = 1
                     num = 4
@@ -90,7 +92,6 @@ class main():
                     # 1분뒤에 문열림
                     time.sleep(60)
                     openclose()
-                    
                             
                 self.dc_motor.drive(speed)  # DC_MOTOR 객체의 drive 함수 호출
                 
