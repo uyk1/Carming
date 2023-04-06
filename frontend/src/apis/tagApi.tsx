@@ -9,7 +9,10 @@ export const tagApi = createApi({
   tagTypes: ['Tags'],
   endpoints: builder => ({
     getTags: builder.query<TagSliceState, void>({
-      query: () => '',
+      query: () => {
+        console.log();
+        return {url: ''};
+      },
       providesTags: ['Tags'],
     }),
   }),

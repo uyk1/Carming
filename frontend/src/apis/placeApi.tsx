@@ -18,10 +18,13 @@ export const placeApi = createApi({
   tagTypes: ['Places', 'PopularPlaces', 'SelectedPopularPlace'],
   endpoints: builder => ({
     getPlaces: builder.query<Place[], PlaceSearch>({
-      query: filter => ({
-        url: '/',
-        params: filter,
-      }),
+      query: filter => {
+        console.log();
+        return {
+          url: '/',
+          params: filter,
+        };
+      },
       serializeQueryArgs: endpointName => {
         const {category, tagId, regions} = endpointName.queryArgs;
         const key = `${regions}${category}${tagId}`;

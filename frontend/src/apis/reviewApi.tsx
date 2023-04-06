@@ -9,18 +9,24 @@ export const reviewApi = createApi({
   tagTypes: ['Reviews'],
   endpoints: builder => ({
     getReviews: builder.query<any[], number>({
-      query: courseId => ({
-        url: '',
-        params: {courseId},
-      }),
+      query: courseId => {
+        console.log();
+        return {
+          url: '',
+          params: {courseId},
+        };
+      },
       providesTags: ['Reviews'],
     }),
     registReview: builder.mutation<void, ReviewRequest>({
-      query: review => ({
-        url: '',
-        method: 'POST',
-        body: review,
-      }),
+      query: review => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: review,
+        };
+      },
       invalidatesTags: ['Reviews'],
     }),
   }),

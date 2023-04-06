@@ -53,18 +53,24 @@ export const courseApi = createApi({
       }),
     }),
     checkCourseExist: builder.query<CheckCourseResponse, number[]>({
-      query: placeKeys => ({
-        url: '/new',
-        params: {placeKeys},
-      }),
+      query: placeKeys => {
+        console.log();
+        return {
+          url: '/new',
+          params: {placeKeys},
+        };
+      },
     }),
 
     registCourse: builder.mutation<number, Course>({
-      query: course => ({
-        url: '',
-        method: 'POST',
-        body: course,
-      }),
+      query: course => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: course,
+        };
+      },
       invalidatesTags: ['Courses'],
     }),
   }),
