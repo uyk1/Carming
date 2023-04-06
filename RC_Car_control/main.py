@@ -11,7 +11,9 @@ import re
 import tts
 import serial
 
-ser = serial.Serial('/dev/ttyACM0', 9600, exclusive=True)
+ser = serial.Serial('/dev/ttyACM1', 9600, exclusive=True)
+## ls /dev/ttyA* 명령 입력해서 연결된 포트 확인하기
+## 통신 중에 프로그램이 종료될 경우, ACM뒤의 포트 번호가 계속 올라간다.
 
 class main():
     def __init__(self):
@@ -41,30 +43,35 @@ class main():
                 if wheel_angle <= -2:  ## left
                     num = 2
                     ser.write(num.to_bytes(1, 'little'))
+                    time.sleep(0.1)
                     self.servo_motor.steering(-2)
                     time.sleep(0.3)
 
                 elif wheel_angle >= 2:  ## right
                     num = 3
                     ser.write(num.to_bytes(1, 'little'))
+                    time.sleep(0.1)
                     self.servo_motor.steering(2)
                     time.sleep(0.3)
 
                 elif wheel_angle <= -1 and wheel_angle > -2:  ## semi left
                     num = 2
                     ser.write(num.to_bytes(1, 'little'))
+                    time.sleep(0.1)
                     self.servo_motor.steering(-1)
                     time.sleep(0.3)
 
                 elif wheel_angle >= 1 and wheel_angle < 2:  ## semi right
                     num = 3
                     ser.write(num.to_bytes(1, 'little'))
+                    time.sleep(0.1)
                     self.servo_motor.steering(1)
                     time.sleep(0.3)
 
                 else:
                     num = 1
                     ser.write(num.to_bytes(1, 'little'))
+                    time.sleep(0.1)
                     self.servo_motor.steering(0)
                     time.sleep(0.3)
 
@@ -85,12 +92,12 @@ class main():
                 
                 ## 문열림 한 번만 하기 위해서 flag 사용
                 if is_destination == b'1' and door_flag == 0:
-                    tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
-                    door_flag = 1
                     num = 4
                     ser.write(num.to_bytes(1, 'little'))
+                    tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
+                    door_flag = 1
                     # 1분뒤에 문열림
-                    time.sleep(60)
+                    time.sleep(10)
                     openclose()
                             
                 self.dc_motor.drive(speed)  # DC_MOTOR 객체의 drive 함수 호출
