@@ -47,6 +47,7 @@ const PlacesRecommendScreen: React.FC<
 
   const {
     data: places,
+    error,
     isFetching,
     isError,
     isSuccess,

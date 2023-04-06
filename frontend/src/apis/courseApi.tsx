@@ -1,6 +1,6 @@
 import {createApi} from '@reduxjs/toolkit/query/react';
 import {REST_API_URL} from '@env';
-import {Course, Tag} from '../types';
+import {Course, Tag, Review} from '../types';
 import customFetchBaseQuery from './customFetchBaseQuery';
 
 export interface CourseSearch {
@@ -40,6 +40,18 @@ export const courseApi = createApi({
       },
       providesTags: ['Courses'],
     }),
+    getPopularCourses: builder.query<Course[], number>({
+      query: size => ({
+        url: '/',
+        params: {size},
+      }),
+      providesTags: ['Courses'],
+    }),
+    getSelectedPopularCourseReviews: builder.query<Review, number>({
+      query: id => ({
+        url: `/${id}/reviews`,
+      }),
+    }),
     checkCourseExist: builder.query<CheckCourseResponse, number[]>({
       query: placeKeys => ({
         url: '/new',
@@ -62,4 +74,5 @@ export const {
   useGetCoursesQuery,
   useCheckCourseExistQuery,
   useRegistCourseMutation,
+  useGetPopularCoursesQuery,
 } = courseApi;

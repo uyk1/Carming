@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   Modal,
   Text,
@@ -20,6 +20,7 @@ import MIcon from 'react-native-vector-icons/MaterialIcons';
 import {addPlaceToPlaceCart} from '../redux/slices/placeSlice';
 import {addPlaceToPreCart} from '../redux/slices/mainSlice';
 import {RootState} from '../redux/store';
+import {SelectedPopularPlaceResponse} from '../types/MainResponse';
 
 export interface MainPlaceCardModalProps {
   isVisible: boolean;
@@ -32,6 +33,7 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
   onClose,
   place,
 }) => {
+  console.log('place: ', selectedPlaceInstance);
   const dispatch = useDispatch();
 
   const rating = calcRating(place.ratingSum, place.ratingCount);
@@ -47,6 +49,20 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
     dispatch(addPlaceToPreCart(place));
   };
 
+  // 모달을 띄우기 위한 추가적인 정보 불러오기
+  const selectedPlaceInstance = useSelector(
+    (state: RootState) => state.main.selectedPopularPlace,
+  );
+  let tags: {tagName: string; tagCount: number}[] = [];
+  if (selectedPlaceInstance) {
+    tags = selectedPlaceInstance.tags
+      .slice()
+      .sort((a, b) => b.tagCount - a.tagCount);
+  }
+  useEffect(() => {
+    console.log(selectedPlaceInstance);
+  }, [selectedPlaceInstance]);
+
   return (
     <Modal
       animationType="fade"
@@ -59,7 +75,8 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
             <ImgView>
               <PlaceImg source={{uri: place.image}} />
             </ImgView>
-            <ContentView style={{justifyContent: 'space-between'}}>
+            <ContentView
+              style={{justifyContent: 'space-between', flexWrap: 'wrap'}}>
               <CustomText
                 style={{
                   fontFamily: 'SeoulNamsanEB',
@@ -80,28 +97,40 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
                 </RatingText>
               </View>
             </ContentView>
-            <ContentView>
-              <SIcon
-                name={'location-pin'}
-                style={{fontSize: 14, marginRight: 5}}
-              />
-              <CustomText>{place.region}</CustomText>
-            </ContentView>
+            {!!selectedPlaceInstance && (
+              <ContentView>
+                <SIcon
+                  name={'location-pin'}
+                  style={{fontSize: 14, marginRight: 5}}
+                />
+                <CustomText>{selectedPlaceInstance.address}</CustomText>
+              </ContentView>
+            )}
             <ContentView>
               <MIcon name={'call'} style={{fontSize: 14, marginRight: 5}} />
-              <CustomText>{place.tel}</CustomText>
+              {!!selectedPlaceInstance && selectedPlaceInstance.tel !== '' ? (
+                <CustomText>{selectedPlaceInstance.tel}</CustomText>
+              ) : (
+                <CustomText>아직 전화번호가 등록되지 않은 곳입니다.</CustomText>
+              )}
             </ContentView>
-            <ContentView>
-              {place.keyword?.map((keyword, index) => {
-                return (
-                  <CustomText
-                    key={index}
-                    style={{fontFamily: 'SeoulNamsanEB', fontSize: 14}}>
-                    #{keyword}
-                  </CustomText>
-                );
-              })}
-            </ContentView>
+            {selectedPlaceInstance && (
+              <ContentView>
+                {tags?.map((tag, index) => {
+                  return (
+                    <CustomText
+                      key={index}
+                      style={{
+                        fontFamily:
+                          index < 2 ? 'SeoulNamsanEB' : 'SeoulNamsanM',
+                        fontSize: index < 2 ? 15 : 12,
+                      }}>
+                      #{tag.tagName}({tag.tagCount})
+                    </CustomText>
+                  );
+                })}
+              </ContentView>
+            )}
           </ContentsContainer>
           <View
             style={{
@@ -121,11 +150,11 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
               }}
               disabled={isIncluded}>
               {isIncluded ? (
-                <Text style={{color: '#fff', fontWeight: 'bold'}}>
+                <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
                   담은 장소
                 </Text>
               ) : (
-                <Text style={{color: '#fff', fontWeight: 'bold'}}>
+                <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
                   미리 담기
                 </Text>
               )}
@@ -139,7 +168,9 @@ const MainPlaceCardModal: React.FC<MainPlaceCardModalProps> = ({
                 borderRadius: 5,
                 alignItems: 'center',
               }}>
-              <Text style={{color: '#fff', fontWeight: 'bold'}}>나가기</Text>
+              <Text style={{fontFamily: 'SeoulNamsanM', color: '#fff'}}>
+                나가기
+              </Text>
             </TouchableOpacity>
           </View>
         </ModalContainer>
@@ -157,7 +188,7 @@ const BackgroundView = styled(View)`
 
 const ModalContainer = styled(View)`
   background-color: rgba(255, 255, 255, 0.8);
-  height: 70%;
+  height: 75%;
   width: 85%;
   border-radius: 3px;
   padding: 5%;
@@ -169,6 +200,7 @@ const ContentsContainer = styled(View)`
 `;
 const ContentView = styled(View)`
   flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   margin-bottom: 4%;
 `;
