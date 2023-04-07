@@ -23,12 +23,12 @@ class main():
 
     ## redis에서 데이터 확인
     def run(self):
+        start_flag = 0
         redis_client = redis.StrictRedis(host='j8a408.p.ssafy.io', port=6379, db=0, password='carming123')
         
-        door_flag = 0
-        start_flag = 0
         try:
             while True:
+                door_flag = 0
                 ## 속도 b'1.4650933742523193' 형태로 출력
                 current_velocity = redis_client.get('current_velocity')
                 speed = re.findall(b'\d+', current_velocity)[0]  ### 정규식으로 바이트 문자열에서 숫자만 추출
@@ -83,15 +83,26 @@ class main():
                 #print('get_in : ', get_in)
                 #print('is_destination : ', is_destination)
                 
-                ## 탑승 완료
-                if get_in == b'1' and start_flag == 0:
-                    tts.synthesize_text("안전벨트를 매주세요!... 출발하겠습니다~")
+                ## 차량이 사용자의 위치로 도착, 승차하기 전
+                ## 승차한 후 is_destination = 0, get_in = 1
+                if is_destination == b'1' and get_in == 0 and start_flag == 0:
+                    num = 4
+                    ser.write(num.to_bytes(1, 'little'))
+                    tts.synthesize_text("안녕하세요! 카밍카 입니다! 승차해 주세요!")
+                    # 10초 뒤에 문열림
+                    time.sleep(10)
+                    openclose()
                     start_flag = 1
+
+                ## 사용자가 탑승한 상황, 출발
+                if get_in == b'1':
+                    tts.synthesize_text("안전벨트를 매주세요!... 출발하겠습니다~")
                     ## 주행 시작하면서 문열림 flag 초기화
-                    door_flag = 0
+
+
                 
-                ## 문열림 한 번만 하기 위해서 flag 사용
-                if is_destination == b'1' and door_flag == 0:
+                ## 사용자가 탑승한 차량이 목적지에 도착한 경우
+                if get_in == b'1' and is_destination == b'1' and door_flag == 0:
                     num = 4
                     ser.write(num.to_bytes(1, 'little'))
                     tts.synthesize_text("목적지에 도착하였습니다. 하차 준비를 하세요~")
@@ -99,6 +110,7 @@ class main():
                     # 1분뒤에 문열림
                     time.sleep(10)
                     openclose()
+                    start_flag = 0
                             
                 self.dc_motor.drive(speed)  # DC_MOTOR 객체의 drive 함수 호출
                 
