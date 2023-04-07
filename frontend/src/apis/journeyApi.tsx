@@ -125,7 +125,7 @@ export const journeyApi = createApi({
           url: '',
           method: 'POST',
           body: {
-            key: 'tour_start ',
+            key: 'tour_start',
             value: status,
           },
         };
