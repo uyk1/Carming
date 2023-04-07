@@ -5,7 +5,7 @@
 
 차가 없어서, 새로운 장소에 대한 접근이 어려워서, 어디를 가야할지 몰라서! 여러가지 이유로 늘 같은 곳만 가셨나요?
 택시를 타도 기사님들이 말을 거는게 불편하거나 면허가 없어서 렌트카를 빌리지 못하시지는 않으셨나요?
-저희 서비스는 여러분을 위해 장소 추천과 코스 설정, 그리고 이동까지! 간편한 환경을 제공합니다
+저희 서비스는 여러분을 위해 장소 추천과 코스 설정, 그리고 이동까지! 간편한 환경을 제공합니다.
 
 
 ##  🚩 개요
@@ -38,7 +38,7 @@
 - 차량의 위치와 호출 위치 사이의 최적 경로를 생성한 후, 예상 소요 시간을 전송
 
 #### 경로 생성
-- 최단거리 경로 생성
+- Dijkstra 알고리즘을 활용한 최단거리 경로 생성
 
 #### 마이페이지
 - 앱을 사용하는 동안의 기록들을 저장
@@ -49,15 +49,24 @@
 - 가상환경에서의 주행과 동기화된 주행 상태 구현
 - 스피커를 부착하여 사용자의 플레이리스트 재생
 - 모터를 추가하여 승하차시 문의 움직임을 구현
+- 라즈베리파이와 아두이노의 UART통신으로 NeoPixel을 이용한 후미등 구현
 
-#### 결제
-- 거리 및 시간을 기준으로 금액을 산출하여 영수증 형태로 제공
-- 승차 확인 클릭과 동시에 자동 결제로 진행
+## 	🚩Carming 상세페이지
+![Carming 배포.png](./image-1.png)
+![랜딩페이지.png](./image-2.png)
+![로그인 회원가입.png](./image-3.png)
+![메인화면.png](./image-4.png)
+![호출.png](./image-5.png)
+![여정완료.png](./image-6.png)
 
 ## 	🚩주요 기술
 
+[기능명세서](https://lab.ssafy.com/s08-mobility-autodriving-sub1/S08P21A408/-/blob/2324b6a3f21ab1c4daab91d62235f1a0ba81d2f3/docs/%EA%B8%B0%EB%8A%A5%EB%AA%85%EC%84%B8%EC%84%9C.png)
+
 ---
 ![시스템 아키텍쳐.png](./Docs/시스템 아키텍쳐.png)
+![redis를 이용한 통신 시스템 아키텍쳐.png](./image.png)
+
 
 
 ## 🙆 협업 툴
@@ -95,25 +104,14 @@
 ## 🙆  팀원 역할 분배
 
 ---
-- 주해린 : PM, Mobility
-- 심정윤 : Moblility
+- 주해린 : PM, Mobility,IoT
+- 심정윤 : Moblility,IoT
 - 조성환 : Moblility, 서기, 발표
 - 김인중 : Backend, Frontend
 - 이신광 : Backend, CI/CD
 - 오현규 : Backend, Frontend, UI/UX
 
 
-## 	🚩 프로젝트 산출물
-
----
-
-- [기능명세서](https://lab.ssafy.com/s08-mobility-autodriving-sub1/S08P21A408/-/blob/2324b6a3f21ab1c4daab91d62235f1a0ba81d2f3/docs/%EA%B8%B0%EB%8A%A5%EB%AA%85%EC%84%B8%EC%84%9C.png)
-- [이해관계자 파악 및 분석]()
-- [Swagger UI]()
-- [페르소나]()
-- [ERD]()
-- [Usecase 다이어그램]()
-- [Usecase Scenario]()
 
 
 ## Feature List
