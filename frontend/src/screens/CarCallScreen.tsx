@@ -11,6 +11,7 @@ import {
   useSetDestinationCoordinateMutation,
   useSetDriveStartStatusMutation,
   useSetIsDestinationMutation,
+  useSetTourStartMutation,
 } from '../apis/journeyApi';
 import {CarCallInfoCard, CustomButton, CustomMapView} from '../components';
 import {iconPlace} from '../components/MapMarker';
@@ -68,6 +69,7 @@ const CarCallScreen: React.FC<CarCallScreenProps> = ({navigation, route}) => {
     useSetDestinationCoordinateMutation();
   const [setIsDestination, setIsDestStatus] = useSetIsDestinationMutation();
   const [setDriveStart, setDriveStartStatus] = useSetDriveStartStatusMutation();
+  const [setTourStart, setTourStartStatus] = useSetTourStartMutation();
 
   useEffect(() => {
     if (currentCarCoordinate !== undefined) {
@@ -76,11 +78,6 @@ const CarCallScreen: React.FC<CarCallScreenProps> = ({navigation, route}) => {
       setArrivalTime(calcArrivalTime(currentCarCoordinate, endCoordinate));
     }
   }, [currentCarCoordinate]);
-
-  useEffect(() => {
-    if (globalPath !== undefined) {
-    }
-  }, [globalPath]);
 
   useEffect(() => {
     if (isDestination !== undefined) {
@@ -92,18 +89,21 @@ const CarCallScreen: React.FC<CarCallScreenProps> = ({navigation, route}) => {
     setDestinationCoordinate(placeToCoordinate(journeyPlaceList[1]));
     setDriveStart(1);
     setIsDestination(0);
+    setTourStart(0);
   };
 
   useEffect(() => {
     const redisSetSuccess =
       setDestCoordStatus.isSuccess &&
       setIsDestStatus.isSuccess &&
-      setDriveStartStatus.isSuccess;
+      setDriveStartStatus.isSuccess &&
+      setTourStartStatus.isSuccess;
 
     const redisSetError =
       setDestCoordStatus.isError ||
       setIsDestStatus.isError ||
-      setDriveStartStatus.isError;
+      setDriveStartStatus.isError ||
+      setTourStartStatus.isError;
 
     if (redisSetSuccess) {
       dispatch(setCurrentIdx(1));
@@ -115,7 +115,12 @@ const CarCallScreen: React.FC<CarCallScreenProps> = ({navigation, route}) => {
         textBody: '잠시 후에 다시 시도해 주세요.',
       });
     }
-  }, [setDestCoordStatus, setIsDestStatus, setDriveStartStatus]);
+  }, [
+    setDestCoordStatus,
+    setIsDestStatus,
+    setDriveStartStatus,
+    setTourStartStatus,
+  ]);
 
   return (
     <StyledSafeAreaView>
@@ -138,7 +143,7 @@ const CarCallScreen: React.FC<CarCallScreenProps> = ({navigation, route}) => {
         places={[startPlace, endPlace, currentCarPlace]}
         viewStyle={{flex: 1}}
         latitudeOffset={0}
-        routeCoordinates={globalPath}
+        routeCoordinates={globalPath ?? []}
       />
       <CustomButton
         text={'차량 탑승 완료'}

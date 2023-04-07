@@ -25,6 +25,7 @@ import {
   useSetDestinationCoordinateMutation,
   useSetDriveStartStatusMutation,
   useSetIsDestinationMutation,
+  useSetTourStartMutation,
 } from '../apis/journeyApi';
 import {ALERT_TYPE, Toast} from 'react-native-alert-notification';
 import {L3_TotalJourneyStackParamList} from '../navigations/L3_TotalJourneyStackNavigator';
@@ -41,6 +42,7 @@ export type CourseEditScreenProps = CompositeScreenProps<
 >;
 
 const {width: screenWidth, height: screenHeight} = Dimensions.get('window');
+
 const currentClientPosition: Coordinate = {
   latitude: 37.57948501077321,
   longitude: 126.8884875696561,
@@ -67,6 +69,7 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
     useSetDestinationCoordinateMutation();
   const [setIsDestination, setIsDestStatus] = useSetIsDestinationMutation();
   const [setDriveStart, setDriveStartStatus] = useSetDriveStartStatusMutation();
+  const [setTourStart, setTourStartStatus] = useSetTourStartMutation();
 
   useEffect(() => {
     route.params.recommendType === '0'
@@ -79,6 +82,7 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
   }, [coursePlaces]);
 
   const calcRoute = async () => {
+    console.log('client coordinate ::: ', placeCoordinates[0]);
     await callNaverDirectionApi(placeCoordinates)
       .then(res => {
         const {summary, path} = res.data.route.traoptimal[0];
@@ -91,8 +95,9 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
   const journeyStartBtnPressed = async () => {
     dispatch(setJourneyPlaceList([clientPlace, ...coursePlaces]));
     setDestinationCoordinate(currentClientPosition);
-    setDriveStart(1);
+    setDriveStart(0);
     setIsDestination(0);
+    setTourStart(1);
     setRouteModalVisible(false);
   };
 
@@ -100,12 +105,14 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
     const redisSetSuccess =
       setDestCoordStatus.isSuccess &&
       setIsDestStatus.isSuccess &&
-      setDriveStartStatus.isSuccess;
+      setDriveStartStatus.isSuccess &&
+      setTourStartStatus.isSuccess;
 
     const redisSetError =
       setDestCoordStatus.isError ||
       setIsDestStatus.isError ||
-      setDriveStartStatus.isError;
+      setDriveStartStatus.isError ||
+      setTourStartStatus.isError;
 
     if (redisSetSuccess) {
       if (currentCarPosition) {
@@ -127,7 +134,12 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
         textBody: '잠시 후에 다시 이용해 주세요.',
       });
     }
-  }, [setDestCoordStatus, setIsDestStatus, setDriveStartStatus]);
+  }, [
+    setDestCoordStatus,
+    setIsDestStatus,
+    setDriveStartStatus,
+    setTourStartStatus,
+  ]);
 
   return (
     <GradientBackground colors={['#70558e7a', '#df94c283', '#ffbdc1b0']}>
@@ -177,7 +189,6 @@ const CourseEditScreen: React.FC<CourseEditScreenProps> = ({
         testID={'modal'}
         isVisible={routeModalVisible}
         onSwipeComplete={() => setRouteModalVisible(false)}
-        swipeDirection={[]}
         style={styles.view}>
         <StyledView style={styles.modalView}>
           <CustomMapView

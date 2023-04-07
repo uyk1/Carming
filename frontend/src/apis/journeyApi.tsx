@@ -118,6 +118,19 @@ export const journeyApi = createApi({
       },
       invalidatesTags: ['isDestination'],
     }),
+    setTourStart: builder.mutation<void, number>({
+      query: status => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: {
+            key: 'tour_start ',
+            value: status,
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -130,4 +143,5 @@ export const {
   useSetGetOffStatusMutation,
   useSetIsDestinationMutation,
   useCheckDriveStartStatusQuery,
+  useSetTourStartMutation,
 } = journeyApi;
