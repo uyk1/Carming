@@ -1,14 +1,6 @@
-import {
-  View,
-  Text,
-  Button,
-  ImageBackground,
-  Image,
-  StyleSheet,
-} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components';
-import {logout} from '../redux/slices/authSlice';
 import {RootState} from '../redux/store';
 import MainMap from './../components/MainMap';
 import {ScrollView} from 'react-native-gesture-handler';
@@ -18,26 +10,59 @@ import PopularCoursesList from '../components/PopularCoursesList';
 import {Category, Course, Place} from '../types';
 import {PlacePreCart} from '../components';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import {useGetTagsQuery} from '../apis/tagApi';
+import {setTagList} from '../redux/slices/tagSlice';
+import {useGetPopularPlacesQuery} from '../apis/placeApi';
+import {useGetPopularCoursesQuery} from '../apis/courseApi';
 
 const HomeScreen = () => {
   const dispatch = useDispatch();
-  const {token, memberInfo} = useSelector((state: RootState) => state.auth);
+  const {memberInfo} = useSelector((state: RootState) => state.auth);
   const preCart = useSelector((state: RootState) => state.main.preCart);
 
-  //코스 모달
-  const [isCourseModalVisible, setIsCourseModalVisible] = useState(false);
-  const handleCourseModalClose = () => {
-    setIsCourseModalVisible(false);
-  };
-  const selectedCourse = useSelector(
-    (state: RootState) => state.main.selectedCourse,
-  );
+  const {
+    data: popularPlacesData,
+    error: popularPlacesError,
+    isLoading: popularPlacesIsLoading,
+    isError: popularPlacesIsError,
+  } = useGetPopularPlacesQuery();
+  const {
+    data: popularCoursesData,
+    error: popularCoursesError,
+    isLoading: popularCoursesIsLoading,
+    isError: popularCoursesIsError,
+  } = useGetPopularCoursesQuery(3);
+
+  const [popularPlaces, setPopularPlaces] = useState<Place[]>([]);
+  const [popularCourses, setPopularCourses] = useState<Course[]>([]);
+  useEffect(() => {
+    if (popularPlacesData) {
+      setPopularPlaces(popularPlacesData);
+      console.log('Popular Places:', popularPlacesData);
+    }
+    if (popularCoursesData) {
+      setPopularCourses(popularCoursesData);
+      console.log('Popular Course:', popularCoursesData);
+    }
+  }, [popularPlacesData, popularCoursesData]);
+
+  //초기 태그 리스트 불러오기
+  const {data: tagLists} = useGetTagsQuery();
+  useEffect(() => {
+    if (tagLists !== undefined) dispatch(setTagList(tagLists));
+  }, [tagLists]);
 
   //로그아웃
   const handleLogout = () => {
     dispatch(logout());
   };
+  if (popularPlacesError) {
+    console.error('popularPlacesError: ', popularPlacesError);
+  }
+  if (popularCoursesError) {
+    console.error('popularCoursesError: ', popularCoursesError);
+  }
 
   return (
     <SafeAreaView style={{flex: 1}}>
@@ -56,29 +81,48 @@ const HomeScreen = () => {
             - 지역을 선택해주세요 -
           </MainText>
           <MainMap />
-          {preCart.length > 0 && (
-            <Container>
-              <TitleView>
-                <Icon name="cart-outline" style={styles.titleIcon} />
-                <TitleText>"{memberInfo?.nickname}" 님의 미리 담기</TitleText>
-              </TitleView>
-              <PlacePreCart
-                preCart={preCart}
-                iconColor="rgba(0, 0, 0, 0.6)"
-                componentStyle={{
-                  width: '95%',
-                  marginBottom: '3%',
-                  justifyContent: 'flex-start',
-                }}
-              />
-            </Container>
-          )}
+          <Container>
+            <TitleView>
+              <Icon name="cart-outline" style={styles.titleIcon} />
+              <TitleText>"{memberInfo?.nickname}" 님의 미리 담기</TitleText>
+            </TitleView>
+            {preCart.length > 0 ? (
+              <View
+                style={{
+                  flex: 1,
+                  width: '85%',
+                  marginTop: '-1.5%',
+                  marginBottom: '2%',
+                }}>
+                <PlacePreCart
+                  preCart={preCart}
+                  iconColor="rgba(0, 0, 0, 0.6)"
+                  componentStyle={{
+                    flex: 1,
+                    width: '95%',
+                    justifyContent: 'flex-start',
+                  }}
+                />
+              </View>
+            ) : (
+              <TitleText
+                style={{
+                  fontFamily: 'SeoulNamsanL',
+                  fontSize: 14,
+                  marginTop: '1%',
+                  marginBottom: '5%',
+                  color: 'grey',
+                }}>
+                - 원하는 장소나 코스를 미리 담을 수 있어요! -
+              </TitleText>
+            )}
+          </Container>
           <Container style={{}}>
-            <PopularPlacesList placeList={places} />
+            <PopularPlacesList placeList={popularPlaces} />
             {/* <Button title="로그아웃" onPress={handleLogout} color={'grey'} /> */}
           </Container>
           <Container style={{}}>
-            <PopularCoursesList courseList={courses} />
+            <PopularCoursesList courseList={popularCourses} />
           </Container>
         </HomeContainer>
       </ScrollView>

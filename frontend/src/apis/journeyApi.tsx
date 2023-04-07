@@ -65,46 +65,71 @@ export const journeyApi = createApi({
 
     // Mutations
     setDestinationCoordinate: builder.mutation<void, Coordinate>({
-      query: coordinate => ({
-        url: '',
-        method: 'POST',
-        body: {
-          key: 'destination_coordinate',
-          value: JSON.stringify(coordinateToRedisPosition(coordinate)),
-        },
-      }),
+      query: coordinate => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: {
+            key: 'destination_coordinate',
+            value: JSON.stringify(coordinateToRedisPosition(coordinate)),
+          },
+        };
+      },
     }),
     setGetOffStatus: builder.mutation<void, number>({
-      query: status => ({
-        url: '',
-        method: 'POST',
-        body: {
-          key: 'get_off',
-          value: status,
-        },
-      }),
+      query: status => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: {
+            key: 'get_off',
+            value: status,
+          },
+        };
+      },
     }),
     setDriveStartStatus: builder.mutation<void, number>({
-      query: status => ({
-        url: '',
-        method: 'POST',
-        body: {
-          key: 'get_in',
-          value: status,
-        },
-      }),
+      query: status => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: {
+            key: 'get_in',
+            value: status,
+          },
+        };
+      },
       invalidatesTags: ['driveStartStatus'],
     }),
     setIsDestination: builder.mutation<void, number>({
-      query: status => ({
-        url: '',
-        method: 'POST',
-        body: {
-          key: 'is_destination',
-          value: status,
-        },
-      }),
+      query: status => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: {
+            key: 'is_destination',
+            value: status,
+          },
+        };
+      },
       invalidatesTags: ['isDestination'],
+    }),
+    setTourStart: builder.mutation<void, number>({
+      query: status => {
+        console.log();
+        return {
+          url: '',
+          method: 'POST',
+          body: {
+            key: 'tour_start',
+            value: status,
+          },
+        };
+      },
     }),
   }),
 });
@@ -118,4 +143,5 @@ export const {
   useSetGetOffStatusMutation,
   useSetIsDestinationMutation,
   useCheckDriveStartStatusQuery,
+  useSetTourStartMutation,
 } = journeyApi;

@@ -3,6 +3,7 @@ import {Coordinate} from '../types';
 import {NAVER_MAPS_API_ID, NAVER_MAPS_API_KEY} from '@env';
 
 const callNaverDirectionApi = async (coordinates: Coordinate[]) => {
+  console.log();
   const start = `${coordinates[0].longitude},${coordinates[0].latitude}`;
   const end = `${coordinates[coordinates.length - 1].longitude},${
     coordinates[coordinates.length - 1].latitude
