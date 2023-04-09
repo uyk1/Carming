@@ -107,9 +107,9 @@
 - 주해린 : PM, Mobility,IoT
 - 심정윤 : Moblility,IoT
 - 조성환 : Moblility, 서기, 발표
-- 김인중 : Backend, Frontend
-- 이신광 : Backend, CI/CD
-- 오현규 : Backend, Frontend, UI/UX
+- 김인중 : Backend, Frontend, CI/CD
+- 이신광 : Backend리드
+- 오현규 : Frontend리드 , UI/UX
 
 
 
